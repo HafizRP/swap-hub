@@ -19,7 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Let Laravel auto-detect URL scheme from request
-        // This allows the app to work with any IP/domain dynamically
+        // Force HTTPS only if accessing via domain
+        if (request()->getHost() === 'swaphub.b14.my.id') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
