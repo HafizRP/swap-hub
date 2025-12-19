@@ -44,8 +44,7 @@ services:
       - "5541:80"
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    volumes_from:
-      - app:ro
+      - ./public:/var/www/public:ro
     networks:
       - swap-hub-network
     depends_on:
