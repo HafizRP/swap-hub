@@ -29,9 +29,12 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       REDIS_HOST: redis
       BROADCAST_CONNECTION: reverb
-      REVERB_HOST: "reverb"
-      REVERB_PORT: 8080
-      REVERB_SCHEME: http
+      REVERB_APP_ID: "${REVERB_APP_ID}"
+      REVERB_APP_KEY: "${REVERB_APP_KEY}"
+      REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_HOST: reverb
+      REVERB_PORT: "${REVERB_PORT}"
+      REVERB_SCHEME: "${REVERB_SCHEME}"
 
   nginx:
     image: nginx:alpine
@@ -93,6 +96,12 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       REDIS_HOST: redis
       BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: "${REVERB_APP_ID}"
+      REVERB_APP_KEY: "${REVERB_APP_KEY}"
+      REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_HOST: 0.0.0.0
+      REVERB_PORT: "${REVERB_PORT}"
+      REVERB_SCHEME: "${REVERB_SCHEME}"
     networks:
       - swap-hub-network
     depends_on:
