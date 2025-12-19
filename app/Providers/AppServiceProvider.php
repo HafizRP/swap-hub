@@ -19,9 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS URLs when APP_URL is HTTPS
-        if (str_starts_with(config('app.url'), 'https://')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-        }
+        // Let Laravel auto-detect URL scheme from request
+        // This allows the app to work with any IP/domain dynamically
     }
 }
