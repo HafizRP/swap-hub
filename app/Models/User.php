@@ -73,15 +73,7 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function skillSwapRequestsSent()
-    {
-        return $this->hasMany(SkillSwapRequest::class, 'requester_id');
-    }
 
-    public function skillSwapRequestsReceived()
-    {
-        return $this->hasMany(SkillSwapRequest::class, 'provider_id');
-    }
 
     public function conversations()
     {

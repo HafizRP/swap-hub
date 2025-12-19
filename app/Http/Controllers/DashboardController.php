@@ -9,23 +9,13 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+
         $activeProjects = $user->projects()
             ->where('status', 'active')
             ->latest()
             ->take(5)
             ->get();
-            
-        $incomingSwaps = $user->skillSwapRequestsReceived()
-            ->where('status', 'pending')
-            ->latest()
-            ->take(5)
-            ->get();
-            
-        $outgoingSwaps = $user->skillSwapRequestsSent()
-            ->latest()
-            ->take(5)
-            ->get();
-            
-        return view('dashboard', compact('user', 'activeProjects', 'incomingSwaps', 'outgoingSwaps'));
-    }}
+
+        return view('dashboard', compact('user', 'activeProjects'));
+    }
+}

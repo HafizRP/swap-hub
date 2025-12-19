@@ -21,7 +21,7 @@
     <div class="container py-4">
         <!-- Quick Stats -->
         <div class="row g-4 mb-5">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="card border-0 shadow-sm p-4 text-white"
                     style="background: linear-gradient(135deg, #6366f1, #a855f7);">
                     <h6 class="text-uppercase small fw-black opacity-75">Active Projects</h6>
@@ -30,16 +30,9 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-4 text-white"
-                    style="background: linear-gradient(135deg, #10b981, #06b6d4);">
-                    <h6 class="text-uppercase small fw-black opacity-75">Pending Swaps</h6>
-                    <div class="display-5 fw-black my-2">{{ $incomingSwaps->count() }}</div>
-                    <div class="small opacity-75">Requiring your expertise</div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
+
+            <div class="col-md-6">
                 <div class="card border-0 shadow-sm p-4 text-white"
                     style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
                     <h6 class="text-uppercase small fw-black opacity-75">Reputation Level</h6>
@@ -56,7 +49,7 @@
 
         <div class="row g-4">
             <!-- Active Projects List -->
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="card h-100 overflow-hidden">
                     <div
                         class="card-header bg-transparent border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center p-4">
@@ -114,65 +107,7 @@
                 </div>
             </div>
 
-            <!-- Skill Swap Requests -->
-            <div class="col-lg-6">
-                <div class="card h-100 overflow-hidden">
-                    <div
-                        class="card-header bg-transparent border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center p-4">
-                        <h5 class="fw-black mb-0">Swap Requests</h5>
-                        <a href="{{ route('skill-swaps.index') }}"
-                            class="btn btn-link link-success p-0 text-decoration-none fw-bold small">Marketplace</a>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        @forelse($incomingSwaps as $swap)
-                            <div class="list-group-item bg-transparent border-bottom border-white border-opacity-10 p-4">
-                                <div class="d-flex align-items-center gap-3 mb-4">
-                                    <img src="{{ $swap->requester->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($swap->requester->name) . '&background=34d399&color=fff' }}"
-                                        class="rounded-4 border border-white border-opacity-10" width="48" height="48">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold text-white mb-1">{{ $swap->requester->name }}</h6>
-                                        <p class="small text-secondary mb-0">Needs: {{ $swap->requestedSkill->name }} |
-                                            Offers: {{ $swap->offeredSkill->name }}</p>
-                                    </div>
-                                    <div class="text-end">
-                                        <span class="d-block fw-black text-success small">+{{ $swap->points_offered }}
-                                            CP</span>
-                                    </div>
-                                </div>
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <form action="{{ route('skill-swaps.accept', $swap) }}" method="POST">
-                                            @csrf
-                                            <button
-                                                class="btn btn-success w-100 rounded-pill py-2 small fw-black">Accept</button>
-                                        </form>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('skill-swaps.show', $swap) }}"
-                                            class="btn btn-secondary w-100 rounded-pill py-2 small fw-black border-0"
-                                            style="background: rgba(255,255,255,0.05);">Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="p-5 text-center">
-                                <div class="bg-white bg-opacity-5 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                                    style="width: 64px; height: 64px;">
-                                    <svg class="text-secondary" style="width: 32px;" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <p class="text-secondary mb-1">No pending swap requests.</p>
-                                <p class="small text-secondary opacity-50">New requests matching your skills will appear
-                                    here.</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 

@@ -57,6 +57,19 @@
             max-width: 450px;
             padding: 3rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .btn-primary {
@@ -120,8 +133,7 @@
                     <h2 class="h4 fw-black text-white mt-3 mb-0">Swap Hub</h2>
                 </a>
             </div>
-
-            {{ $slot }}
+            @yield('content')
         </div>
     </div>
 

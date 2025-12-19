@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ProjectMemberAdded;
+use App\Mail\MemberValidated;
 
 class ProjectController extends Controller
 {
@@ -154,6 +157,14 @@ class ProjectController extends Controller
             $project->conversation->participants()->syncWithoutDetaching([$userId]);
         }
 
+        // Send email notification to project owner
+        $member = \App\Models\User::find($userId);
+        if ($project->owner_id !== $userId) {
+            Mail::to($project->owner->email)->send(
+                new ProjectMemberAdded($project, $member, $project->owner)
+            );
+        }
+
         return back()->with('status', 'member-added');
     }
 
@@ -186,7 +197,19 @@ class ProjectController extends Controller
         ]);
 
         // Reward reputation points
-        $user->increment('reputation_points', $validated['rating'] * 10);
+        $reputationEarned = $validated['rating'] * 10;
+        $user->increment('reputation_points', $reputationEarned);
+
+        // Send email notification to validated member
+        Mail::to($user->email)->send(
+            new MemberValidated(
+                $project,
+                $user,
+                $validated['rating'],
+                $validated['notes'] ?? null,
+                $reputationEarned
+            )
+        );
 
         return back()->with('status', 'member-validated');
     }

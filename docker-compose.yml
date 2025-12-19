@@ -68,12 +68,17 @@ services:
       - swap-hub-network
 
   reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: swap-hub-app
     container_name: swap-hub-reverb
     restart: unless-stopped
     command: php artisan reverb:start
     ports:
       - "8080:8080"
+    volumes:
+      - ./:/var/www
     environment:
       APP_NAME: "${APP_NAME}"
       APP_ENV: "${APP_ENV}"
@@ -91,6 +96,7 @@ services:
     networks:
       - swap-hub-network
     depends_on:
+      - app
       - redis
 
 networks:
