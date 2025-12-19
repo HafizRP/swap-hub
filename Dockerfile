@@ -17,8 +17,18 @@ FROM composer:latest AS backend
 
 WORKDIR /app
 COPY composer.json composer.lock ./
+COPY artisan ./
+COPY app/ ./app/
+COPY bootstrap/ ./bootstrap/
+COPY config/ ./config/
+COPY database/ ./database/
+COPY routes/ ./routes/
+COPY public/ ./public/
+COPY resources/ ./resources/
+COPY storage/ ./storage/
+
 # Install production dependencies only, optimized autoloader
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-dev --no-scripts
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-dev
 # Install Pusher PHP SDK
 RUN composer require pusher/pusher-php-server --no-interaction --ignore-platform-reqs
 
