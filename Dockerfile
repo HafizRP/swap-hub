@@ -41,6 +41,9 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+# Create .env from .env.example (since .env is in .dockerignore)
+RUN cp .env.example .env
+
 # Complete composer installation
 RUN composer dump-autoload --optimize
 
