@@ -55,6 +55,8 @@ services:
     image: mysql:8.0
     container_name: swap-hub-db
     restart: unless-stopped
+    ports:
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: swap_hub
       MYSQL_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
@@ -106,6 +108,7 @@ services:
       - swap-hub-network
     depends_on:
       - app
+      - db
       - redis
 
 networks:
