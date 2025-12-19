@@ -1,3 +1,28 @@
+# Stage 1: Build Frontend Assets
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+COPY package*.json ./
+COPY vite.config.js ./
+COPY resources/ ./resources/
+COPY public/ ./public/
+# Copy env file to ensure Vite can read environment variables during build
+COPY env-server.txt .env
+
+RUN npm install
+RUN npm run build
+
+# Stage 2: Build Backend Dependencies
+FROM composer:latest AS backend
+
+WORKDIR /app
+COPY composer.json composer.lock ./
+# Install production dependencies only, optimized autoloader
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-dev --no-scripts
+# Install Pusher PHP SDK
+RUN composer require pusher/pusher-php-server --no-interaction --ignore-platform-reqs
+
+# Stage 3: Production Image
 FROM php:8.4-fpm
 
 # Install system dependencies
@@ -10,53 +35,34 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libicu-dev \
-    nodejs \
-    npm \
-    nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install OpCache
+RUN docker-php-ext-install opcache
+COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock ./
+# Copy backend dependencies from stage 2
+COPY --from=backend /app/vendor /var/www/vendor
 
-# Install PHP dependencies
-# Use --ignore-platform-reqs to handle cross-platform builds (macOS -> Linux)
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts --no-autoloader
+# Copy frontend assets from stage 1
+COPY --from=frontend /app/public/build /var/www/public/build
 
-# Install Pusher PHP SDK
-RUN composer require pusher/pusher-php-server --no-interaction --ignore-platform-reqs
-
-# Copy package files for npm
-COPY package*.json ./
-
-# Install npm dependencies
-RUN npm install
-
-# Copy the rest of the application
+# Copy application code
 COPY . .
 
-# Create .env from env-server.txt (production config with secure password)
-# Falls back to .env.example if env-server.txt doesn't exist
+# Ensure .env exists (fallback)
 RUN if [ -f env-server.txt ]; then \
         cp env-server.txt .env; \
     else \
         cp .env.example .env; \
     fi
-
-# Complete composer installation
-RUN composer dump-autoload --optimize
-
-# Build frontend assets
-RUN npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
@@ -67,11 +73,8 @@ RUN chown -R www-data:www-data /var/www \
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose port 9000
 EXPOSE 9000
 
-# Set entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Default command
 CMD ["php-fpm"]
+
