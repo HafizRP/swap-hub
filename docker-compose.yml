@@ -8,7 +8,9 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      # Only mount storage for persistence, not the entire app
+      # Mount source code from host
+      - ./:/var/www
+      # Mount storage for persistence
       - storage-data:/var/www/storage
     networks:
       - swap-hub-network
@@ -44,8 +46,7 @@ services:
       - "5541:80"
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    volumes_from:
-      - app:ro
+      - ./:/var/www:ro
     networks:
       - swap-hub-network
     depends_on:
