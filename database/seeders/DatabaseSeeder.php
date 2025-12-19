@@ -94,39 +94,5 @@ class DatabaseSeeder extends Seeder
                 ->recycle($members->concat([$project->owner]))
                 ->create();
         }
-
-        // 5. Create Skill Swap Requests
-        foreach (range(1, 15) as $i) {
-            $requester = $users->random();
-            $offeredSkill = $skills->random();
-            $requestedSkill = $skills->reject(fn($s) => $s->id === $offeredSkill->id)->random();
-            $status = fake()->randomElement(['pending', 'accepted', 'completed', 'cancelled']);
-
-            $createdAt = fake()->dateTimeBetween('-2 months', 'now');
-            $providerId = null;
-            $acceptedAt = null;
-            $completedAt = null;
-
-            if (in_array($status, ['accepted', 'completed'])) {
-                $providerId = $users->reject(fn($u) => $u->id === $requester->id)->random()->id;
-                $acceptedAt = (clone $createdAt)->modify('+' . rand(1, 5) . ' days');
-                if ($status === 'completed') {
-                    $completedAt = (clone $acceptedAt)->modify('+' . rand(1, 48) . ' hours');
-                }
-            }
-
-            \App\Models\SkillSwapRequest::create([
-                'requester_id' => $requester->id,
-                'provider_id' => $providerId,
-                'offered_skill_id' => $offeredSkill->id,
-                'requested_skill_id' => $requestedSkill->id,
-                'description' => fake()->paragraph(),
-                'points_offered' => rand(20, 100),
-                'status' => $status,
-                'accepted_at' => $acceptedAt,
-                'completed_at' => $completedAt,
-                'created_at' => $createdAt,
-            ]);
-        }
     }
 }
