@@ -10,11 +10,9 @@ README.md
 # Environment files (will be created in container)
 .env
 
-# Node modules (will be installed in container)
-node_modules
-
-# Vendor (will be installed in container)
-vendor
+# Node modules and vendor are installed during build, so we keep them
+# node_modules
+# vendor
 
 # IDE files
 .idea
