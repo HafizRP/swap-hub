@@ -32,6 +32,9 @@ COPY composer.json composer.lock ./
 # Use --ignore-platform-reqs to handle cross-platform builds (macOS -> Linux)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts --no-autoloader
 
+# Install Pusher PHP SDK
+RUN composer require pusher/pusher-php-server --no-interaction --ignore-platform-reqs
+
 # Copy package files for npm
 COPY package*.json ./
 
