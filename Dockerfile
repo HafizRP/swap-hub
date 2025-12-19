@@ -25,14 +25,26 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
-COPY . /var/www
+# Copy composer files first for better caching
+COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+# Use --ignore-platform-reqs to handle cross-platform builds (macOS -> Linux)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts --no-autoloader
 
-# Install and build frontend dependencies
+# Copy package files for npm
+COPY package*.json ./
+
+# Install npm dependencies
 RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Complete composer installation
+RUN composer dump-autoload --optimize
+
+# Build frontend assets
 RUN npm run build
 
 # Set permissions

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Events\MessageSent;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewMessageNotification;
 
 class ChatController extends Controller
 {
@@ -65,6 +67,21 @@ class ChatController extends Controller
 
         // Broadcast the event
         broadcast(new MessageSent($message->load('user')));
+
+        // Optional: Send email notifications to other participants
+        // Uncomment the code below if you want email notifications for new messages
+        // Note: Consider using queues to avoid performance issues
+        /*
+        $participants = $conversation->participants()
+            ->where('user_id', '!=', auth()->id())
+            ->get();
+
+        foreach ($participants as $participant) {
+            Mail::to($participant->email)->send(
+                new NewMessageNotification($message, auth()->user(), $conversation, $participant)
+            );
+        }
+        */
 
         if ($request->wantsJson()) {
             return response()->json($message->load('user'));

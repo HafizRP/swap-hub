@@ -149,7 +149,7 @@
         <section id="features" class="container py-5 mt-5">
             <div class="row g-4 mt-5">
                 <!-- Group Chat -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     <div class="p-5 h-100 feature-card glass">
                         <div class="bg-primary bg-opacity-10 rounded-4 p-3 d-inline-block mb-4">
                             <svg class="text-primary" style="width: 24px;" fill="none" stroke="currentColor"
@@ -165,24 +165,10 @@
                     </div>
                 </div>
 
-                <!-- Skill Swap -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="p-5 h-100 feature-card glass">
-                        <div class="bg-warning bg-opacity-10 rounded-4 p-3 d-inline-block mb-4">
-                            <svg class="text-warning" style="width: 24px;" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="h4 fw-black text-white mb-3">Skill Bartering</h3>
-                        <p class="small text-secondary fw-medium lh-lg">Exchange professional services with peers using
-                            our non-monetary reputation system.</p>
-                    </div>
-                </div>
+
 
                 <!-- GitHub Integrations -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     <div class="p-5 h-100 feature-card glass">
                         <div class="bg-info bg-opacity-10 rounded-4 p-3 d-inline-block mb-4">
                             <svg class="text-info" style="width: 24px;" fill="currentColor" viewBox="0 0 24 24">
@@ -197,7 +183,7 @@
                 </div>
 
                 <!-- Reputation -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     <div class="p-5 h-100 feature-card glass">
                         <div class="bg-success bg-opacity-10 rounded-4 p-3 d-inline-block mb-4">
                             <svg class="text-success" style="width: 24px;" fill="none" stroke="currentColor"

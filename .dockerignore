@@ -1,13 +1,41 @@
-/node_modules
-/vendor
-/public/build
-/public/hot
-/storage/*.key
-.env
+# Git files
 .git
-.phpunit.cache
-test-report.xml
-.vscode
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Environment files (will be created in container)
+.env
+
+# Node modules (will be installed in container)
+node_modules
+
+# Vendor (will be installed in container)
+vendor
+
+# IDE files
 .idea
-Dockerfile
-docker-compose.yml
+.vscode
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Storage and cache (will be generated)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
