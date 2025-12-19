@@ -20,11 +20,14 @@ if [ "$1" = "php-fpm" ]; then
         echo "✅ Database is ready!"
     fi
 
-    # Generate application key if not set
-    if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-        echo "🔑 Generating application key..."
-        php artisan key:generate --force
-    fi
+    # Generate APP_KEY if not set
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null || grep -q "^APP_KEY=$" .env 2>/dev/null; then
+    echo "🔑 Generating application key..."
+    # Remove any existing APP_KEY line first
+    sed -i '/^APP_KEY=/d' .env
+    # Generate new key
+    php artisan key:generate --force
+fi
 
     # Run migrations
     echo "🗄️  Running database migrations..."
