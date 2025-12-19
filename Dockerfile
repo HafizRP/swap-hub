@@ -42,8 +42,13 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# Create .env from .env.example (since .env is in .dockerignore)
-RUN cp .env.example .env
+# Create .env from env-server.txt (production config with secure password)
+# Falls back to .env.example if env-server.txt doesn't exist
+RUN if [ -f env-server.txt ]; then \
+        cp env-server.txt .env; \
+    else \
+        cp .env.example .env; \
+    fi
 
 # Complete composer installation
 RUN composer dump-autoload --optimize

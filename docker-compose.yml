@@ -16,25 +16,25 @@ services:
       - db
       - redis
     environment:
-      APP_NAME: "${APP_NAME}"
-      APP_ENV: "${APP_ENV}"
-      APP_KEY: "${APP_KEY}"
-      APP_DEBUG: "${APP_DEBUG}"
-      APP_URL: "${APP_URL}"
-      DB_CONNECTION: "${DB_CONNECTION}"
+      APP_NAME: "Swap Hub"
+      APP_ENV: production
+      APP_KEY: ""
+      APP_DEBUG: "false"
+      APP_URL: "http://localhost"
+      DB_CONNECTION: mysql
       DB_HOST: db
-      DB_PORT: "${DB_PORT}"
-      DB_DATABASE: "${DB_DATABASE}"
-      DB_USERNAME: "${DB_USERNAME}"
-      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_PORT: "3306"
+      DB_DATABASE: swap_hub
+      DB_USERNAME: root
+      DB_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
       REDIS_HOST: redis
       BROADCAST_CONNECTION: reverb
-      REVERB_APP_ID: "${REVERB_APP_ID}"
-      REVERB_APP_KEY: "${REVERB_APP_KEY}"
-      REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_APP_ID: swap-hub
+      REVERB_APP_KEY: swap-hub-key
+      REVERB_APP_SECRET: swap-hub-secret
       REVERB_HOST: reverb
-      REVERB_PORT: "${REVERB_PORT}"
-      REVERB_SCHEME: "${REVERB_SCHEME}"
+      REVERB_PORT: "8080"
+      REVERB_SCHEME: http
 
   nginx:
     image: nginx:alpine
@@ -56,10 +56,10 @@ services:
     container_name: swap-hub-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: "${DB_DATABASE}"
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_DATABASE: swap_hub
+      MYSQL_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
+      MYSQL_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
+      MYSQL_USER: root
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -83,25 +83,25 @@ services:
     ports:
       - "8080:8080"
     environment:
-      APP_NAME: "${APP_NAME}"
-      APP_ENV: "${APP_ENV}"
-      APP_KEY: "${APP_KEY}"
-      APP_DEBUG: "${APP_DEBUG}"
-      APP_URL: "${APP_URL}"
-      DB_CONNECTION: "${DB_CONNECTION}"
+      APP_NAME: "Swap Hub"
+      APP_ENV: production
+      APP_KEY: ""
+      APP_DEBUG: "false"
+      APP_URL: "http://localhost"
+      DB_CONNECTION: mysql
       DB_HOST: db
-      DB_PORT: "${DB_PORT}"
-      DB_DATABASE: "${DB_DATABASE}"
-      DB_USERNAME: "${DB_USERNAME}"
-      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_PORT: "3306"
+      DB_DATABASE: swap_hub
+      DB_USERNAME: root
+      DB_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
       REDIS_HOST: redis
       BROADCAST_CONNECTION: reverb
-      REVERB_APP_ID: "${REVERB_APP_ID}"
-      REVERB_APP_KEY: "${REVERB_APP_KEY}"
-      REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_APP_ID: swap-hub
+      REVERB_APP_KEY: swap-hub-key
+      REVERB_APP_SECRET: swap-hub-secret
       REVERB_HOST: 0.0.0.0
-      REVERB_PORT: "${REVERB_PORT}"
-      REVERB_SCHEME: "${REVERB_SCHEME}"
+      REVERB_PORT: "8080"
+      REVERB_SCHEME: http
     networks:
       - swap-hub-network
     depends_on:
