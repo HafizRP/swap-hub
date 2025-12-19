@@ -39,7 +39,7 @@
             },
             fetchMessages() {
                 this.initialLoading = true;
-                fetch('{{ route('chat.messages.get', $conversation) }}')
+                fetch('{{ route('chat.messages.get', $conversation, false) }}')
                     .then(response => response.json())
                     .then(data => {
                         this.messages = Array.isArray(data) ? data : [];
@@ -64,7 +64,7 @@
                 if (!this.newMessage.trim() || this.loading) return;
                 this.loading = true;
                 try {
-                    const response = await fetch('{{ route('chat.messages.send', $conversation) }}', {
+                    const response = await fetch('{{ route('chat.messages.send', $conversation, false) }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
