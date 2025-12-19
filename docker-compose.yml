@@ -60,8 +60,6 @@ services:
     environment:
       MYSQL_DATABASE: swap_hub
       MYSQL_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
-      MYSQL_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
-      MYSQL_USER: root
     volumes:
       - dbdata:/var/lib/mysql
     networks:
