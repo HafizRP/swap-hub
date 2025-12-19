@@ -1,0 +1,102 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: swap-hub-app
+    container_name: swap-hub-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - swap-hub-network
+    depends_on:
+      - db
+      - redis
+    environment:
+      APP_NAME: "${APP_NAME}"
+      APP_ENV: "${APP_ENV}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG}"
+      APP_URL: "${APP_URL}"
+      DB_CONNECTION: "${DB_CONNECTION}"
+      DB_HOST: db
+      DB_PORT: "${DB_PORT}"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      REDIS_HOST: redis
+      BROADCAST_CONNECTION: reverb
+      REVERB_HOST: "reverb"
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
+
+  nginx:
+    image: nginx:alpine
+    container_name: swap-hub-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - swap-hub-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: swap-hub-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_USER: "${DB_USERNAME}"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - swap-hub-network
+
+  redis:
+    image: redis:alpine
+    container_name: swap-hub-redis
+    restart: unless-stopped
+    networks:
+      - swap-hub-network
+
+  reverb:
+    image: swap-hub-app
+    container_name: swap-hub-reverb
+    restart: unless-stopped
+    command: php artisan reverb:start
+    ports:
+      - "8080:8080"
+    environment:
+      APP_NAME: "${APP_NAME}"
+      APP_ENV: "${APP_ENV}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG}"
+      APP_URL: "${APP_URL}"
+      DB_CONNECTION: "${DB_CONNECTION}"
+      DB_HOST: db
+      DB_PORT: "${DB_PORT}"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      REDIS_HOST: redis
+      BROADCAST_CONNECTION: reverb
+    networks:
+      - swap-hub-network
+    depends_on:
+      - redis
+
+networks:
+  swap-hub-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

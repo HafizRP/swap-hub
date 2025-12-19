@@ -1,0 +1,13 @@
+/node_modules
+/vendor
+/public/build
+/public/hot
+/storage/*.key
+.env
+.git
+.phpunit.cache
+test-report.xml
+.vscode
+.idea
+Dockerfile
+docker-compose.yml
