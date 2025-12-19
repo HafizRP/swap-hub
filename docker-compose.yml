@@ -41,7 +41,7 @@ services:
     container_name: swap-hub-nginx
     restart: unless-stopped
     ports:
-      - "8000:80"
+      - "5541:80"
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     volumes_from:
