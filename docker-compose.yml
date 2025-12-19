@@ -18,7 +18,7 @@ services:
     environment:
       APP_NAME: "Swap Hub"
       APP_ENV: production
-      APP_KEY: ""
+      APP_KEY: "base64:vK8rX9mN2pQ5wL3jH6fT1yU4sR7eW0oI9aB8cD5gF2h="
       APP_DEBUG: "false"
       APP_URL: "http://localhost"
       DB_CONNECTION: mysql
@@ -85,7 +85,7 @@ services:
     environment:
       APP_NAME: "Swap Hub"
       APP_ENV: production
-      APP_KEY: ""
+      APP_KEY: "base64:vK8rX9mN2pQ5wL3jH6fT1yU4sR7eW0oI9aB8cD5gF2h="
       APP_DEBUG: "false"
       APP_URL: "http://localhost"
       DB_CONNECTION: mysql
