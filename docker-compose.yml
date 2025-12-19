@@ -52,14 +52,14 @@ services:
       - app
 
   db:
-    image: mysql:8.0
+    image: mariadb:10.11
     container_name: swap-hub-db
     restart: unless-stopped
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: swap_hub
-      MYSQL_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
+      MARIADB_DATABASE: swap_hub
+      MARIADB_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -117,4 +117,6 @@ volumes:
   dbdata:
     driver: local
   storage-data:
+    driver: local
+  app-files:
     driver: local
