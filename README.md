@@ -1,59 +1,257 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔄 Swap Hub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Platform untuk skill swap dan property exchange berbasis Laravel.
 
-## About Laravel
+## 📋 Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Development](#development)
+- [Deployment](#deployment)
+- [CI/CD with Jenkins](#cicd-with-jenkins)
+- [Documentation](#documentation)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 🏠 Property listing and management
+- 💬 Real-time chat with Pusher
+- 🔐 Authentication with social login
+- 📊 Admin dashboard
+- 🔍 Advanced search and filtering
+- 📱 Responsive design
+- 🐳 Docker support
+- 🚀 CI/CD with Jenkins
 
-## Learning Laravel
+## 🛠 Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Backend:** Laravel 11
+- **Frontend:** Blade, TailwindCSS, Alpine.js
+- **Database:** MySQL/MariaDB
+- **Cache:** Redis
+- **Real-time:** Pusher
+- **Containerization:** Docker & Docker Compose
+- **CI/CD:** Jenkins
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Quick Start
 
-## Laravel Sponsors
+### Prerequisites
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Docker & Docker Compose
+- Git
 
-### Premium Partners
+### Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# Clone repository
+git clone https://github.com/your-username/swap-hub.git
+cd swap-hub
 
-## Contributing
+# Start with Docker Compose
+docker-compose up -d --build
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Application will be available at:
+# http://localhost:5541
+```
 
-## Code of Conduct
+That's it! The application will automatically:
+- ✅ Install dependencies
+- ✅ Run migrations
+- ✅ Seed database
+- ✅ Build assets
+- ✅ Configure storage
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 💻 Development
 
-## Security Vulnerabilities
+### Local Development (Without Docker)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# Install dependencies
+composer install
+npm install
 
-## License
+# Setup environment
+cp .env.example .env
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Run migrations
+php artisan migrate --seed
+
+# Build assets
+npm run dev
+
+# Start server
+php artisan serve
+```
+
+### Docker Development
+
+```bash
+# Start containers
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Run artisan commands
+docker-compose exec app php artisan [command]
+
+# Access container
+docker-compose exec app bash
+```
+
+## 📦 Deployment
+
+### Docker Deployment
+
+See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
+
+```bash
+# Production deployment
+docker-compose up -d --build
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+```
+
+### Manual Deployment
+
+```bash
+# Install dependencies
+composer install --optimize-autoloader --no-dev
+npm install
+npm run build
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Optimize
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run migrations
+php artisan migrate --force
+```
+
+## 🔄 CI/CD with Jenkins
+
+### Configure Jenkins Pipeline
+
+See [JENKINS.md](JENKINS.md) for comprehensive Jenkins configuration guide.
+
+**Quick Steps:**
+1. Create new Pipeline job in Jenkins
+2. Configure Git repository
+3. Set Script Path to `Jenkinsfile`
+4. Build Now!
+
+**Key Features:**
+- ✅ Automated build on git push
+- ✅ Run tests before deployment
+- ✅ Docker-based deployment
+- ✅ Database migrations
+- ✅ Cache optimization
+- ✅ Health checks
+- ✅ Automatic rollback on failure
+
+### Pipeline Stages
+
+1. **Checkout** - Clone repository
+2. **Install Dependencies** - Composer & NPM
+3. **Build Assets** - Compile frontend
+4. **Run Tests** - PHPUnit tests
+5. **Build Docker** - Create images
+6. **Deploy** - Start containers
+7. **Migrate** - Update database
+8. **Optimize** - Cache config/routes/views
+9. **Health Check** - Verify deployment
+
+## 📚 Documentation
+
+- [DOCKER.md](DOCKER.md) - Docker deployment guide
+- [JENKINS.md](JENKINS.md) - Jenkins CI/CD setup
+- [Jenkinsfile](Jenkinsfile) - Pipeline configuration
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Key environment variables (see `.env.example`):
+
+```env
+APP_NAME="Swap Hub"
+APP_ENV=production
+APP_URL=https://your-domain.com
+
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_DATABASE=swap_hub
+
+REDIS_HOST=redis
+
+BROADCAST_CONNECTION=pusher
+PUSHER_APP_ID=your-app-id
+PUSHER_APP_KEY=your-app-key
+PUSHER_APP_SECRET=your-app-secret
+```
+
+## 🧪 Testing
+
+```bash
+# Run tests
+php artisan test
+
+# Run with coverage
+php artisan test --coverage
+
+# Run specific test
+php artisan test --filter=TestName
+```
+
+## 📊 Monitoring
+
+### Application Logs
+
+```bash
+# Docker logs
+docker-compose logs -f app
+
+# Laravel logs
+tail -f storage/logs/laravel.log
+```
+
+### Container Stats
+
+```bash
+docker stats swap-hub-app swap-hub-nginx swap-hub-db
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📝 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🙏 Acknowledgments
+
+- Built with [Laravel](https://laravel.com)
+- UI components from [TailwindCSS](https://tailwindcss.com)
+- Real-time features powered by [Pusher](https://pusher.com)
+
+---
+
+**Need Help?** 
+- 📖 Check the [documentation](JENKINS.md)
+- 🐛 [Report issues](https://github.com/your-username/swap-hub/issues)
+- 💬 [Discussions](https://github.com/your-username/swap-hub/discussions)
