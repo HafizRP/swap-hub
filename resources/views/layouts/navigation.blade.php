@@ -36,10 +36,43 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('chat.*') ? 'active fw-bold text-white' : '' }}"
-                        href="{{ route('chat.index') }}">
+                    <a class="nav-link {{ request()->routeIs('chat*') ? 'active fw-bold text-white' : '' }}"
+                        href="{{ route('chat') }}">
                         Chat
                     </a>
+                </li>
+            </ul>
+
+            <!-- Dark Mode Toggle -->
+            <ul class="navbar-nav me-3">
+                <li class="nav-item" x-data="{ 
+                    darkMode: localStorage.getItem('darkMode') === 'true' || localStorage.getItem('darkMode') === null,
+                    toggle() {
+                        this.darkMode = !this.darkMode;
+                        localStorage.setItem('darkMode', this.darkMode);
+                        document.documentElement.setAttribute('data-bs-theme', this.darkMode ? 'dark' : 'light');
+                    }
+                }" x-init="document.documentElement.setAttribute('data-bs-theme', darkMode ? 'dark' : 'light')">
+                    <button @click="toggle()"
+                        class="btn btn-link nav-link px-3 py-2 rounded-pill d-flex align-items-center gap-2"
+                        style="background-color: rgba(255, 255, 255, 0.05) !important; border: none; text-decoration: none;"
+                        :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+                        <!-- Sun Icon (Light Mode) -->
+                        <svg x-show="!darkMode" style="width: 20px; height: 20px;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" class="text-warning">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <!-- Moon Icon (Dark Mode) -->
+                        <svg x-show="darkMode" style="width: 20px; height: 20px;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" class="text-primary">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                        <span class="small fw-bold d-none d-md-inline" x-text="darkMode ? 'Dark' : 'Light'"></span>
+                    </button>
                 </li>
             </ul>
 

@@ -22,8 +22,7 @@
         <!-- Quick Stats -->
         <div class="row g-4 mb-5">
             <div class="col-md-6">
-                <div class="card border-0 shadow-sm p-4 text-white"
-                    style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+                <div class="card border-0 shadow-sm p-4 bg-gradient-purple">
                     <h6 class="text-uppercase small fw-black opacity-75">Active Projects</h6>
                     <div class="display-5 fw-black my-2">{{ $activeProjects->count() }}</div>
                     <div class="small opacity-75">Ongoing collaborations</div>
@@ -33,8 +32,7 @@
 
 
             <div class="col-md-6">
-                <div class="card border-0 shadow-sm p-4 text-white"
-                    style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                <div class="card border-0 shadow-sm p-4 bg-gradient-orange">
                     <h6 class="text-uppercase small fw-black opacity-75">Reputation Level</h6>
                     <div class="display-5 fw-black my-2">
                         @if($user->reputation_points >= 500) Elite
@@ -63,9 +61,10 @@
                                 class="list-group-item bg-transparent border-bottom border-white border-opacity-10 p-4 transition-bg hover-dim">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="pe-3">
-                                        <h6 class="fw-bold text-white mb-1">{{ $project->title }}</h6>
+                                        <h6 class="fw-bold mb-1">{{ $project->title }}</h6>
                                         <p class="small text-secondary mb-0 text-truncate" style="max-width: 250px;">
-                                            {{ $project->description }}</p>
+                                            {{ $project->description }}
+                                        </p>
                                     </div>
                                     <span
                                         class="badge text-primary bg-primary bg-opacity-10 py-2 px-3 rounded-pill fw-black small text-uppercase">{{ $project->status }}</span>
@@ -126,6 +125,30 @@
 
         .-space-x-2>*:first-child {
             margin-left: 0;
+        }
+
+        /* Default (Dark Mode) */
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+        }
+
+        .bg-gradient-orange {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+        }
+
+        /* Light Mode Overrides */
+        [data-bs-theme="light"] .bg-gradient-purple {
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff) !important;
+            color: #1e293b !important;
+            border: 1px solid rgba(99, 102, 241, 0.2) !important;
+        }
+
+        [data-bs-theme="light"] .bg-gradient-orange {
+            background: linear-gradient(135deg, #ffedd5, #fee2e2) !important;
+            color: #1e293b !important;
+            border: 1px solid rgba(245, 158, 11, 0.2) !important;
         }
     </style>
 </x-app-layout>

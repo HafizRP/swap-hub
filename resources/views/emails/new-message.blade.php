@@ -9,7 +9,7 @@
         {{ Str::limit($message->content, 150) }}
     </x-mail::panel>
 
-    <x-mail::button :url="route('chat.show', $conversation)">
+    <x-mail::button :url="route('chat', $conversation)">
         View Message
     </x-mail::button>
 
