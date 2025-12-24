@@ -20,6 +20,8 @@ class Project extends Model
         'owner_id',
         'github_repo_url',
         'github_repo_name',
+        'github_webhook_id',
+        'github_webhook_status',
         'category',
         'status',
         'start_date',

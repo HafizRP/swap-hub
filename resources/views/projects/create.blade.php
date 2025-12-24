@@ -84,6 +84,30 @@
                                         @endif
                                     @endif
                                     <x-input-error :messages="$errors->get('github_repo_url')" class="mt-2" />
+                                    
+                                    {{-- Auto-setup Webhook Checkbox --}}
+                                    @if(auth()->user()->github_token)
+                                        <div class="form-check mt-3 ps-0">
+                                            <div class="d-flex align-items-start gap-3 p-3 rounded-4" 
+                                                 style="background-color: rgba(79, 70, 229, 0.1) !important; border: 1px solid rgba(79, 70, 229, 0.2);">
+                                                <input type="checkbox" 
+                                                       id="setup_webhook" 
+                                                       name="setup_webhook" 
+                                                       value="1"
+                                                       {{ old('setup_webhook') ? 'checked' : '' }}
+                                                       class="form-check-input mt-1 bg-dark border-primary"
+                                                       style="width: 20px; height: 20px; cursor: pointer;">
+                                                <div class="flex-grow-1">
+                                                    <label for="setup_webhook" class="form-check-label text-white fw-bold mb-1" style="cursor: pointer;">
+                                                        🚀 Auto-setup GitHub Webhook
+                                                    </label>
+                                                    <p class="text-secondary small mb-0" style="font-size: 11px; line-height: 1.5;">
+                                                        Automatically configure webhook for real-time commit tracking and activity feed
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Category -->

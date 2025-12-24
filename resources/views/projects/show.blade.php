@@ -21,12 +21,12 @@
                         class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-black border-white border-opacity-10">Edit
                         Project</a>
                     @if($project->conversation)
-                        <a href="{{ route('chat.show', $project->conversation) }}"
+                        <a href="{{ route('chat', $project->conversation) }}"
                             class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Enter Squad Chat</a>
                     @endif
                 @elseif($project->members->contains(auth()->id()))
                     @if($project->conversation)
-                        <a href="{{ route('chat.show', $project->conversation) }}"
+                        <a href="{{ route('chat', $project->conversation) }}"
                             class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Enter Squad Chat</a>
                     @else
                         <div
@@ -180,22 +180,21 @@
                     </div>
 
                     <!-- Project Stats -->
-                    <div class="card border-0 shadow-lg text-white p-4"
-                        style="background: linear-gradient(135deg, #111827, #1f2937);">
+                    <div class="card border-0 shadow-sm p-4">
                         <h5 class="fw-black mb-4">Collaboration Stats</h5>
                         <div class="d-flex flex-column gap-3">
-                            <div class="rounded-4 p-3 d-flex justify-content-between align-items-center"
-                                style="background-color: rgba(255, 255, 255, 0.05) !important;">
+                            <div
+                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
                                 <span class="small fw-black text-secondary text-uppercase">Commits</span>
                                 <span class="h4 fw-black mb-0">{{ $project->githubActivities->count() }}</span>
                             </div>
-                            <div class="rounded-4 p-3 d-flex justify-content-between align-items-center"
-                                style="background-color: rgba(255, 255, 255, 0.05) !important;">
+                            <div
+                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
                                 <span class="small fw-black text-secondary text-uppercase">Health</span>
                                 <span class="h4 fw-black mb-0 text-success">98%</span>
                             </div>
-                            <div class="rounded-4 p-3 d-flex justify-content-between align-items-center"
-                                style="background-color: rgba(255, 255, 255, 0.05) !important;">
+                            <div
+                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
                                 <span class="small fw-black text-secondary text-uppercase">Active</span>
                                 <span
                                     class="h4 fw-black mb-0">{{ (int) ($project->created_at->diffInDays() + 1) }}d</span>

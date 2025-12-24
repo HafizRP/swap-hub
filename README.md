@@ -16,7 +16,7 @@ Platform untuk skill swap dan property exchange berbasis Laravel.
 
 - 🏠 Property listing and management
 - 💬 Real-time chat with Pusher
-- 🔐 Authentication with social login
+- 🔐 Authentication with GitHub OAuth login
 - 📊 Admin dashboard
 - 🔍 Advanced search and filtering
 - 📱 Responsive design
@@ -175,6 +175,8 @@ See [JENKINS.md](JENKINS.md) for comprehensive Jenkins configuration guide.
 
 - [DOCKER.md](DOCKER.md) - Docker deployment guide
 - [JENKINS.md](JENKINS.md) - Jenkins CI/CD setup
+- [GITHUB-OAUTH.md](GITHUB-OAUTH.md) - GitHub OAuth login setup
+- [GITHUB-WEBHOOK-SETUP.md](GITHUB-WEBHOOK-SETUP.md) - Auto-setup GitHub webhooks
 - [Jenkinsfile](Jenkinsfile) - Pipeline configuration
 
 ## 🔧 Configuration
@@ -198,6 +200,11 @@ BROADCAST_CONNECTION=pusher
 PUSHER_APP_ID=your-app-id
 PUSHER_APP_KEY=your-app-key
 PUSHER_APP_SECRET=your-app-secret
+
+# GitHub OAuth (see GITHUB-OAUTH.md for setup)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GITHUB_REDIRECT_URI=http://localhost:5541/auth/github/callback
 ```
 
 ## 🧪 Testing

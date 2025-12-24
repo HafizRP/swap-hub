@@ -29,9 +29,15 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        return [
+        $channels = [
             new PrivateChannel('chat.' . $this->message->conversation_id),
         ];
+
+        foreach ($this->message->conversation->participants as $participant) {
+            $channels[] = new PrivateChannel('App.Models.User.' . $participant->id);
+        }
+
+        return $channels;
     }
 
     /**
@@ -51,11 +57,36 @@ class MessageSent implements ShouldBroadcastNow
     {
         return [
             'id' => $this->message->id,
-            'content' => $this->message->content,
+            'conversation_id' => $this->message->conversation_id,
+            'content' => $this->stripMarkdown($this->message->content),
             'user_id' => $this->message->user_id,
-            'user_name' => $this->message->user->name,
-            'user_avatar' => $this->message->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->message->user->name) . '&background=6366f1&color=fff',
-            'created_at' => $this->message->created_at->format('H:i'),
+            'user_name' => $this->message->user ? $this->message->user->name : 'System',
+            'user_avatar' => $this->message->user
+                ? ($this->message->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->message->user->name) . '&background=6366f1&color=fff')
+                : 'https://ui-avatars.com/api/?name=System&background=10b981&color=fff',
+            'conversation_name' => $this->message->conversation->name,
+            'conversation_type' => $this->message->conversation->type,
+            'created_at' => $this->message->created_at->toISOString(),
+            'attachments' => $this->message->attachments->map(function ($att) {
+                return [
+                    'id' => $att->id,
+                    'file_path' => asset('storage/' . $att->file_path),
+                    'file_name' => $att->file_name,
+                    'file_type' => $att->file_type,
+                ];
+            })->toArray(),
         ];
+    }
+
+    /**
+     * Strip markdown formatting for notifications
+     */
+    private function stripMarkdown(string $content): string
+    {
+        // Remove bold (**text**)
+        $content = preg_replace('/\*\*(.*?)\*\*/', '$1', $content);
+        // Remove code (`text`)
+        $content = preg_replace('/`(.*?)`/', '$1', $content);
+        return $content;
     }
 }

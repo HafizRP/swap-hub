@@ -60,12 +60,18 @@ class ProjectController extends Controller
             'category' => ['required', 'string', 'in:Development,Design,Marketing'],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
+            'setup_webhook' => ['nullable', 'boolean'],
         ]);
 
         $project = auth()->user()->ownedProjects()->create($validated);
 
         // Add owner as member
         $project->members()->attach(auth()->id(), ['role' => 'owner', 'is_validated' => true]);
+
+        // Auto-setup GitHub webhook if requested and user has GitHub token
+        if ($request->boolean('setup_webhook') && $validated['github_repo_url'] && auth()->user()->github_token) {
+            $this->setupGitHubWebhook($project, auth()->user()->github_token);
+        }
 
         return redirect()->route('projects.show', $project)->with('status', 'project-created');
     }
@@ -218,6 +224,34 @@ class ProjectController extends Controller
     {
         if (auth()->id() !== $project->owner_id) {
             abort(403);
+        }
+    }
+
+    /**
+     * Setup GitHub webhook for the project.
+     */
+    protected function setupGitHubWebhook(\App\Models\Project $project, string $githubToken): void
+    {
+        $webhookService = new \App\Services\GitHubWebhookService();
+
+        // Webhook URL that GitHub will call
+        $webhookUrl = url('/webhooks/github');
+
+        $webhookData = $webhookService->createWebhook(
+            $project->github_repo_url,
+            $githubToken,
+            $webhookUrl
+        );
+
+        if ($webhookData) {
+            $project->update([
+                'github_webhook_id' => $webhookData['id'],
+                'github_webhook_status' => 'active',
+            ]);
+        } else {
+            $project->update([
+                'github_webhook_status' => 'failed',
+            ]);
         }
     }
 }

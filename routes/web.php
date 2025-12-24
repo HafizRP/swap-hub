@@ -31,11 +31,8 @@ Route::middleware('auth')->group(function () {
 
 
 
-    // Chat
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{conversation}/messages', [ChatController::class, 'sendMessage'])->name('chat.messages.send');
-    Route::get('/chat/{conversation}/messages', [ChatController::class, 'getMessages'])->name('chat.messages.get');
+    // Chat - Full Livewire SPA
+    Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');
     Route::post('/chat/direct/{user}', [ChatController::class, 'createDirectConversation'])->name('chat.direct');
 });
 
