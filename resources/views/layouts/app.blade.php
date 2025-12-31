@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 
 <head>
     <meta charset="utf-8">
@@ -10,431 +10,241 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
+        [data-bs-theme="light"] {
+            --bs-font-sans-serif: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --bs-body-bg: #f8fafc;
+            --bs-primary: #4f46e5;
+            --bs-primary-rgb: 79, 70, 229;
+            --bs-sidebar-bg: #ffffff;
+            --bs-border-color: #e2e8f0;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-font-sans-serif: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --bs-body-bg: #0b1120;
+            --bs-body-color: #e2e8f0;
+            --bs-primary: #6366f1;
+            --bs-primary-rgb: 99, 102, 241;
+            --bs-sidebar-bg: #1e293b;
+            --bs-border-color: rgba(255, 255, 255, 0.08);
+        }
+
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #0b1120;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color, #1e293b);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode Utility Overrides */
+        [data-bs-theme="dark"] .bg-white {
+            background-color: #1e293b !important;
             color: #e2e8f0;
         }
 
-        .navbar {
-            background-color: rgba(11, 17, 32, 0.8) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #0f172a !important;
         }
 
-        .card {
-            background-color: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1.5rem;
-        }
-
-        .btn-primary {
-            background-color: #4f46e5;
-            border: none;
-            border-radius: 0.75rem;
-            padding: 0.6rem 1.5rem;
-            font-weight: 700;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            background-color: #4338ca;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-        }
-
-        /* Chat Hover Styles */
-        .hover-bg-light:hover {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-        }
-
-        /* Dark Mode - Ensure labels are visible */
-        [data-bs-theme="dark"] .text-uppercase,
-        [data-bs-theme="dark"] .tracking-widest,
-        [data-bs-theme="dark"] .tracking-wide {
-            color: rgba(255, 255, 255, 0.7) !important;
+        [data-bs-theme="dark"] .text-dark {
+            color: #f1f5f9 !important;
         }
 
         [data-bs-theme="dark"] .text-secondary {
             color: #94a3b8 !important;
         }
 
-        /* Smooth Theme Transition */
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        [data-bs-theme="dark"] .border,
+        [data-bs-theme="dark"] .border-top,
+        [data-bs-theme="dark"] .border-bottom,
+        [data-bs-theme="dark"] .border-end,
+        [data-bs-theme="dark"] .border-start {
+            border-color: var(--bs-border-color) !important;
         }
 
-        /* Light Mode Overrides */
-        [data-bs-theme="light"] body {
-            background-color: #f8fafc;
-            color: #1e293b;
+        [data-bs-theme="dark"] .btn-light {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: transparent;
+            color: #e2e8f0;
         }
 
-        [data-bs-theme="light"] .navbar {
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        [data-bs-theme="dark"] .btn-light:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        [data-bs-theme="light"] .card {
-            background-color: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+        [data-bs-theme="dark"] .nav-link:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #f1f5f9 !important;
         }
 
-        [data-bs-theme="light"] .text-white {
-            color: #1e293b !important;
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: #1e293b;
+            border-color: var(--bs-border-color);
         }
 
-        [data-bs-theme="light"] .text-secondary {
-            color: #64748b !important;
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #e2e8f0;
         }
 
-        [data-bs-theme="light"] .bg-dark {
-            background-color: #f1f5f9 !important;
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
 
-        /* Light Mode - Navbar Specific Overrides */
-        [data-bs-theme="light"] .navbar {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .navbar-brand,
-        [data-bs-theme="light"] .nav-link {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .nav-link:hover,
-        [data-bs-theme="light"] .nav-link.active {
-            color: #4f46e5 !important;
-        }
-
-        [data-bs-theme="light"] .navbar .dropdown-toggle {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .dropdown-menu {
-            background-color: #ffffff !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-        }
-
-        [data-bs-theme="light"] .dropdown-item {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .dropdown-item:hover {
-            background-color: #f1f5f9 !important;
-        }
-
-        /* Light Mode - General Text Overrides */
-        [data-bs-theme="light"] h1,
-        [data-bs-theme="light"] h2,
-        [data-bs-theme="light"] h3,
-        [data-bs-theme="light"] h4,
-        [data-bs-theme="light"] h5,
-        [data-bs-theme="light"] h6 {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .fw-bold,
-        [data-bs-theme="light"] .fw-black {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .small {
-            color: #64748b !important;
-        }
-
-        /* Light Mode - More Text Overrides */
-        [data-bs-theme="light"] p,
-        [data-bs-theme="light"] span,
-        [data-bs-theme="light"] div {
-            color: #1e293b;
-        }
-
-        [data-bs-theme="light"] a {
-            color: #4f46e5;
-        }
-
-        [data-bs-theme="light"] a:hover {
-            color: #4338ca;
-        }
-
-        /* Light Mode - Badge Overrides */
-        [data-bs-theme="light"] .badge {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .badge.bg-primary {
-            background-color: #4f46e5 !important;
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .badge.bg-success {
-            background-color: #10b981 !important;
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .badge.bg-warning {
-            background-color: #f59e0b !important;
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .badge.bg-danger {
-            background-color: #ef4444 !important;
-            color: white !important;
-        }
-
-        /* Light Mode - Opacity Classes */
-        [data-bs-theme="light"] .opacity-75 {
-            opacity: 0.75 !important;
-        }
-
-        [data-bs-theme="light"] .opacity-50 {
-            opacity: 0.5 !important;
-        }
-
-        /* Light Mode - Button Text */
-        [data-bs-theme="light"] .btn-primary {
-            background-color: #4f46e5 !important;
-            color: white !important;
-            border-color: #4f46e5 !important;
-        }
-
-        [data-bs-theme="light"] .btn-outline-primary {
-            color: #4f46e5 !important;
-            border-color: #4f46e5 !important;
-        }
-
-        [data-bs-theme="light"] .btn-outline-primary:hover {
-            background-color: #4f46e5 !important;
-            color: white !important;
-        }
-
-        /* Light Mode - Special Classes */
-        [data-bs-theme="light"] .text-muted {
-            color: #64748b !important;
-        }
-
-        [data-bs-theme="light"] .text-primary {
-            color: #4f46e5 !important;
-        }
-
-        [data-bs-theme="light"] .text-success {
-            color: #10b981 !important;
-        }
-
-        [data-bs-theme="light"] .text-warning {
-            color: #f59e0b !important;
-        }
-
-        [data-bs-theme="light"] .text-danger {
-            color: #ef4444 !important;
-        }
-
-        /* Light Mode - Label and Uppercase Text */
-        [data-bs-theme="light"] .text-uppercase {
-            color: #64748b !important;
-        }
-
-        [data-bs-theme="light"] .tracking-widest,
-        [data-bs-theme="light"] .tracking-wide {
-            color: #64748b !important;
-        }
-
-        /* Light Mode - Any remaining white/light text */
-        [data-bs-theme="light"] .text-light {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] .text-white-50 {
-            color: #64748b !important;
-        }
-
-        /* Light Mode - Ensure all text in cards is dark */
-        [data-bs-theme="light"] .card * {
-            color: #1e293b;
-        }
-
-        [data-bs-theme="light"] .card .text-secondary {
-            color: #64748b !important;
-        }
-
-        [data-bs-theme="light"] .card .small {
-            color: #64748b !important;
-        }
-
-        /* Light Mode - Aggressive Catch-All Overrides */
-        /* This ensures NO white text remains in light mode */
-
-        /* Override ALL possible white text variations */
-        [data-bs-theme="light"] .text-white,
-        [data-bs-theme="light"] .text-light,
-        [data-bs-theme="light"] .text-white-50,
-        [data-bs-theme="light"] [class*="text-white"] {
-            color: #1e293b !important;
-        }
-
-        /* Override opacity variations that might hide text */
-        [data-bs-theme="light"] .opacity-25 {
-            opacity: 0.4 !important;
-        }
-
-        /* Ensure all headings are dark */
-        [data-bs-theme="light"] header *,
-        [data-bs-theme="light"] .header * {
-            color: #1e293b !important;
-        }
-
-        /* Ensure all main content is dark */
-        [data-bs-theme="light"] main *:not(.btn):not(.badge):not(.bg-primary *):not(.bg-success *):not(.bg-warning *):not(.bg-danger *) {
-            color: #1e293b;
-        }
-
-        /* Special override for any remaining edge cases */
-        [data-bs-theme="light"] .container *:not(.btn):not(.badge):not(.bg-primary *) {
-            color: #1e293b;
-        }
-
-        /* Ensure labels and form labels are visible */
-        [data-bs-theme="light"] label,
-        [data-bs-theme="light"] .form-label {
-            color: #1e293b !important;
-        }
-
-        /* Ensure table text is dark */
-        [data-bs-theme="light"] table,
-        [data-bs-theme="light"] table * {
-            color: #1e293b !important;
-        }
-
-        [data-bs-theme="light"] thead {
-            color: #1e293b !important;
-        }
-
-        /* Ensure list text is dark */
-        [data-bs-theme="light"] ul,
-        [data-bs-theme="light"] ol,
-        [data-bs-theme="light"] li {
-            color: #1e293b;
-        }
-
-        /* Override any inline styles that might set white text */
-        [data-bs-theme="light"] [style*="color: white"],
-        [data-bs-theme="light"] [style*="color: #fff"],
-        [data-bs-theme="light"] [style*="color: #ffffff"],
-        [data-bs-theme="light"] [style*="color:white"],
-        [data-bs-theme="light"] [style*="color:#fff"] {
-            color: #1e293b !important;
-        }
-
-        /* Ensure SVG text is visible */
-        [data-bs-theme="light"] svg text {
-            fill: #1e293b !important;
-        }
-
-        /* Exception: Keep white text in colored backgrounds */
-        [data-bs-theme="light"] .bg-primary,
-        [data-bs-theme="light"] .bg-primary *,
-        [data-bs-theme="light"] .btn-primary,
-        [data-bs-theme="light"] .btn-primary *,
-        [data-bs-theme="light"] .badge.bg-primary,
-        [data-bs-theme="light"] .badge.bg-primary * {
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .bg-success,
-        [data-bs-theme="light"] .bg-success *,
-        [data-bs-theme="light"] .badge.bg-success,
-        [data-bs-theme="light"] .badge.bg-success * {
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .bg-warning,
-        [data-bs-theme="light"] .bg-warning *,
-        [data-bs-theme="light"] .badge.bg-warning,
-        [data-bs-theme="light"] .badge.bg-warning * {
-            color: white !important;
-        }
-
-        [data-bs-theme="light"] .bg-danger,
-        [data-bs-theme="light"] .bg-danger *,
-        [data-bs-theme="light"] .badge.bg-danger,
-        [data-bs-theme="light"] .badge.bg-danger * {
-            color: white !important;
-        }
-
-        /* Ensure placeholder text is visible */
-        [data-bs-theme="light"] ::placeholder {
+        [data-bs-theme="dark"] .input-group-text,
+        [data-bs-theme="dark"] input::placeholder {
             color: #94a3b8 !important;
         }
 
-        [data-bs-theme="light"] ::-webkit-input-placeholder {
-            color: #94a3b8 !important;
+        .btn-primary {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
         }
 
-        [data-bs-theme="light"] ::-moz-placeholder {
-            color: #94a3b8 !important;
+        .btn-primary:hover {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+
+        [data-bs-theme="dark"] .btn-primary:hover {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .text-primary {
+            color: var(--bs-primary) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--bs-primary) !important;
+        }
+
+        /* Sidebar Link Active State */
+        .nav-link.active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--bs-primary) !important;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: #1e293b !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        [data-bs-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Card Hover Effect */
+        .hover-lift {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .05) !important;
         }
     </style>
 
-    <!-- Theme Detection Script (Before any render) -->
-    <script>
-        // Set theme immediately to prevent flash
-        (function () {
-            const darkMode = localStorage.getItem('darkMode');
-            const theme = (darkMode === 'false') ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        })();
-    </script>
-
     <!-- Scripts -->
     @vite(['resources/js/app.js'])
-
-    <!-- Livewire Styles -->
     @livewireStyles
+    <!-- Theme Init -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+        }
+    </script>
 </head>
 
-<body class="antialiased">
-    <div class="min-vh-100">
-        @include('layouts.navigation')
+<body class="antialiased" x-data="{ 
+    sidebarExpanded: localStorage.getItem('sidebarExpanded') === null ? true : localStorage.getItem('sidebarExpanded') === 'true',
+    sidebarOpenMobile: false,
+    darkMode: localStorage.getItem('theme') === 'dark',
+    toggleSidebar() {
+        if (window.innerWidth >= 768) {
+            this.sidebarExpanded = !this.sidebarExpanded;
+            localStorage.setItem('sidebarExpanded', this.sidebarExpanded);
+        } else {
+            this.sidebarOpenMobile = !this.sidebarOpenMobile;
+        }
+    },
+    toggleTheme() {
+        this.darkMode = !this.darkMode;
+        localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-bs-theme', this.darkMode ? 'dark' : 'light');
+    },
+    init() {
+        this.$watch('darkMode', val => {
+            document.documentElement.setAttribute('data-bs-theme', val ? 'dark' : 'light');
+        });
+    }
+}" @resize.window="if(window.innerWidth >= 768) sidebarOpenMobile = false">
+    <div class="d-flex min-vh-100">
+        <!-- Sidebar -->
+        @include('layouts.sidebar')
 
-        <!-- Page Heading -->
-        @isset($header)
-            <header class="py-4 border-bottom border-white-5">
-                <div class="container">
-                    {{ $header }}
+        <!-- Mobile Overlay -->
+        <div x-show="sidebarOpenMobile" class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-md-none"
+            style="z-index: 1045;" @click="sidebarOpenMobile = false" x-transition.opacity></div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
+            <!-- Topbar -->
+            @include('layouts.topbar')
+
+            <!-- Main Page Content -->
+            <main class="flex-grow-1 overflow-auto p-4 custom-scrollbar bg-light">
+                <div class="container-fluid" style="max-width: 1400px;">
+                    {{ $slot }}
                 </div>
-            </header>
-        @endisset
-
-        <!-- Page Content -->
-        <main class="py-5">
-            <div class="container">
-                {{ $slot }}
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Livewire Scripts -->
     @livewireScripts
-
-    <!-- Stack Scripts -->
     @stack('scripts')
 
-    <!-- Global Chat Notification Script -->
+    <!-- Auth Notification Script -->
     @auth
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // Request permission silently if not granted
                 if ('Notification' in window && Notification.permission === 'default') {
                     Notification.requestPermission();
                 }
@@ -446,48 +256,25 @@
                     if (window.Echo) {
                         window.Echo.private(`App.Models.User.${userId}`)
                             .listen('.message.sent', (e) => {
-                                // 1. Refresh Livewire Components (Sidebar)
-                                if (window.Livewire) {
-                                    window.Livewire.dispatch('refresh-conversation-list');
-                                }
-
-                                // 2. Ignore own messages
+                                if (window.Livewire) window.Livewire.dispatch('refresh-conversation-list');
                                 if (e.user_id == userId) return;
+                                if (window.currentConversationId && window.currentConversationId == e.conversation_id) return;
 
-                                // 3. Ignore if viewing context
-                                if (window.currentConversationId && window.currentConversationId == e.conversation_id) {
-                                    return;
-                                }
-
-                                // 4. Show Notification
                                 if ('Notification' in window && Notification.permission === 'granted') {
                                     const title = (e.conversation_type === 'project' && e.conversation_name)
-                                        ? e.conversation_name
-                                        : (e.user_name || 'New Message');
-
-                                    const body = (e.conversation_type === 'project' && e.conversation_name)
-                                        ? `${e.user_name}: ${e.content.substring(0, 100)}`
-                                        : e.content.substring(0, 100);
+                                        ? e.conversation_name : (e.user_name || 'New Message');
+                                    const body = e.content.substring(0, 100);
 
                                     try {
-                                        const n = new Notification(title, {
-                                            body: body,
-                                            icon: e.user_avatar
-                                        });
-                                        n.onclick = function () {
-                                            window.focus();
-                                            window.location.href = `/chat/${e.conversation_id}`;
-                                        }
-                                    } catch (err) {
-                                        // Silent fail
-                                    }
+                                        const n = new Notification(title, { body: body, icon: e.user_avatar });
+                                        n.onclick = function () { window.focus(); window.location.href = `/chat/${e.conversation_id}`; }
+                                    } catch (err) { }
                                 }
                             });
                     } else {
                         setTimeout(initEcho, 1000);
                     }
                 };
-
                 initEcho();
             });
         </script>
@@ -495,4 +282,3 @@
 </body>
 
 </html>
-```

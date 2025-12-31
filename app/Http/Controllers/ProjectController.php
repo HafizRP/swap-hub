@@ -28,7 +28,19 @@ class ProjectController extends Controller
             });
         }
 
-        $projects = $query->latest()->paginate(12)->withQueryString();
+        if ($request->filter === 'my') {
+            $query->whereHas('members', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        }
+
+        if ($request->sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        $projects = $query->paginate(12)->withQueryString();
 
         return view('projects.index', compact('projects'));
     }
@@ -66,7 +78,11 @@ class ProjectController extends Controller
         $project = auth()->user()->ownedProjects()->create($validated);
 
         // Add owner as member
-        $project->members()->attach(auth()->id(), ['role' => 'owner', 'is_validated' => true]);
+        $project->members()->attach(auth()->id(), [
+            'role' => 'owner',
+            'status' => 'active',
+            'is_validated' => true
+        ]);
 
         // Auto-setup GitHub webhook if requested and user has GitHub token
         if ($request->boolean('setup_webhook') && $validated['github_repo_url'] && auth()->user()->github_token) {
@@ -155,7 +171,7 @@ class ProjectController extends Controller
 
         // Prevent duplicates
         $project->members()->syncWithoutDetaching([
-            $userId => ['role' => $role, 'joined_at' => now()]
+            $userId => ['role' => $role, 'status' => 'active', 'joined_at' => now()]
         ]);
 
         // Add to conversation if it exists
@@ -172,6 +188,106 @@ class ProjectController extends Controller
         }
 
         return back()->with('status', 'member-added');
+    }
+
+    /**
+     * Apply to join the project.
+     */
+    public function apply(Request $request, \App\Models\Project $project)
+    {
+        // 0. Check User Skills (Minimal 3)
+        if (auth()->user()->skills()->count() < 3) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Please add at least 3 skills to your profile before joining a project.');
+        }
+
+        // 1. Validate Message
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'min:10', 'max:1000'],
+            'role' => ['required', 'in:member,contributor'],
+        ]);
+
+        // 2. Check if already applied or member
+        $existingMember = $project->members()->where('user_id', auth()->id())->first();
+
+        if ($existingMember) {
+            $status = $existingMember->pivot->status;
+            if ($status === 'active') {
+                return back()->with('error', 'You are already a member of this project.');
+            }
+            if ($status === 'pending') {
+                return back()->with('error', 'Your application is already pending.');
+            }
+            if ($status === 'rejected') {
+                return back()->with('error', 'Your previous application was rejected.');
+            }
+        }
+
+        // 3. Create Application (Pending Member)
+        $project->members()->attach(auth()->id(), [
+            'role' => $validated['role'],
+            'status' => 'pending',
+            'message' => $validated['message'],
+            'joined_at' => now(),
+        ]);
+
+        // 4. Notify Owner (Optional: You can add Mail here)
+        // Mail::to($project->owner->email)->send(new NewApplicationReceived($project, auth()->user()));
+
+        return back()->with('status', 'application-sent');
+    }
+
+    /**
+     * Accept a member application.
+     */
+    public function acceptApplication(Request $request, \App\Models\Project $project, \App\Models\User $user)
+    {
+        $this->authorizeOwner($project);
+
+        // Lock row to prevent race condition (Basic implementation)
+        $memberPivot = $project->projectMembers()->where('user_id', $user->id)->firstOrFail();
+
+        if ($memberPivot->status !== 'pending') {
+            return back()->with('error', 'This application has already been processed.');
+        }
+
+        // Accept
+        $memberPivot->update(['status' => 'active']);
+
+        // Add to conversation
+        if ($project->conversation) {
+            $project->conversation->participants()->syncWithoutDetaching([$user->id]);
+
+            // Optional: Send Welcome Message
+            // \App\Models\Message::create([...]);
+        }
+
+        // Notify User
+        // Mail::to($user->email)->send(new ApplicationAccepted($project));
+
+        return back()->with('status', 'application-accepted');
+    }
+
+    /**
+     * Reject a member application.
+     */
+    public function rejectApplication(Request $request, \App\Models\Project $project, \App\Models\User $user)
+    {
+        $this->authorizeOwner($project);
+
+        $memberPivot = $project->projectMembers()->where('user_id', $user->id)->firstOrFail();
+
+        if ($memberPivot->status !== 'pending') {
+            return back()->with('error', 'This application has already been processed.');
+        }
+
+        // Reject
+        $memberPivot->update(['status' => 'rejected']);
+
+        // Notify User
+        // Mail::to($user->email)->send(new ApplicationRejected($project));
+
+        return back()->with('status', 'application-rejected');
     }
 
     /**
