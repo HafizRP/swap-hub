@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libicu-dev \
+    nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -68,11 +69,8 @@ COPY --from=frontend /app/public/build /var/www/public/build
 COPY . .
 
 # Ensure .env exists (fallback)
-RUN if [ -f env-server.txt ]; then \
-        cp env-server.txt .env; \
-    else \
-        cp .env.example .env; \
-    fi
+# .env handling moved to entrypoint.sh to prevent overwrite
+# COPY docker/entrypoint.sh handles .env initialization
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \

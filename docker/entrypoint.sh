@@ -5,6 +5,19 @@ echo "🚀 Starting Laravel application setup..."
 
 # Wait for database to be ready
 if [ "$1" = "php-fpm" ]; then
+    # Initialize .env if not exists
+    if [ ! -f .env ]; then
+        echo "📝 .env not found, initializing from env-server.txt..."
+        if [ -f env-server.txt ]; then
+            cp env-server.txt .env
+        else
+            cp .env.example .env
+        fi
+        chown www-data:www-data .env
+    else
+        echo "✅ Existing .env found, skipping overwrite."
+    fi
+
     echo "⏳ Waiting for database connection..."
     max_tries=30
     count=0
