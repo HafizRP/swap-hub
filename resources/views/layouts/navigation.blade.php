@@ -38,7 +38,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('chat*') ? 'active fw-bold text-white' : '' }}"
                         href="{{ route('chat') }}">
-                        Chat
+                        Workspace
                     </a>
                 </li>
             </ul>

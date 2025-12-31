@@ -85,6 +85,11 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
     public function githubActivities()
     {
         return $this->hasMany(GitHubActivity::class);

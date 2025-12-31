@@ -41,8 +41,18 @@ class Project extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_members')
-            ->withPivot('role', 'is_validated', 'contribution_rating', 'contribution_notes', 'joined_at')
+            ->withPivot('role', 'status', 'message', 'is_validated', 'contribution_rating', 'contribution_notes', 'joined_at')
             ->withTimestamps();
+    }
+
+    public function activeMembers(): BelongsToMany
+    {
+        return $this->members()->wherePivot('status', 'active');
+    }
+
+    public function applicants(): BelongsToMany
+    {
+        return $this->members()->wherePivot('status', 'pending');
     }
 
     public function projectMembers(): HasMany
@@ -58,5 +68,10 @@ class Project extends Model
     public function githubActivities(): HasMany
     {
         return $this->hasMany(GitHubActivity::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

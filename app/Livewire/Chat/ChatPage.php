@@ -17,6 +17,7 @@ class ChatPage extends Component
     public $newMessage = '';
     public $loading = false;
     public $attachments = [];
+    public $activeTab = 'chat'; // chat, tasks, files
 
     public function mount($conversation = null)
     {
@@ -33,6 +34,9 @@ class ChatPage extends Component
         $this->conversation = Conversation::with(['participants', 'project'])
             ->findOrFail($conversationId);
 
+        // Reset tab to chat when switching
+        $this->activeTab = 'chat';
+
         // Update sidebar
         $this->dispatch('update-conversation-ui', conversationId: $conversationId);
 
@@ -43,6 +47,11 @@ class ChatPage extends Component
 
         // Load messages
         $this->loadMessages();
+    }
+
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
     }
 
     #[On('conversation-switched')]

@@ -133,7 +133,8 @@
             @if (session('status') === 'profile-updated')
                 <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
                     class="small text-success fw-black text-uppercase tracking-widest mb-0">
-                    {{ __('Identity Synchronized.') }}</p>
+                    {{ __('Identity Synchronized.') }}
+                </p>
             @endif
         </div>
     </form>

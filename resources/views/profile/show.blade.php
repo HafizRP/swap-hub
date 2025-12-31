@@ -1,95 +1,95 @@
 @section('title', $user->name)
 <x-app-layout>
-    <x-slot name="header">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
-            <h2 class="h3 fw-black text-white mb-0">
-                {{ __('Student Portfolio') }}
-            </h2>
-            @if(auth()->id() === $user->id)
-                <a href="{{ route('profile.edit') }}"
-                    class="btn btn-light rounded-pill px-4 py-2 fw-black small shadow-sm transition">
-                    Edit Portfolio
-                </a>
-            @else
-                <form action="{{ route('chat.direct', $user) }}" method="POST">
-                    @csrf
-                    <button class="btn btn-primary rounded-pill px-5 py-3 fw-black shadow-lg">
-                        Start Collaboration
-                    </button>
-                </form>
-            @endif
-        </div>
-    </x-slot>
-
     <div class="container py-5">
-        <div class="row g-5">
-
-            <!-- Profile Header Card -->
-            <div class="col-12">
-                <div
-                    class="card border-0 shadow-lg overflow-hidden rounded-5 bg-dark bg-opacity-25 border border-white border-opacity-10">
-                    <div class="position-relative"
-                        style="height: 160px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);">
-                    </div>
-                    <div class="px-4 px-md-5 pb-5 position-relative">
-                        <div class="d-flex flex-column flex-md-row align-items-end gap-4" style="margin-top: -80px;">
-                            <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&size=160&background=111827&color=fff' }}"
-                                class="rounded-5 border border-8 border-dark shadow-2xl position-relative z-1"
-                                width="160" height="160">
-                            <div class="flex-grow-1 pb-2 text-center text-md-start">
-                                <h1 class="display-5 fw-black text-white mb-1">{{ $user->name }}</h1>
-                                <p class="small text-secondary fw-bold text-uppercase tracking-widest mb-0 opacity-75">
-                                    {{ $user->university }} • {{ $user->major }} • Class of
-                                    {{ $user->graduation_year ?? 'Not Set' }}
-                                </p>
-                            </div>
-                            <div class="pb-2 text-center">
-                                <span
-                                    class="d-block small fw-black text-secondary text-uppercase tracking-tighter mb-2 opacity-50"
-                                    style="font-size: 8px;">Reputation Level</span>
-                                <div class="badge bg-primary rounded-pill px-4 py-3 fs-6 fw-black shadow-lg">
-                                    @if($user->reputation_points >= 500) Elite Contributor
-                                    @elseif($user->reputation_points >= 250) Expert Sync
-                                    @elseif($user->reputation_points >= 100) Active Talent
-                                    @else Rising Star @endif
-                                </div>
-                            </div>
+        
+        <!-- ROW 1: HEADER CARD -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background-color: var(--bs-card-bg);">
+            <div class="card-body p-4 p-md-5">
+                <div class="row align-items-center gap-4 gap-md-0">
+                    <!-- Avatar -->
+                    <div class="col-md-auto text-center text-md-start">
+                        <div class="position-relative d-inline-block">
+                            <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&size=128&background=random' }}" 
+                                 class="rounded-circle border border-4 border-white shadow-sm" 
+                                 width="128" height="128" style="object-fit: cover;">
+                            <!-- Online/Status Indicator -->
+                            <div class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white" 
+                                 style="width: 24px; height: 24px; bottom: 8px !important; right: 8px !important;"></div>
                         </div>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div class="col-md flex-grow-1 text-center text-md-start">
+                        <h1 class="fw-bold mb-1">{{ $user->name }}</h1>
+                        <p class="text-secondary mb-2 fs-5">{{ $user->university }} <span class="mx-1">•</span> {{ $user->major }}</p>
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3 mt-2">
+                             <span class="text-secondary small d-flex align-items-center gap-1">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                {{ $user->location ?? 'Indonesia, ID' }}
+                             </span>
+                             <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-bold small">
+                                 Open to work
+                             </span>
+                        </div>
+                    </div>
 
-                        <div class="row g-5 mt-4">
-                            <!-- Bio -->
-                            <div class="col-lg-8 border-end border-white border-opacity-10">
-                                <h6
-                                    class="small fw-black text-secondary text-uppercase tracking-widest mb-3 opacity-50">
-                                    About Me</h6>
-                                <p class="fs-4 text-white lh-base fw-medium italic opacity-90">
-                                    "{{ $user->bio ?? 'No bio provided yet. This student is busy building amazing things!' }}"
-                                </p>
-                            </div>
+                    <!-- Actions -->
+                    <div class="col-md-auto d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                        @if(auth()->id() === $user->id)
+                            <a href="{{ route('profile.edit') }}" class="btn btn-primary rounded-3 px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                Edit Profile
+                            </a>
+                        @else
+                            <form action="{{ route('chat.direct', $user) }}" method="POST">
+                                @csrf
+                                <button class="btn btn-primary rounded-3 px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2">
+                                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                     Message
+                                </button>
+                            </form>
+                        @endif
+                        <a href="{{ route('profile.resume', $user) }}" class="btn btn-light border rounded-3 px-4 py-2 fw-bold d-flex align-items-center gap-2">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Resume
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <!-- Stats Grid -->
-                            <div class="col-lg-4 d-flex align-items-center">
-                                <div class="row g-3 w-100">
-                                    <div class="col-6 text-center">
-                                        <div class="p-4 rounded-4 border border-white border-opacity-10 shadow-sm"
-                                            style="background-color: rgba(255, 255, 255, 0.05) !important;">
-                                            <span
-                                                class="d-block small fw-black text-secondary text-uppercase mb-1 opacity-50"
-                                                style="font-size: 8px;">Projects</span>
-                                            <span
-                                                class="h2 fw-black text-white mb-0">{{ $user->projects->count() }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <div class="p-4 rounded-4 border border-primary border-opacity-10 shadow-sm"
-                                            style="background-color: rgba(99, 102, 241, 0.1) !important;">
-                                            <span
-                                                class="d-block small fw-black text-primary text-uppercase mb-1 opacity-50"
-                                                style="font-size: 8px;">Score</span>
-                                            <span class="h2 fw-black text-primary mb-0">{{ $user->reputation_points }}
-                                                <span class="small" style="font-size: 0.5em;">CP</span></span>
-                                        </div>
-                                    </div>
+        <!-- ROW 2: SPLIT CONTENT -->
+        <div class="row g-4 mb-4">
+            
+            <!-- ABOUT ME -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 h-100" style="background-color: var(--bs-card-bg);">
+                    <div class="card-body p-4 p-md-5 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <h5 class="fw-bold mb-0">About Me</h5>
+                        </div>
+                        <p class="text-secondary lh-lg mb-5">
+                            {{ $user->bio ?? "Passionate {$user->major} student looking for collaborative opportunities. Experienced in building web applications and working in agile teams. Always eager to learn new technologies." }}
+                        </p>
+
+                        <!-- Stats Row -->
+                        <div class="mt-auto">
+                            <div class="row g-4 border-top pt-4">
+                                <div class="col-6 col-md-3">
+                                    <h6 class="text-uppercase text-secondary small fw-bold mb-1" style="font-size: 10px; letter-spacing: 1px;">Experience</h6>
+                                    <p class="fw-bold mb-0">Student</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <h6 class="text-uppercase text-secondary small fw-bold mb-1" style="font-size: 10px; letter-spacing: 1px;">Projects</h6>
+                                    <p class="fw-bold mb-0">{{ $user->projects->count() }}+ Completed</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <h6 class="text-uppercase text-secondary small fw-bold mb-1" style="font-size: 10px; letter-spacing: 1px;">Reputation</h6>
+                                    <p class="fw-bold mb-0">{{ $user->reputation_points }} CP</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <h6 class="text-uppercase text-secondary small fw-bold mb-1" style="font-size: 10px; letter-spacing: 1px;">Language</h6>
+                                    <p class="fw-bold mb-0">English, ID</p>
                                 </div>
                             </div>
                         </div>
@@ -97,186 +97,165 @@
                 </div>
             </div>
 
-            <!-- Skills Column -->
-            <div class="col-lg-4">
-                <div class="d-flex flex-column gap-4">
-                    <div
-                        class="card border-0 shadow-sm rounded-5 bg-dark bg-opacity-25 border border-white border-opacity-10 p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                            <h5 class="fw-black text-white mb-0 uppercase tracking-widest small">Verified Skills</h5>
-                            @if(auth()->id() === $user->id)
-                                <a href="{{ route('profile.edit') }}"
-                                    class="text-primary small fw-bold text-decoration-none">+ Add</a>
-                            @endif
+            <!-- SKILLS & EXPERTISE -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 h-100" style="background-color: var(--bs-card-bg);">
+                    <div class="card-body p-4 p-md-5">
+                         <div class="d-flex align-items-center gap-2 mb-4">
+                            <svg class="text-primary" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            <h5 class="fw-bold mb-0">Skills & Expertise</h5>
                         </div>
-                        <div class="d-flex flex-column gap-3">
+
+                        <!-- Skill Tags -->
+                        <div class="d-flex flex-wrap gap-2 mb-4">
                             @forelse($user->skills as $skill)
-                                <div class="p-3 rounded-4 d-flex align-items-center justify-content-between border border-white border-opacity-5 transition hover-scale-5"
-                                    style="background-color: rgba(255, 255, 255, 0.05) !important;">
-                                    <div>
-                                        <h6 class="fw-bold text-white mb-1 small">{{ $skill->name }}</h6>
-                                        <span class="small text-primary fw-black text-uppercase opacity-75"
-                                            style="font-size: 7px;">{{ $skill->pivot->proficiency_level }}</span>
-                                    </div>
-                                    <div class="d-flex gap-1">
-                                        @php $levels = ['beginner' => 1, 'intermediate' => 2, 'advanced' => 3, 'expert' => 4]; @endphp
-                                        @for($i = 1; $i <= 4; $i++)
-                                            <div class="rounded-circle {{ $i <= $levels[$skill->pivot->proficiency_level] ? 'bg-primary shadow-primary' : '' }}"
-                                                style="width: 6px; height: 6px; background-color: {{ $i <= $levels[$skill->pivot->proficiency_level] ? '' : 'rgba(255, 255, 255, 0.1)' }} !important;">
-                                            </div>
-                                        @endfor
-                                    </div>
-                                </div>
+                                <span class="badge bg-secondary-subtle text-secondary rounded-3 px-3 py-2 fw-medium border border-light-subtle">
+                                    {{ $skill->name }}
+                                </span>
                             @empty
-                                <div class="text-center py-4 opacity-50 italic">
-                                    <p class="small text-secondary mb-0">No skills listed yet.</p>
-                                </div>
+                                <span class="text-secondary small">No specific skills listed.</span>
                             @endforelse
                         </div>
-                    </div>
 
-                    <!-- GitHub Pulse -->
-                    <div
-                        class="card border-0 shadow-xl rounded-5 bg-black p-4 text-white overflow-hidden border border-white border-opacity-10">
-                        <div class="d-flex align-items-center gap-3 mb-4 px-2">
-                            <div class="rounded-3"
-                                style="background-color: rgba(255, 255, 255, 0.1) !important; padding: 0.5rem;">
-                                <svg style="width: 20px;" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                                </svg>
-                            </div>
-                            <h5 class="fw-black mb-0 uppercase tracking-widest small">Git Pulse</h5>
-                        </div>
-                        <div class="row g-2 mb-4">
-                            <div class="col-12">
-                                <div class="p-3 rounded-4 border border-white border-opacity-10 d-flex justify-content-between align-items-center"
-                                    style="background-color: rgba(255, 255, 255, 0.05) !important;">
-                                    <span class="small fw-black text-secondary text-uppercase opacity-50"
-                                        style="font-size: 7px;">Monthly Commits</span>
-                                    <span class="h4 fw-black text-emerald mb-0">42</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-end gap-1 px-1 mt-auto" style="height: 60px;">
-                            @foreach([4, 7, 2, 8, 5, 9, 1, 3, 6, 8, 2, 9, 6, 4, 8] as $h)
-                                <div class="flex-grow-1 rounded-top-1"
-                                    style="height: {{ $h * 10 }}%; min-width: 4px; background-color: rgba(16, 185, 129, 0.25) !important;">
+                        <!-- Tools Proficiency (Progress Bars) -->
+                        <h6 class="text-secondary small fw-bold mb-3 mt-4">Tools Proficiency</h6>
+                        <div class="d-flex flex-column gap-3">
+                            @php
+                                $displayedSkills = $user->skills->take(3); // Show top 3 for bars
+                            @endphp
+                            @foreach($displayedSkills as $skill)
+                                @php
+                                    $levelMap = ['beginner' => 25, 'intermediate' => 50, 'advanced' => 75, 'expert' => 95];
+                                    $percent = $levelMap[$skill->pivot->proficiency_level] ?? 50;
+                                @endphp
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold">{{ $skill->name }}</span>
+                                        <span class="small text-primary fw-bold">{{ $percent }}%</span>
+                                    </div>
+                                    <div class="progress rounded-pill" style="height: 6px;">
+                                        <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ $percent }}%" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
                             @endforeach
+                            @if($user->skills->isEmpty())
+                                <div class="text-center p-3 bg-light rounded-3">
+                                    <small class="text-secondary">Add skills to see your proficiency stats.</small>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Projects & Achievements Column -->
-            <div class="col-lg-8">
-                <div
-                    class="card border-0 shadow-sm rounded-5 bg-dark bg-opacity-25 border border-white border-opacity-10 overflow-hidden">
-                    <div
-                        class="card-header bg-transparent border-bottom border-white border-opacity-5 px-4 px-md-5 py-4">
-                        <h5 class="fw-black text-white mb-0 text-uppercase tracking-widest small">Project Contributions
-                        </h5>
-                    </div>
-                    <div class="card-body p-4 p-md-5">
-                        <div class="row g-4">
-                            @forelse($user->projects as $project)
-                                <div class="col-md-6">
-                                    <div class="card h-100 border-0 rounded-4 p-4 border border-white border-opacity-5 transition hover-bg-light shadow-sm d-flex flex-column group"
-                                        style="background-color: rgba(255, 255, 255, 0.05) !important;">
-                                        <div class="d-flex justify-content-between align-items-start mb-4">
-                                            <div class="rounded-4 border border-white border-opacity-10 group-hover-bg-primary transition"
-                                                style="background-color: rgba(11, 17, 32, 0.5) !important; padding: 1rem;">
-                                                <svg style="width: 24px;" class="group-hover-text-white" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                                    </path>
-                                                </svg>
-                                            </div>
-                                            <span class="small text-primary fw-black text-uppercase opacity-75"
-                                                style="font-size: 8px;">{{ $project->pivot->role }}</span>
-                                        </div>
-                                        <h5 class="fw-black text-white mb-2 text-truncate">{{ $project->title }}</h5>
-                                        <p class="small text-secondary mb-4 opacity-75 line-clamp-3 lh-base overflow-hidden"
-                                            style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                                            {{ $project->description }}
-                                        </p>
-                                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                                            @if($project->pivot->is_validated)
-                                                <div class="d-flex align-items-center gap-2 text-emerald fw-black"
-                                                    style="font-size: 8px; text-transform: uppercase;">
-                                                    <svg style="width: 12px;" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                            clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    Validated
-                                                </div>
-                                            @endif
-                                            <a href="{{ route('projects.show', $project) }}"
-                                                class="text-secondary small fw-bold text-decoration-none hover-white opacity-50 ms-auto">Details
-                                                →</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12 py-5 text-center opacity-50 italic">
-                                    <p class="text-secondary mb-0">No projects completed yet.</p>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- ROW 3: GITHUB ACTIVITY -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4" style="background-color: var(--bs-card-bg);">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-dark text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
+                            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                                GitHub Activity 
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill small fw-bold px-2 py-1" style="font-size: 10px;">Connected</span>
+                            </h5>
+                            <p class="text-secondary small mb-0">Displaying public contributions</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-light border rounded-pill px-3 py-1 small fw-bold d-flex align-items-center gap-2">
+                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                         Sync Now
+                    </button>
+                </div>
+
+                <!-- Fake Contribution Graph -->
+                <div class="d-flex flex-wrap gap-1 px-1">
+                    @for($w = 0; $w < 40; $w++) 
+                         <div class="d-flex flex-column gap-1">
+                             @for($d = 0; $d < 5; $d++)
+                                 @php 
+                                                                 $active = rand(0, 10) > 6;
+                                    $opacity = $active ? rand(30, 90) : 10;
+                                 @endphp
+                                 <div class="rounded-1" style="width: 12px; height: 12px; background-color: rgba(16, 185, 129, {{ $opacity / 100 }});"></div>
+                             @endfor
+                         </div>
+                    @endfor
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: PROJECT HISTORY -->
+        <div class="card border-0 shadow-sm rounded-4" style="background-color: var(--bs-card-bg);">
+             <div class="card-header bg-transparent border-0 pt-4 px-4 px-md-5 d-flex justify-content-between align-items-center">
+                 <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                    <svg class="text-primary" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Project History
+                 </h5>
+                 <a href="{{ route('projects.index') }}" class="text-primary small fw-bold text-decoration-none">View All Projects</a>
+             </div>
+             <div class="card-body p-0">
+                 <div class="table-responsive">
+                     <table class="table align-middle mb-0 text-nowrap">
+                         <thead class="bg-light">
+                             <tr>
+                                 <th class="px-4 px-md-5 py-3 small text-secondary fw-bold text-uppercase border-0 rounded-start-4">Project Name</th>
+                                 <th class="px-4 py-3 small text-secondary fw-bold text-uppercase border-0">Role</th>
+                                 <th class="px-4 py-3 small text-secondary fw-bold text-uppercase border-0">Status</th>
+                                 <th class="px-4 px-md-5 py-3 small text-secondary fw-bold text-uppercase border-0 rounded-end-4 text-end">Action</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                            @forelse($user->projects->take(5) as $project)
+                                <tr>
+                                    <td class="px-4 px-md-5 py-3 border-bottom-0">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-3 bg-secondary bg-opacity-10 p-2 text-secondary">
+                                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                                            </div>
+                                            <span class="fw-bold">{{ $project->title }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-bottom-0">
+                                         <span class="badge bg-secondary-subtle text-dark border rounded-pill fw-normal px-3">{{ $project->pivot->role }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 border-bottom-0">
+                                         <span class="d-flex align-items-center gap-2">
+                                             <span class="rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
+                                             Completed
+                                         </span>
+                                    </td>
+                                    <td class="px-4 px-md-5 py-3 border-bottom-0 text-end">
+                                         <a href="{{ route('projects.show', $project) }}" class="btn btn-light border btn-sm rounded-pill fw-bold">View</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-secondary">No project history found.</td>
+                                </tr>
+                            @endforelse
+                         </tbody>
+                     </table>
+                 </div>
+             </div>
+        </div>
+
     </div>
 
+    <!-- Theming -->
     <style>
-        .rounded-5 {
-            border-radius: 3rem !important;
+        :root {
+            --bs-card-bg: #fff;
         }
-
-        .text-emerald {
-            color: #10b981 !important;
+        [data-bs-theme="dark"] {
+            --bs-card-bg: #1e293b;
+            --bs-body-bg: #0f172a;
         }
-
-        .bg-emerald {
-            background-color: #10b981 !important;
-        }
-
-        .shadow-2xl {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .shadow-primary {
-            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
-        }
-
-        .hover-scale-5:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s;
-        }
-
-        .hover-bg-light:hover {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            opacity: 1 !important;
-        }
-
-        .group-hover-bg-primary:hover,
-        .group:hover .group-hover-bg-primary {
-            background-color: #4f46e5 !important;
-            border-color: #4f46e5 !important;
-        }
-
-        .group-hover-text-white:hover,
-        .group:hover .group-hover-text-white {
-            color: white !important;
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #334155 !important;
         }
     </style>
 </x-app-layout>

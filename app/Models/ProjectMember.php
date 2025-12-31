@@ -15,6 +15,8 @@ class ProjectMember extends Model
         'project_id',
         'user_id',
         'role',
+        'status',
+        'message',
         'is_validated',
         'contribution_rating',
         'contribution_notes',
