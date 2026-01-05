@@ -10,7 +10,7 @@ COPY public/ ./public/
 # Copy potential env files (wildcards prevent error if files missing)
 COPY env-server.txt* .env* ./
 
-# If .env doesn't exist but env-server.txt does, use it
+# Logic: 1. Use existing .env if present. 2. Else use env-server.txt.
 RUN if [ ! -f .env ] && [ -f env-server.txt ]; then cp env-server.txt .env; fi
 
 RUN npm install
