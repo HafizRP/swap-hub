@@ -33,7 +33,6 @@ SESSION_PATH=/
 SESSION_DOMAIN=null
 
 # Broadcasting & Queue
-# Broadcasting & Queue
 BROADCAST_CONNECTION=pusher
 FILESYSTEM_DISK=local
 QUEUE_CONNECTION=database
@@ -47,7 +46,7 @@ REDIS_HOST=redis
 REDIS_PASSWORD=null
 REDIS_PORT=6379
 
-# Broadcasting
+# Broadcasting Driver (for compatibility)
 BROADCAST_DRIVER=pusher
 
 # Pusher Configuration

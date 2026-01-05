@@ -24,34 +24,92 @@
                         <a href="{{ route('chat', $project->conversation) }}"
                             class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Enter Squad Chat</a>
                     @endif
-                @elseif($project->members->contains(auth()->id()))
-                    @if($project->conversation)
-                        <a href="{{ route('chat', $project->conversation) }}"
-                            class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Enter Squad Chat</a>
-                    @else
-                        <div
-                            class="badge bg-emerald bg-opacity-10 text-emerald px-4 py-2 rounded-pill small fw-black border border-emerald border-opacity-25 d-flex align-items-center gap-2">
-                            <svg style="width: 14px;" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            Already in Squad
-                        </div>
-                    @endif
                 @else
-                    <form action="{{ route('projects.members.add', $project) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="role" value="member">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Apply
-                            to Join Squad</button>
-                    </form>
+                    @php
+                        $member = $project->members->firstWhere('id', auth()->id());
+                        $status = $member ? $member->pivot->status : null;
+                    @endphp
+
+                    @if($status === 'active')
+                        @if($project->conversation)
+                            <a href="{{ route('chat', $project->conversation) }}"
+                                class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Enter Squad Chat</a>
+                        @else
+                            <div class="badge bg-success bg-opacity-10 text-success px-4 py-2 rounded-pill small fw-black border border-success border-opacity-25 d-flex align-items-center gap-2">
+                                <svg style="width: 14px;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                Already in Squad
+                            </div>
+                        @endif
+                    @elseif($status === 'pending')
+                         <div class="badge bg-warning bg-opacity-10 text-warning px-4 py-2 rounded-pill small fw-black border border-warning border-opacity-25 d-flex align-items-center gap-2">
+                            <i class="bi bi-hourglass-split"></i>
+                            Request Pending
+                        </div>
+                    @else
+                        {{-- Not a member or rejected --}}
+                        <form action="{{ route('projects.members.add', $project) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="role" value="member">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 small fw-black shadow-lg">Apply
+                                to Join Squad</button>
+                        </form>
+                    @endif
                 @endif
             </div>
         </div>
     </x-slot>
 
+
     <div class="container py-4">
+        {{-- Action Card for Non-Members --}}
+        @if(auth()->id() !== $project->owner_id)
+            @php
+                $member = $project->members->firstWhere('id', auth()->id());
+                $status = $member ? $member->pivot->status : null;
+            @endphp
+
+            @if($status === null || $status === 'rejected')
+                <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h5 class="mb-1"><i class="bi bi-info-circle-fill me-2"></i>Interested in this project?</h5>
+                        <p class="mb-0 small">Join the squad and start collaborating with the team!</p>
+                    </div>
+                    <form action="{{ route('projects.members.add', $project) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="role" value="member">
+                        <button type="submit" class="btn btn-light btn-lg shadow-sm">
+                            <i class="bi bi-person-plus-fill me-2"></i>Apply to Join Squad
+                        </button>
+                    </form>
+                </div>
+            @elseif($status === 'pending')
+                <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center gap-3 mb-4">
+                    <i class="bi bi-hourglass-split fs-3"></i>
+                    <div>
+                        <h5 class="mb-1">Request Pending</h5>
+                        <p class="mb-0 small">Your application to join this project is awaiting approval from the owner.</p>
+                    </div>
+                </div>
+            @elseif($status === 'active' && $project->conversation)
+                <div class="alert alert-success border-0 shadow-sm d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-check-circle-fill fs-3"></i>
+                        <div>
+                            <h5 class="mb-1">You're part of this squad!</h5>
+                            <p class="mb-0 small">Join the conversation and collaborate with your team.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('chat', $project->conversation) }}" class="btn btn-success btn-lg shadow-sm">
+                        <i class="bi bi-chat-dots-fill me-2"></i>Enter Squad Chat
+                    </a>
+                </div>
+            @endif
+        @endif
+
         <div class="row g-4">
 
             <!-- Main Content -->
