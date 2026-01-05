@@ -18,7 +18,7 @@
     <div class="flex-grow-1 overflow-auto custom-scrollbar">
         <div class="list-group list-group-flush">
             @forelse($this->filteredConversations as $conv)
-                <a href="#" wire:click.prevent="switchConversation({{ $conv['id'] }})" wire:key="conv-{{ $conv['id'] }}"
+                <a href="{{ route('chat', $conv['id']) }}" wire:key="conv-{{ $conv['id'] }}"
                     class="list-group-item list-group-item-action bg-transparent border-bottom border-white border-opacity-5 p-3 px-4 d-flex align-items-center gap-3 transition {{ $conv['is_active'] ? 'active-chat-tab' : 'hover-bg-light' }}">
                     <div class="position-relative">
                         <img src="{{ $conv['avatar'] }}" class="rounded-circle shadow-sm" width="44" height="44">

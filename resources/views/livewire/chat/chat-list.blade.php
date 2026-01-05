@@ -37,12 +37,14 @@
                             </div>
                         </div>
 
+
                         <!-- Conversation List -->
                         <div class="flex-grow-1 overflow-auto">
                             <div class="list-group list-group-flush">
                                 @forelse($this->filteredConversations as $conv)
                                     <a href="{{ route('chat', $conv['id']) }}"
-                                        class="list-group-item list-group-item-action bg-transparent border-bottom border-white border-opacity-5 p-4 d-flex align-items-center gap-3 transition hover-bg-light">
+                                        class="list-group-item bg-transparent border-bottom border-white border-opacity-5 p-4 d-flex align-items-center gap-3"
+                                        style="text-decoration: none; color: inherit;">
                                         <div class="position-relative">
                                             <img src="{{ $conv['avatar'] }}" class="rounded-3 shadow-sm" width="48"
                                                 height="48">
@@ -64,8 +66,6 @@
                                         @if($conv['unread'])
                                             <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
                                         @endif
-                                        {{-- DEBUG: Show conversation ID --}}
-                                        <span class="badge bg-danger">ID: {{ $conv['id'] ?? 'NULL' }}</span>
                                     </a>
                                 @empty
                                     <div class="p-5 text-center">
