@@ -64,6 +64,8 @@
                                         @if($conv['unread'])
                                             <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
                                         @endif
+                                        {{-- DEBUG: Show conversation ID --}}
+                                        <span class="badge bg-danger">ID: {{ $conv['id'] ?? 'NULL' }}</span>
                                     </a>
                                 @empty
                                     <div class="p-5 text-center">
