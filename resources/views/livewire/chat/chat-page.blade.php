@@ -6,174 +6,218 @@
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: rgba(155, 155, 155, 0.5);
             border-radius: 3px;
         }
 
-        /* Dark Mode Defaults */
-        [data-bs-theme="dark"] .bg-sidebar {
-            background-color: #0f172a !important;
-        }
-        [data-bs-theme="dark"] .bg-main {
-            background-color: #1e293b !important;
+        /* Variables */
+        :root {
+            --chat-header-height: 120px;
         }
 
-        /* Light Mode Defaults */
-        [data-bs-theme="light"] .bg-sidebar {
-            background-color: #f8fafc !important;
-        }
-        [data-bs-theme="light"] .bg-main {
-            background-color: #ffffff !important;
-        }
-        
-        /* Message Input & Form Controls */
-        #chat-page-component .form-control {
-            background-color: rgba(255, 255, 255, 0.05); /* Dark mode default */
-            color: var(--bs-body-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        [data-bs-theme="light"] #chat-page-component .form-control {
-            background-color: #ffffff !important;
-            border-color: #e2e8f0 !important;
-            color: #1e293b !important;
+        [data-bs-theme="dark"] .bg-subtle {
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        /* Fix Text Colors */
-        [data-bs-theme="light"] .text-white {
-            color: #1e293b !important;
+        [data-bs-theme="light"] .bg-subtle {
+            background-color: rgba(0, 0, 0, 0.03);
         }
-        [data-bs-theme="light"] .text-white-50 {
-            color: #64748b !important;
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--bs-secondary);
+            padding: 1rem 0;
+            margin-right: 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-        [data-bs-theme="light"] .border-white {
-            border-color: #e2e8f0 !important;
+
+        .nav-tabs .nav-link:hover {
+            color: var(--bs-primary);
         }
-        
-        /* Specific Override for Primary Badge/Button Text */
-        [data-bs-theme="light"] .bg-primary .text-white, 
-        .btn-primary {
-            color: #ffffff !important;
+
+        .nav-tabs .nav-link.active {
+            color: var(--bs-primary);
+            background: transparent;
+            border-bottom-color: var(--bs-primary);
         }
     </style>
 
     <div id="chat-page-component" class="container-fluid py-0 h-100" style="height: calc(100vh - 74px) !important;">
         <div class="row h-100 g-0">
 
-            <!-- LEFT COLUMN: Conversation List / Channels -->
-            <div class="col-12 col-md-4 col-lg-3 border-end border-white border-opacity-10 d-flex flex-column h-100 bg-sidebar {{ $conversation ? 'd-none d-md-flex' : 'd-flex' }}" style="background-color: var(--bs-body-bg);">
-                <div class="p-3 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
-                     <h6 class="fw-bold mb-0 text-uppercase tracking-wide small opacity-75">Workspaces</h6>
-                     <button class="btn btn-sm btn-icon text-secondary"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+            <!-- LEFT COLUMN: Conversation List -->
+            <div class="col-12 col-md-4 col-lg-3 border-end border-white border-opacity-10 d-flex flex-column h-100 bg-sidebar {{ $conversation ? 'd-none d-md-flex' : 'd-flex' }}"
+                style="background-color: var(--bs-body-bg);">
+                <div
+                    class="p-3 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-uppercase tracking-wide small opacity-75">Workspaces</h6>
+                    <button class="btn btn-sm btn-icon text-secondary"><i class="bi bi-plus-lg"></i></button>
                 </div>
                 @livewire('chat.conversation-sidebar', ['currentConversationId' => $conversationId])
             </div>
 
-            <!-- MIDDLE COLUMN: Main Chat Area -->
-            <div class="col-12 col-md-8 col-lg-6 d-flex flex-column h-100 bg-main border-end border-white border-opacity-10 position-relative {{ $conversation ? 'd-flex' : 'd-none d-md-flex' }}" style="background-color: var(--bs-card-bg);">
+            <!-- MIDDLE COLUMN: Main Chat / Interaction Area -->
+            <div class="col-12 col-md-8 col-lg-6 d-flex flex-column h-100 bg-main border-end border-white border-opacity-10 position-relative {{ $conversation ? 'd-flex' : 'd-none d-md-flex' }}"
+                style="background-color: var(--bs-card-bg);">
                 @if($conversation)
-                    <!-- Workspace Header -->
-                    <div class="px-4 pt-3 pb-0 border-bottom border-white border-opacity-10 flex-shrink-0">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                    <!-- Header Area -->
+                    <div
+                        class="px-4 pt-3 {{ $conversation->type === 'project' ? 'pb-0' : 'pb-3' }} border-bottom border-white border-opacity-10 flex-shrink-0 bg-subtle">
+
+                        <!-- Top Row: Title & Actions -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
                             <div class="d-flex align-items-center gap-3">
                                 <!-- Mobile Back -->
                                 <a href="/chat" wire:navigate class="btn btn-icon btn-text-secondary d-md-none me-1 p-0">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                    <i class="bi bi-arrow-left fs-5"></i>
                                 </a>
 
                                 @php
                                     $title = $this->getTitle();
                                     $other = ($conversation->type === 'direct') ? $conversation->participants->where('id', '!=', auth()->id())->first() : null;
-                                    $avatar = $conversation->type === 'project' 
+                                    $avatar = $conversation->type === 'project'
                                         ? 'https://ui-avatars.com/api/?name=' . urlencode($title) . '&background=4f46e5&color=fff'
                                         : ($other->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($title));
                                 @endphp
 
-                                <img src="{{ $avatar }}" class="rounded-circle shadow-sm" width="40" height="40">
+                                @if($conversation->type === 'direct')
+                                    <img src="{{ $avatar }}" class="rounded-circle shadow-sm" width="40" height="40">
+                                @else
+                                    <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm"
+                                        style="width: 40px; height: 40px;">
+                                        <i class="bi bi-folder-fill fs-5"></i>
+                                    </div>
+                                @endif
 
-                                <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
-                                    {{ $title }}
-                                    @if($conversation->type === 'project')
-                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill small fw-bold px-2 py-0" style="font-size: 10px;">Active</span>
-                                    @else
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill small fw-bold px-2 py-0" style="font-size: 10px;">DM</span>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h5 class="fw-bold mb-0">{{ $title }}</h5>
+                                        @if($conversation->type === 'project')
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1"
+                                                style="font-size: 10px;">
+                                                <i class="bi bi-circle-fill me-1"
+                                                    style="font-size: 6px; vertical-align: middle;"></i>Active
+                                            </span>
+                                        @endif
+                                    </div>
+                                    @if($conversation->type === 'project' && $conversation->project && $conversation->project->github_repo_url)
+                                        <a href="{{ $conversation->project->github_repo_url }}" target="_blank"
+                                            class="text-secondary small text-decoration-none hover-primary">
+                                            <i
+                                                class="bi bi-github me-1"></i>{{ $conversation->project->github_repo_name ?? 'Repository' }}
+                                        </a>
                                     @endif
-                                </h5>
+                                </div>
                             </div>
-                            
+
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2 rounded-2">
-                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    Settings
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold small">
+                                    <i class="bi bi-gear-fill me-1"></i>Settings
                                 </button>
+                                @if($conversation->type === 'project')
+                                    <button class="btn btn-sm btn-primary rounded-pill fw-bold small" data-bs-toggle="modal"
+                                        data-bs-target="#addMemberModal">
+                                        <i class="bi bi-plus-lg me-1"></i>Invite
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
-                        <!-- Tabs -->
-                        <ul class="nav nav-tabs border-0 gap-4" style="margin-bottom: -1px;">
-                            <li class="nav-item">
-                                <a class="nav-link border-0 bg-transparent px-0 pb-3 fw-bold {{ $activeTab === 'chat' ? 'text-primary border-bottom border-2 border-primary active' : 'text-secondary' }}" href="#" wire:click.prevent="setTab('chat')">Chat</a>
-                            </li>
-                            @if($conversation->type === 'project')
+                        @if($conversation->type === 'project')
+                            <!-- Tabs -->
+                            <ul class="nav nav-tabs" style="margin-bottom: -1px;">
                                 <li class="nav-item">
-                                    <a class="nav-link border-0 bg-transparent px-0 pb-3 fw-bold {{ $activeTab === 'tasks' ? 'text-primary border-bottom border-2 border-primary active' : 'text-secondary' }}" href="#" wire:click.prevent="setTab('tasks')">Tasks</a>
+                                    <a class="nav-link {{ $activeTab === 'chat' ? 'active' : '' }}" href="#"
+                                        wire:click.prevent="setTab('chat')">
+                                        <i class="bi bi-chat-dots-fill me-2"></i>Project Chat
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link border-0 bg-transparent px-0 pb-3 fw-medium text-secondary" href="#">Files</a>
+                                    <a class="nav-link {{ $activeTab === 'tasks' ? 'active' : '' }}" href="#"
+                                        wire:click.prevent="setTab('tasks')">
+                                        <i class="bi bi-kanban me-2"></i>Task Board
+                                    </a>
                                 </li>
-                            @endif
-                        </ul>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $activeTab === 'files' ? 'active' : '' }}" href="#"
+                                        wire:click.prevent="setTab('files')">
+                                        <i class="bi bi-folder me-2"></i>Files
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $activeTab === 'github' ? 'active' : '' }}" href="#"
+                                        wire:click.prevent="setTab('github')">
+                                        <i class="bi bi-github me-2"></i>GitHub Feed
+                                    </a>
+                                </li>
+                            </ul>
+                        @endif
                     </div>
 
+                    <!-- TAB CONTENT AREA -->
+
                     @if($activeTab === 'chat')
+                        <!-- Chat Messages Area -->
+                        <div class="flex-grow-1 overflow-auto p-4 custom-scrollbar" id="messagesContainer"
+                            x-init="$el.scrollTop = $el.scrollHeight"
+                            @scroll-to-bottom.window="document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight">
 
-                    <!-- Messages -->
-                    <div class="flex-grow-1 overflow-auto p-4 custom-scrollbar" id="messagesContainer"
-                        x-init="$el.scrollTop = $el.scrollHeight"
-                        @scroll-to-bottom.window="document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight">
-                        
-                        @forelse($messages as $msg)
-                            @php
-                                $isOwn = $msg['user_id'] == auth()->id();
-                                $isSystem = !$msg['user_id'];
-                            @endphp
+                            @forelse($messages as $msg)
+                                @php
+                                    $isOwn = $msg['user_id'] == auth()->id();
+                                    $isSystem = !$msg['user_id'];
+                                @endphp
 
-                            @if($isSystem)
-                                <div class="text-center my-4">
-                                     <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-3 py-1 fw-normal">
-                                        {!! nl2br(e($msg['content'])) !!}
-                                     </span>
-                                </div>
-                            @else
-                                <div class="d-flex gap-3 mb-4 {{ $isOwn ? '' : '' }}">
-                                    <div class="flex-shrink-0">
-                                        <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm" width="40" height="40">
+                                @if($isSystem)
+                                    <div class="text-center my-4">
+                                        <span
+                                            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3 py-1 fw-normal"
+                                            style="font-size: 11px;">
+                                            {!! nl2br(e($msg['content'])) !!}
+                                        </span>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-baseline gap-2 mb-1">
-                                            <span class="fw-bold {{ $isOwn ? 'text-primary' : 'text-body' }}">{{ $msg['user_name'] }}</span>
-                                            <span class="small text-secondary opacity-75" style="font-size: 11px;">{{ $msg['created_at_human'] }}</span>
-                                        </div>
-                                        
-                                        <div class="p-3 rounded-3 {{ $isOwn ? 'bg-primary bg-opacity-10 text-body border border-primary border-opacity-10' : 'bg-secondary bg-opacity-5 text-body border border-secondary border-opacity-10' }}" 
-                                             style="width: fit-content; max-width: 90%;">
-                                            <p class="mb-0 text-break" style="white-space: pre-line;">{!! nl2br(e($msg['content'])) !!}</p>
-                                            
+                                @else
+                                    <div class="d-flex align-items-start gap-3 mb-4 {{ $isOwn ? '' : '' }}">
+                                        <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm" width="40" height="40">
+
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span
+                                                    class="fw-bold {{ $isOwn ? 'text-primary' : 'text-body' }}">{{ $msg['user_name'] }}</span>
+                                                <span class="small text-secondary"
+                                                    style="font-size: 11px;">{{ $msg['created_at_human'] }}</span>
+                                                @if($isOwn)
+                                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-1"
+                                                        style="font-size: 9px;">YOU</span>
+                                                @endif
+                                            </div>
+
+                                            <div class="text-body" style="white-space: pre-line; line-height: 1.5;">
+                                                {!! nl2br(e($msg['content'])) !!}
+                                            </div>
+
                                             @if(isset($msg['attachments']) && count($msg['attachments']) > 0)
                                                 <div class="d-flex flex-wrap gap-2 mt-2">
                                                     @foreach($msg['attachments'] as $att)
                                                         @if(Str::startsWith($att['file_type'], 'image/'))
                                                             <div role="button" onclick="openGallery(@js($msg['attachments']), '{{ $att['id'] }}')">
-                                                                <img src="{{ $att['file_path'] }}" class="rounded shadow-sm" style="max-height: 150px; max-width: 100%;">
+                                                                <img src="{{ $att['file_path'] }}"
+                                                                    class="rounded shadow-sm border border-white border-opacity-10"
+                                                                    style="max-height: 200px; max-width: 100%;">
                                                             </div>
                                                         @else
-                                                            <a href="{{ $att['file_path'] }}" target="_blank" class="d-flex align-items-center gap-2 p-2 bg-white rounded border text-decoration-none text-body">
-                                                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
-                                                                <span class="small">{{ $att['file_name'] }}</span>
+                                                            <a href="{{ $att['file_path'] }}" target="_blank"
+                                                                class="d-flex align-items-center gap-2 p-2 bg-secondary bg-opacity-10 rounded border border-white border-opacity-10 text-decoration-none text-body">
+                                                                <i class="bi bi-file-earmark-text fs-5"></i>
+                                                                <span class="small fw-medium">{{ $att['file_name'] }}</span>
                                                             </a>
                                                         @endif
                                                     @endforeach
@@ -181,92 +225,183 @@
                                             @endif
                                         </div>
                                     </div>
+                                @endif
+                            @empty
+                                <div
+                                    class="h-100 d-flex flex-column align-items-center justify-content-center text-center opacity-50">
+                                    <i class="bi bi-chat-square-dots fs-1 mb-3"></i>
+                                    <p class="small text-secondary">No messages yet. break the ice!</p>
                                 </div>
-                            @endif
-                        @empty
-                             <div class="text-center py-5 opacity-50">
-                                 <p class="small text-secondary">No messages yet. Start the conversation!</p>
-                             </div>
-                        @endforelse
+                            @endforelse
+                        </div>
 
-                    </div>
+                        <!-- Input Area -->
+                        <div class="p-3 border-top border-white border-opacity-10 bg-subtle">
+                            <form wire:submit.prevent="sendMessage">
+                                @if(count($attachments) > 0)
+                                    <div
+                                        class="d-flex flex-wrap gap-2 mb-2 p-2 bg-secondary bg-opacity-10 rounded border border-white border-opacity-10">
+                                        @foreach($attachments as $index => $att)
+                                            <div class="position-relative">
+                                                <span class="badge bg-secondary">{{ $att->getClientOriginalName() }}</span>
+                                                <button type="button" wire:click="removeAttachment({{ $index }})"
+                                                    class="btn-close btn-close-white position-absolute top-0 end-0 translate-middle p-1 bg-danger rounded-circle"
+                                                    style="width: 16px; height: 16px;"></button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
 
-                    <!-- Input Area -->
-                    <div class="p-3 border-top border-white border-opacity-10 bg-body">
-                        <form wire:submit.prevent="sendMessage">
-                             @if(count($attachments) > 0)
-                                <div class="d-flex flex-wrap gap-2 mb-2 p-2 bg-secondary bg-opacity-10 rounded">
-                                    @foreach($attachments as $index => $att)
-                                        <div class="position-relative">
-                                            <span class="badge bg-secondary">{{ $att->getClientOriginalName() }}</span>
-                                            <button type="button" wire:click="removeAttachment({{ $index }})" class="btn-close btn-close-white position-absolute top-0 end-0 translate-middle p-1 bg-danger rounded-circle" style="width: 16px; height: 16px;"></button>
-                                        </div>
-                                    @endforeach
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-link text-secondary"
+                                        onclick="document.getElementById('fileInput').click()">
+                                        <i class="bi bi-plus-circle-fill fs-5"></i>
+                                    </button>
+                                    <input type="file" wire:model="attachments" id="fileInput" class="d-none" multiple>
+
+                                    <input type="text" wire:model.live.debounce.250ms="newMessage"
+                                        class="form-control bg-dark border-0 rounded-pill text-white shadow-inner px-4"
+                                        placeholder="Type a message to {{ $conversation->type === 'project' ? '#general' : $title }}..."
+                                        {{ $loading ? 'disabled' : '' }}
+                                        style="background-color: rgba(255,255,255,0.05) !important;">
+
+                                    <button class="btn btn-link text-secondary" type="button">
+                                        <i class="bi bi-emoji-smile fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-primary rounded-circle shadow ms-2"
+                                        style="width: 42px; height: 42px;" type="submit" {{ (empty($newMessage) && empty($attachments)) ? 'disabled' : '' }}>
+                                        <i class="bi bi-send-fill text-white"></i>
+                                    </button>
                                 </div>
-                             @endif
+                                <div class="text-end mt-1">
+                                    <small class="text-secondary" style="font-size: 10px;">
+                                        <i class="bi bi-circle-fill text-success me-1" style="font-size: 6px;"></i>Connected
+                                    </small>
+                                </div>
+                            </form>
+                        </div>
 
-                             <div class="input-group">
-                                <button type="button" class="btn btn-light border" onclick="document.getElementById('fileInput').click()">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                </button>
-                                <input type="file" wire:model="attachments" id="fileInput" class="d-none" multiple>
-                                
-                                <input type="text" wire:model.live.debounce.250ms="newMessage" class="form-control border-start-0" placeholder="Type a message..." {{ $loading ? 'disabled' : '' }}>
-                                <button class="btn btn-primary px-4" type="submit" {{ (empty($newMessage) && empty($attachments)) ? 'disabled' : '' }}>
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                </button>
-                             </div>
-                        </form>
-                        </form>
-                    </div>
                     @elseif($activeTab === 'tasks' && $conversation->type === 'project' && $conversation->project)
-                         @livewire('project.task-board', ['project' => $conversation->project], key('tasks-' . $conversation->id))
+                        @livewire('project.task-board', ['project' => $conversation->project], key('tasks-' . $conversation->id))
+
+                    @elseif($activeTab === 'files' && $conversation->type === 'project' && $conversation->project)
+                        @livewire('project.file-browser', ['project' => $conversation->project], key('files-' . $conversation->id))
+
+                    @elseif($activeTab === 'github' && $conversation->type === 'project' && $conversation->project)
+                        @livewire('project.github-feed', ['project' => $conversation->project], key('github-' . $conversation->id))
                     @endif
 
                 @else
                     <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-                        <h4 class="fw-bold mb-2">Select a Workspace</h4>
-                        <p class="text-secondary small">Choose a project or person from the sidebar.</p>
+                        <div class="bg-secondary bg-opacity-10 p-4 rounded-circle mb-3">
+                            <i class="bi bi-chat-quote-fill fs-1 text-secondary"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Select a Conversation</h4>
+                        <p class="text-secondary small">Choose a project workspace or direct message from the sidebar.</p>
                     </div>
                 @endif
             </div>
 
-            <!-- RIGHT COLUMN: Context / Widgets -->
-            <div class="col-lg-3 border-start border-white border-opacity-10 d-none d-lg-flex flex-column h-100 p-4 custom-scrollbar overflow-auto bg-sidebar" style="background-color: var(--bs-body-bg);">
+            <!-- RIGHT COLUMN: Context Info -->
+            <div class="col-lg-3 border-start border-white border-opacity-10 d-none d-lg-flex flex-column h-100 bg-sidebar"
+                style="background-color: var(--bs-body-bg);">
                 @if($conversation && $conversation->type === 'project')
-                    <!-- Team Members -->
-                    <div class="mb-5">
+                    <!-- Team Members Info -->
+                    <div class="p-4 border-bottom border-white border-opacity-10">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75">Team Members</h6>
+                            <span class="badge bg-secondary rounded-pill">{{ $conversation->participants->count() }}</span>
                         </div>
-                        <div class="d-flex flex-column gap-3">
-                            <!-- Participants -->
+                        <div class="d-flex flex-column gap-3 overflow-auto custom-scrollbar" style="max-height: 40vh;">
                             @foreach($conversation->participants as $user)
-                                <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-start gap-2">
                                     <div class="position-relative">
-                                        <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}" class="rounded-circle" width="36" height="36">
-                                        <!-- Simulate Online dot for now or use real presence if available -->
+                                        <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
+                                            class="rounded-circle" width="36" height="36">
+                                        <span
+                                            class="position-absolute bottom-0 end-0 bg-success border border-2 border-dark rounded-circle"
+                                            style="width: 10px; height: 10px;"></span>
                                     </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-0 small">{{ $user->name }}</h6>
-                                        <p class="small text-secondary mb-0" style="font-size: 10px;">{{ $user->major ?? 'Member' }}</p>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold small">{{ $user->name }}</div>
+                                        <div class="text-secondary small" style="font-size: 10px;">
+                                            @if($user->id === $conversation->project->owner_id)
+                                                <span class="text-primary fw-bold">Owner</span> •
+                                            @endif
+                                            {{ $user->major ?? 'Member' }}
+                                        </div>
                                     </div>
+                                    @if($user->id === auth()->id())
+                                        <i class="bi bi-person text-secondary" style="font-size: 12px;"></i>
+                                    @endif
                                 </div>
                             @endforeach
+                            <button class="btn btn-sm btn-outline-secondary w-100 rounded-pill mt-2 small"
+                                data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                                <i class="bi bi-plus-lg me-1"></i>Add Member
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Quick Tasks -->
+                    <div class="p-4 flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75">Quick Tasks</h6>
+                            <a href="#" class="text-primary small text-decoration-none fw-bold" style="font-size: 11px;"
+                                wire:click.prevent="setTab('tasks')">View All</a>
+                        </div>
+
+                        <div class="d-flex flex-column gap-2">
+                            @if(isset($quickTasks))
+                                @forelse($quickTasks as $task)
+                                    <div class="form-check d-flex align-items-center gap-2 ps-0 mb-0">
+                                        <input class="form-check-input mt-0 flex-shrink-0" type="checkbox"
+                                            wire:click.prevent="setTab('tasks')" style="margin-left: 0;">
+                                        <div class="d-flex align-items-center flex-wrap gap-1" role="button"
+                                            wire:click.prevent="setTab('tasks')">
+                                            <label class="form-check-label text-body small text-truncate"
+                                                style="max-width: 140px; cursor: pointer;">
+                                                {{ $task->title }}
+                                            </label>
+                                            @if($task->priority === 'high')
+                                                <span
+                                                    class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 rounded-pill px-2 py-0"
+                                                    style="font-size: 8px;">HIGH</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-center py-4 bg-secondary bg-opacity-10 rounded-3">
+                                        <i class="bi bi-check2-circle text-secondary fs-4 mb-2 opacity-50"></i>
+                                        <p class="text-secondary small mb-0 opacity-75" style="font-size: 11px;">You have no active
+                                            tasks.</p>
+                                    </div>
+                                @endforelse
+                            @endif
+
+                            <button
+                                class="btn btn-sm btn-link text-primary p-0 text-start mt-2 px-0 text-decoration-none small fw-bold"
+                                wire:click.prevent="setTab('tasks')">
+                                <i class="bi bi-plus-lg me-1"></i>Create New Task
+                            </button>
+                        </div>
+                    </div>
+
                 @elseif($conversation && $conversation->type === 'direct')
                     @php
                         $other = $conversation->participants->where('id', '!=', auth()->id())->first();
                     @endphp
                     @if($other)
-                        <!-- User Profile -->
-                        <div class="text-center mb-5">
-                            <img src="{{ $other->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($other->name) }}" class="rounded-circle mb-3 shadow" width="80" height="80">
+                        <div class="p-5 text-center">
+                            <img src="{{ $other->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($other->name) }}"
+                                class="rounded-circle mb-3 shadow" width="80" height="80">
                             <h5 class="fw-bold">{{ $other->name }}</h5>
                             <p class="text-secondary small">{{ $other->major ?? 'Student' }}</p>
-                            <div class="d-flex justify-content-center gap-2 mt-3">
-                                <a href="{{ route('profile.show', $other->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-4">View Profile</a>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{{ route('profile.show', $other->id) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill">View Profile</a>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill">Block User</button>
                             </div>
                         </div>
                     @endif
@@ -281,8 +416,7 @@
         <script>
             let conversationId = {{ $conversation->id }};
             const channelName = `chat.${conversationId}`;
-            
-            // Listen for Messages in THIS conversation
+
             window.Echo.private(channelName)
                 .listen('.message.sent', (e) => {
                     console.log('New message in chat ' + conversationId, e);
@@ -296,12 +430,22 @@
                 const url = data.url;
                 window.history.pushState({}, '', url);
             });
-        
+
+            /* Open Image Gallery Functionality could be added here */
+            window.openGallery = (attachments, scrollId) => {
+                // Placeholder for lightbox logic
+                console.log('Open gallery for:', scrollId);
+            };
+
             // Handle browser back
-             window.addEventListener('popstate', (event) => {
-                 window.location.reload(); 
-             });
+            window.addEventListener('popstate', (event) => {
+                window.location.reload();
+            });
         </script>
         @endscript
+    @endif
+
+    @if($conversation && $conversation->type === 'project' && $conversation->project)
+        @livewire('project.add-member', ['project' => $conversation->project], key('add-member-' . $conversation->id))
     @endif
 </div>

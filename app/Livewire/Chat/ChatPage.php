@@ -183,6 +183,19 @@ class ChatPage extends Component
 
     public function render()
     {
-        return view('livewire.chat.chat-page');
+        $quickTasks = [];
+
+        if ($this->conversation && $this->conversation->type === 'project' && $this->conversation->project) {
+            $quickTasks = \App\Models\Task::where('project_id', $this->conversation->project->id)
+                ->where('assigned_to', auth()->id())
+                ->where('status', '!=', 'done')
+                ->latest()
+                ->take(3)
+                ->get();
+        }
+
+        return view('livewire.chat.chat-page', [
+            'quickTasks' => $quickTasks
+        ]);
     }
 }

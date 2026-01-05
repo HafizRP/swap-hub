@@ -107,21 +107,53 @@
                 <span x-show="window.innerWidth < 768 || sidebarExpanded" x-transition>Pengaturan</span>
             </a>
         </li>
-    </ul>
 
-    <!-- Go Premium Card (Hidden when minimized on desktop) -->
-    <div class="p-3 mt-auto" x-show="window.innerWidth < 768 || sidebarExpanded" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
-        <div class="card bg-primary text-white border-0 shadow-lg rounded-4 overflow-hidden position-relative">
-            <div class="card-body p-3 position-relative z-1">
-                <h6 class="fw-bold mb-1">Go Premium</h6>
-                <p class="small opacity-75 mb-3" style="font-size: 11px; line-height: 1.4;">Get unlimited project applications and priority listing.</p>
-                <button class="btn btn-light btn-sm w-100 fw-bold text-primary border-0 rounded-pill">Upgrade Now</button>
-            </div>
-            <!-- Decorative Circles -->
-            <div class="position-absolute top-0 end-0 rounded-circle bg-white opacity-10" style="width: 80px; height: 80px; margin-top: -20px; margin-right: -20px;"></div>
-            <div class="position-absolute bottom-0 start-0 rounded-circle bg-white opacity-10" style="width: 50px; height: 50px; margin-bottom: -10px; margin-left: -10px;"></div>
-        </div>
-    </div>
+        @if(auth()->user()->isAdmin())
+            <li class="mt-2">
+                <div class="border-top my-2 mx-2"></div>
+            </li>
+            
+            <li class="nav-item">
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="nav-link d-flex align-items-center text-nowrap {{ request()->routeIs('admin.dashboard') ? 'active' : 'text-secondary' }}"
+                   :class="(window.innerWidth < 768 || sidebarExpanded) ? 'gap-3 px-3' : 'justify-content-center px-0 py-2'"
+                   :title="(!sidebarExpanded && window.innerWidth >= 768) ? 'Admin Dashboard' : ''">
+                    <i class="bi bi-speedometer2 fs-5 flex-shrink-0"></i>
+                    <span x-show="window.innerWidth < 768 || sidebarExpanded" x-transition>Admin Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="{{ route('admin.users.index') }}" 
+                   class="nav-link d-flex align-items-center text-nowrap {{ request()->routeIs('admin.users.*') ? 'active' : 'text-secondary' }}"
+                   :class="(window.innerWidth < 768 || sidebarExpanded) ? 'gap-3 px-3' : 'justify-content-center px-0 py-2'"
+                   :title="(!sidebarExpanded && window.innerWidth >= 768) ? 'User Management' : ''">
+                    <i class="bi bi-people-fill fs-5 flex-shrink-0"></i>
+                    <span x-show="window.innerWidth < 768 || sidebarExpanded" x-transition>User Management</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="{{ route('admin.projects.index') }}" 
+                   class="nav-link d-flex align-items-center text-nowrap {{ request()->routeIs('admin.projects.*') ? 'active' : 'text-secondary' }}"
+                   :class="(window.innerWidth < 768 || sidebarExpanded) ? 'gap-3 px-3' : 'justify-content-center px-0 py-2'"
+                   :title="(!sidebarExpanded && window.innerWidth >= 768) ? 'Project Management' : ''">
+                    <i class="bi bi-folder-fill fs-5 flex-shrink-0"></i>
+                    <span x-show="window.innerWidth < 768 || sidebarExpanded" x-transition>Project Management</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="{{ route('admin.health.index') }}" 
+                   class="nav-link d-flex align-items-center text-nowrap {{ request()->routeIs('admin.health.*') ? 'active' : 'text-secondary' }}"
+                   :class="(window.innerWidth < 768 || sidebarExpanded) ? 'gap-3 px-3' : 'justify-content-center px-0 py-2'"
+                   :title="(!sidebarExpanded && window.innerWidth >= 768) ? 'System Health' : ''">
+                    <i class="bi bi-heart-pulse-fill fs-5 flex-shrink-0"></i>
+                    <span x-show="window.innerWidth < 768 || sidebarExpanded" x-transition>System Health</span>
+                </a>
+            </li>
+        @endif
+    </ul>
     
     <!-- Copyright -->
     <div class="px-4 py-3 text-center" x-show="window.innerWidth < 768 || sidebarExpanded">

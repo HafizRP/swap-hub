@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
         'major',
         'university',
         'bio',
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'reputation_points',
         'phone',
         'graduation_year',
+        'role',
     ];
 
     /**
@@ -93,5 +95,11 @@ class User extends Authenticatable
     public function githubActivities()
     {
         return $this->hasMany(GitHubActivity::class);
+    }
+
+    // Helper Methods
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

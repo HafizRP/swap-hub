@@ -40,6 +40,10 @@
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 Edit Profile
                             </a>
+                            <a href="{{ route('profile.resume', $user) }}" class="btn btn-light border rounded-3 px-4 py-2 fw-bold d-flex align-items-center gap-2">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Download Resume
+                            </a>
                         @else
                             <form action="{{ route('chat.direct', $user) }}" method="POST">
                                 @csrf
@@ -49,10 +53,6 @@
                                 </button>
                             </form>
                         @endif
-                        <a href="{{ route('profile.resume', $user) }}" class="btn btn-light border rounded-3 px-4 py-2 fw-bold d-flex align-items-center gap-2">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download Resume
-                        </a>
                     </div>
                 </div>
             </div>
