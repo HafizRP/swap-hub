@@ -7,7 +7,7 @@ COPY vite.config.js ./
 COPY resources/ ./resources/
 COPY public/ ./public/
 # Copy env file to ensure Vite can read environment variables during build
-COPY env-server.txt .env
+# COPY env-server.txt .env
 
 RUN npm install
 RUN npm run build
