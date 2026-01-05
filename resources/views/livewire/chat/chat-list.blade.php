@@ -41,7 +41,7 @@
                         <div class="flex-grow-1 overflow-auto">
                             <div class="list-group list-group-flush">
                                 @forelse($this->filteredConversations as $conv)
-                                    <a href="{{ route('chat', $conv['id']) }}" wire:navigate
+                                    <a href="{{ route('chat', $conv['id']) }}"
                                         class="list-group-item list-group-item-action bg-transparent border-bottom border-white border-opacity-5 p-4 d-flex align-items-center gap-3 transition hover-bg-light">
                                         <div class="position-relative">
                                             <img src="{{ $conv['avatar'] }}" class="rounded-3 shadow-sm" width="48"
