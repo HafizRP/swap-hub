@@ -48,7 +48,7 @@
                                                     @endif
                                                 @endforeach
                                                 <li><hr class="dropdown-divider"></li>
-                                                <li><button class="dropdown-item text-danger small" wire:click="deleteTask({{ $task->id }})">Delete</button></li>
+                                                <li><button class="dropdown-item text-danger small" wire:click="deleteTask({{ $task->id }})" wire:confirm="Are you sure you want to delete this task?">Delete</button></li>
                                             </ul>
                                         </div>
                                     </div>

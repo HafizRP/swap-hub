@@ -115,6 +115,22 @@ class ProjectController extends Controller
     }
 
     /**
+     * Display the workspace for the project.
+     */
+    public function workspace(\App\Models\Project $project)
+    {
+        // Check if user is a member or owner
+        if ($project->owner_id !== auth()->id() && !$project->members->contains(auth()->id())) {
+            abort(403, 'You are not a member of this project.');
+        }
+
+        $project->load(['owner', 'members', 'conversation.messages.user', 'githubActivities']);
+
+        return view('projects.workspace', compact('project'));
+    }
+
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(\App\Models\Project $project)

@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
 
     // Projects
     Route::resource('projects', ProjectController::class);
+    Route::get('/projects/{project}/workspace', [ProjectController::class, 'workspace'])->name('projects.workspace');
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.members.add');
     Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.members.remove');
     Route::post('/projects/{project}/validate/{user}', [ProjectController::class, 'validateMember'])->name('projects.members.validate');
@@ -40,14 +41,31 @@ Route::middleware('auth')->group(function () {
     // Chat - Full Livewire SPA
     Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');
     Route::post('/chat/direct/{user}', [ChatController::class, 'createDirectConversation'])->name('chat.direct');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // User Management
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::post('users/{user}/toggle-role', [\App\Http\Controllers\Admin\UserController::class, 'toggleRole'])->name('users.toggle-role');
+
+    // Project Management
+    Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
+    Route::post('projects/{project}/archive', [\App\Http\Controllers\Admin\ProjectController::class, 'archive'])->name('projects.archive');
 
     // System Health
-    Route::get('/system-status', \App\Livewire\SystemHealth::class)->name('health.index');
+    Route::get('/system-health', \App\Livewire\SystemHealth::class)->name('health.index');
 });
 
 // GitHub OAuth
 Route::get('/auth/github', [\App\Http\Controllers\GitHubAuthController::class, 'redirect'])->name('auth.github');
 Route::get('/auth/github/callback', [\App\Http\Controllers\GitHubAuthController::class, 'callback']);
+
+// Google OAuth
+Route::get('/auth/google', [\App\Http\Controllers\GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController::class, 'callback']);
 
 // GitHub Webhook (Excluded from CSRF)
 Route::post('/webhooks/github', [\App\Http\Controllers\GitHubWebhookController::class, 'handle'])->name('github.webhook');
