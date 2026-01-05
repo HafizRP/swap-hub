@@ -7,10 +7,12 @@ echo "🚀 Starting Laravel application setup..."
 if [ "$1" = "php-fpm" ]; then
     # Initialize .env if not exists
     if [ ! -f .env ]; then
-        echo "📝 .env not found, initializing from env-server.txt..."
+        echo "📝 .env not found."
         if [ -f env-server.txt ]; then
+            echo "✅ Using env-server.txt as .env"
             cp env-server.txt .env
         else
+            echo "⚠️  env-server.txt not found, falling back to .env.example"
             cp .env.example .env
         fi
         chown www-data:www-data .env
@@ -34,13 +36,13 @@ if [ "$1" = "php-fpm" ]; then
     fi
 
     # Generate APP_KEY if not set
-if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null || grep -q "^APP_KEY=$" .env 2>/dev/null; then
-    echo "🔑 Generating application key..."
-    # Remove any existing APP_KEY line first
-    sed -i '/^APP_KEY=/d' .env
-    # Generate new key
-    php artisan key:generate --force
-fi
+    if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null || grep -q "^APP_KEY=$" .env 2>/dev/null; then
+        echo "🔑 Generating application key..."
+        # Remove any existing APP_KEY line first
+        sed -i '/^APP_KEY=/d' .env
+        # Generate new key
+        php artisan key:generate --force
+    fi
 
     # Run migrations
     echo "🗄️  Running database migrations..."
