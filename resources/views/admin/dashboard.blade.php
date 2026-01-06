@@ -150,8 +150,8 @@
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             <span
-                                                class="badge {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
-                                                {{ ucfirst($user->role) }}
+                                                class="badge {{ $user->role && $user->role->slug === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
+                                                {{ $user->role->name ?? 'N/A' }}
                                             </span>
                                         </td>
                                         <td>{{ $user->created_at->diffForHumans() }}</td>
@@ -194,11 +194,11 @@
                                         <td>{{ $project->owner->name }}</td>
                                         <td>
                                             <span class="badge 
-                                                @if($project->status === 'active') bg-success
-                                                @elseif($project->status === 'completed') bg-primary
-                                                @elseif($project->status === 'planning') bg-warning
-                                                @else bg-secondary
-                                                @endif">
+                                                    @if($project->status === 'active') bg-success
+                                                    @elseif($project->status === 'completed') bg-primary
+                                                    @elseif($project->status === 'planning') bg-warning
+                                                    @else bg-secondary
+                                                    @endif">
                                                 {{ ucfirst($project->status) }}
                                             </span>
                                         </td>

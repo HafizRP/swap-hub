@@ -14,7 +14,9 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_users' => User::count(),
-            'total_admins' => User::where('role', 'admin')->count(),
+            'total_admins' => User::whereHas('role', function ($query) {
+                $query->where('slug', 'admin');
+            })->count(),
             'total_projects' => Project::count(),
             'active_projects' => Project::where('status', 'active')->count(),
             'completed_projects' => Project::where('status', 'completed')->count(),

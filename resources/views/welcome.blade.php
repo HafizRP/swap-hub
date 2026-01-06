@@ -175,9 +175,6 @@
                 <div class="d-flex gap-2">
                     @auth
                         <a href="{{ url('/dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-light px-4">Masuk</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary px-4">Daftar</a>
                     @endauth
                 </div>
             </div>
