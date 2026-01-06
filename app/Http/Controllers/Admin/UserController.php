@@ -24,7 +24,9 @@ class UserController extends Controller
 
         // Filter by role
         if ($request->has('role') && $request->role !== 'all') {
-            $query->where('role', $request->role);
+            $query->whereHas('role', function ($q) use ($request) {
+                $q->where('slug', $request->role);
+            });
         }
 
         // Sort

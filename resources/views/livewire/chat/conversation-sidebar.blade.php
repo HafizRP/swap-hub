@@ -1,6 +1,6 @@
 <div class="h-100 d-flex flex-column">
     <!-- Search -->
-    <div class="p-4 border-bottom border-white border-opacity-10">
+    <div class="p-4 border-bottom border-secondary-subtle bg-body">
         <div class="input-group">
             <span class="input-group-text bg-transparent border-0 text-secondary ps-3">
                 <svg style="width: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -9,17 +9,17 @@
                 </svg>
             </span>
             <input type="text" wire:model.live.debounce.300ms="searchQuery"
-                class="form-control form-control-sm bg-white bg-opacity-5 border-0 text-white placeholder-secondary rounded-pill py-2"
+                class="form-control form-control-sm bg-body-tertiary border-0 text-body placeholder-secondary rounded-pill py-2"
                 placeholder="Search conversations..." style="box-shadow: none;">
         </div>
     </div>
 
     <!-- Conversations List -->
-    <div class="flex-grow-1 overflow-auto custom-scrollbar">
+    <div class="flex-grow-1 overflow-auto custom-scrollbar bg-body">
         <div class="list-group list-group-flush">
             @forelse($this->filteredConversations as $conv)
                 <a href="{{ route('chat', $conv['id']) }}" wire:navigate wire:key="conv-{{ $conv['id'] }}"
-                    class="list-group-item list-group-item-action bg-transparent border-bottom border-white border-opacity-5 p-3 px-4 d-flex align-items-center gap-3 transition {{ $conv['is_active'] ? 'active-chat-tab' : 'hover-bg-light' }}">
+                    class="list-group-item list-group-item-action bg-transparent border-bottom border-secondary-subtle p-3 px-4 d-flex align-items-center gap-3 transition {{ $conv['is_active'] ? 'active-chat-tab' : '' }}">
                     <div class="position-relative">
                         <img src="{{ $conv['avatar'] }}" class="rounded-circle shadow-sm" width="44" height="44">
                         @if($conv['is_active'])
@@ -34,13 +34,13 @@
                             </div>
                         @else
                             <!-- Online indicator -->
-                            <div class="position-absolute bottom-0 end-0 bg-success border border-2 border-dark rounded-circle"
+                            <div class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle"
                                 style="width: 10px; height: 10px; transform: translate(15%, 15%);"></div>
                         @endif
                     </div>
                     <div class="flex-grow-1" style="overflow: hidden;">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold text-white mb-0 {{ $conv['is_active'] ? 'text-primary' : '' }}"
+                            <h6 class="fw-bold text-body mb-0 {{ $conv['is_active'] ? 'text-primary' : '' }}"
                                 style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 {{ $conv['name'] }}
                             </h6>

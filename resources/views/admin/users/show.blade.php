@@ -9,9 +9,11 @@
                         class="rounded-circle mb-3" width="120" height="120">
                     <h4 class="fw-bold mb-1">{{ $user->name }}</h4>
                     <p class="text-secondary mb-3">{{ $user->email }}</p>
-                    <span class="badge {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }} px-3 py-2">
-                        <i class="bi {{ $user->role === 'admin' ? 'bi-shield-fill' : 'bi-person-fill' }} me-1"></i>
-                        {{ ucfirst($user->role) }}
+                    <span
+                        class="badge {{ $user->role && $user->role->slug === 'admin' ? 'bg-danger' : 'bg-secondary' }} px-3 py-2">
+                        <i
+                            class="bi {{ $user->role && $user->role->slug === 'admin' ? 'bi-shield-fill' : 'bi-person-fill' }} me-1"></i>
+                        {{ $user->role->name ?? 'N/A' }}
                     </span>
                 </div>
             </div>

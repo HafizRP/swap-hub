@@ -67,14 +67,12 @@ VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
 VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 
 # Mail Configuration
-# For development/testing, use 'log' to write emails to storage/logs/laravel.log
-MAIL_MAILER=log
-# For production, use 'smtp' and configure your mail service below
-# MAIL_MAILER=smtp
+# Gmail SMTP Configuration
+MAIL_MAILER=smtp
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
+MAIL_PASSWORD=your-16-char-app-password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS="noreply@swaphub.com"
 MAIL_FROM_NAME="${APP_NAME}"

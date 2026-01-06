@@ -15,11 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Seed skills first
+        // 1. Seed roles first
+        $this->call(RoleSeeder::class);
+        $studentRole = \App\Models\Role::where('slug', 'student')->first();
+        $adminRole = \App\Models\Role::where('slug', 'admin')->first();
+
+        // 2. Seed skills
         $this->call(SkillSeeder::class);
         $skills = \App\Models\Skill::all();
 
-        // 2. Create main test user
+        // 3. Create main test user (admin)
         $testUser = User::factory()->create([
             'name' => 'Demo Student',
             'email' => 'test@example.com',
@@ -28,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Full-stack developer looking to collaborate on high-impact projects.',
             'reputation_points' => 500,
             'github_username' => 'teststudent',
+            'role_id' => $adminRole->id, // Admin role
         ]);
 
         // Assign some skills to test user
@@ -36,8 +42,11 @@ class DatabaseSeeder extends Seeder
             ['proficiency_level' => 'advanced']
         );
 
-        // 3. Create additional sample users
-        $users = User::factory(20)->create();
+        // 4. Create additional sample users (all students)
+        $users = User::factory(20)->create([
+            'role_id' => $studentRole->id, // Student role
+        ]);
+
         foreach ($users as $user) {
             $user->skills()->attach(
                 $skills->random(rand(2, 5))->pluck('id'),
@@ -45,7 +54,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 4. Create Projects
+        // 5. Create Projects
         $projects = \App\Models\Project::factory(10)
             ->recycle($users->concat([$testUser]))
             ->create();

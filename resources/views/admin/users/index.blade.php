@@ -67,8 +67,8 @@
                                 </td>
                                 <td>
                                     <span
-                                        class="badge {{ $user->role === 'admin' ? 'bg-danger' : 'bg-primary' }} rounded-pill px-3">
-                                        {{ ucfirst($user->role) }}
+                                        class="badge {{ $user->role && $user->role->slug === 'admin' ? 'bg-danger' : 'bg-primary' }} rounded-pill px-3">
+                                        {{ $user->role->name ?? 'N/A' }}
                                     </span>
                                 </td>
                                 <td>

@@ -16,17 +16,31 @@
             border-radius: 3px;
         }
 
+        /* Chat Bubbles */
+        .chat-bubble {
+            border-radius: 18px;
+            padding: 10px 16px;
+            position: relative;
+            max-width: 100%;
+            width: fit-content;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble-own {
+            background-color: var(--bs-primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble-other {
+            background-color: var(--bs-secondary-bg);
+            color: var(--bs-body-color);
+            border-bottom-left-radius: 4px;
+        }
+
         /* Variables */
         :root {
             --chat-header-height: 120px;
-        }
-
-        [data-bs-theme="dark"] .bg-subtle {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        [data-bs-theme="light"] .bg-subtle {
-            background-color: rgba(0, 0, 0, 0.03);
         }
 
         .nav-tabs .nav-link {
@@ -54,23 +68,21 @@
         <div class="row h-100 g-0">
 
             <!-- LEFT COLUMN: Conversation List -->
-            <div class="col-12 col-md-4 col-lg-3 border-end border-white border-opacity-10 d-flex flex-column h-100 bg-sidebar {{ $conversation ? 'd-none d-md-flex' : 'd-flex' }}"
-                style="background-color: var(--bs-body-bg);">
+            <div class="col-12 col-md-4 col-lg-3 border-end border-secondary-subtle d-flex flex-column h-100 bg-body {{ $conversation ? 'd-none d-md-flex' : 'd-flex' }}">
                 <div
-                    class="p-3 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0 text-uppercase tracking-wide small opacity-75">Workspaces</h6>
+                    class="p-3 border-bottom border-secondary-subtle d-flex justify-content-between align-items-center bg-body">
+                    <h6 class="fw-bold mb-0 text-uppercase tracking-wide small opacity-75 text-body">Workspaces</h6>
                     <button class="btn btn-sm btn-icon text-secondary"><i class="bi bi-plus-lg"></i></button>
                 </div>
                 @livewire('chat.conversation-sidebar', ['currentConversationId' => $conversationId])
             </div>
 
             <!-- MIDDLE COLUMN: Main Chat / Interaction Area -->
-            <div class="col-12 col-md-8 col-lg-6 d-flex flex-column h-100 bg-main border-end border-white border-opacity-10 position-relative {{ $conversation ? 'd-flex' : 'd-none d-md-flex' }}"
-                style="background-color: var(--bs-card-bg);">
+            <div class="col-12 col-md-8 col-lg-6 d-flex flex-column h-100 bg-body border-end border-secondary-subtle position-relative {{ $conversation ? 'd-flex' : 'd-none d-md-flex' }}">
                 @if($conversation)
                     <!-- Header Area -->
                     <div
-                        class="px-4 pt-3 {{ $conversation->type === 'project' ? 'pb-0' : 'pb-3' }} border-bottom border-white border-opacity-10 flex-shrink-0 bg-subtle">
+                        class="px-4 pt-3 {{ $conversation->type === 'project' ? 'pb-0' : 'pb-3' }} border-bottom border-secondary-subtle flex-shrink-0 bg-body-tertiary">
 
                         <!-- Top Row: Title & Actions -->
                         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -99,7 +111,7 @@
 
                                 <div>
                                     <div class="d-flex align-items-center gap-2">
-                                        <h5 class="fw-bold mb-0">{{ $title }}</h5>
+                                        <h5 class="fw-bold mb-0 text-body">{{ $title }}</h5>
                                         @if($conversation->type === 'project')
                                             <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1"
                                                 style="font-size: 10px;">
@@ -166,81 +178,96 @@
 
                     @if($activeTab === 'chat')
                         <!-- Chat Messages Area -->
-                        <div class="flex-grow-1 overflow-auto p-4 custom-scrollbar" id="messagesContainer"
+                        <div class="flex-grow-1 overflow-auto p-4 custom-scrollbar bg-body" id="messagesContainer"
                             x-init="$el.scrollTop = $el.scrollHeight"
                             @scroll-to-bottom.window="document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight">
+                            
+                            <div class="d-flex flex-column gap-3">
+                                @forelse($messages as $msg)
+                                    @php
+                                        $isOwn = $msg['user_id'] == auth()->id();
+                                        $isSystem = !$msg['user_id'];
+                                    @endphp
 
-                            @forelse($messages as $msg)
-                                @php
-                                    $isOwn = $msg['user_id'] == auth()->id();
-                                    $isSystem = !$msg['user_id'];
-                                @endphp
-
-                                @if($isSystem)
-                                    <div class="text-center my-4">
-                                        <span
-                                            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3 py-1 fw-normal"
-                                            style="font-size: 11px;">
-                                            {!! nl2br(e($msg['content'])) !!}
-                                        </span>
-                                    </div>
-                                @else
-                                    <div class="d-flex align-items-start gap-3 mb-4 {{ $isOwn ? '' : '' }}">
-                                        <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm" width="40" height="40">
-
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <span
-                                                    class="fw-bold {{ $isOwn ? 'text-primary' : 'text-body' }}">{{ $msg['user_name'] }}</span>
-                                                <span class="small text-secondary"
-                                                    style="font-size: 11px;">{{ $msg['created_at_human'] }}</span>
-                                                @if($isOwn)
-                                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-1"
-                                                        style="font-size: 9px;">YOU</span>
-                                                @endif
-                                            </div>
-
-                                            <div class="text-body" style="white-space: pre-line; line-height: 1.5;">
+                                    @if($isSystem)
+                                        <div class="text-center my-3">
+                                            <span
+                                                class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3 py-1 fw-normal shadow-sm"
+                                                style="font-size: 11px;">
                                                 {!! nl2br(e($msg['content'])) !!}
-                                            </div>
-
-                                            @if(isset($msg['attachments']) && count($msg['attachments']) > 0)
-                                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                                    @foreach($msg['attachments'] as $att)
-                                                        @if(Str::startsWith($att['file_type'], 'image/'))
-                                                            <div role="button" onclick="openGallery(@js($msg['attachments']), '{{ $att['id'] }}')">
-                                                                <img src="{{ $att['file_path'] }}"
-                                                                    class="rounded shadow-sm border border-white border-opacity-10"
-                                                                    style="max-height: 200px; max-width: 100%;">
-                                                            </div>
-                                                        @else
-                                                            <a href="{{ $att['file_path'] }}" target="_blank"
-                                                                class="d-flex align-items-center gap-2 p-2 bg-secondary bg-opacity-10 rounded border border-white border-opacity-10 text-decoration-none text-body">
-                                                                <i class="bi bi-file-earmark-text fs-5"></i>
-                                                                <span class="small fw-medium">{{ $att['file_name'] }}</span>
-                                                            </a>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            @endif
+                                            </span>
                                         </div>
+                                    @else
+                                        <div class="d-flex align-items-end gap-2 {{ $isOwn ? 'flex-row-reverse' : '' }}">
+                                            <!-- Avatar -->
+                                            <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm flex-shrink-0" width="32" height="32" 
+                                                 data-bs-toggle="tooltip" title="{{ $msg['user_name'] }}" style="margin-bottom: 2px;">
+
+                                            <div class="d-flex flex-column {{ $isOwn ? 'align-items-end' : 'align-items-start' }}" style="max-width: 75%;">
+                                                
+                                                <!-- Message Bubble -->
+                                                @if(!empty(trim($msg['content'])))
+                                                <div class="chat-bubble shadow-sm {{ $isOwn ? 'chat-bubble-own' : 'chat-bubble-other' }}">
+                                                    {!! nl2br(e($msg['content'])) !!}
+                                                </div>
+                                                @endif
+
+                                                <!-- Attachments -->
+                                                @if(isset($msg['attachments']) && count($msg['attachments']) > 0)
+                                                    <div class="d-flex flex-wrap gap-2 mt-1 {{ $isOwn ? 'justify-content-end' : 'justify-content-start' }}">
+                                                        @foreach($msg['attachments'] as $att)
+                                                            @if(Str::startsWith($att['file_type'], 'image/'))
+                                                                <div role="button" onclick="openGallery(@js($msg['attachments']), '{{ $att['id'] }}')" 
+                                                                     class="overflow-hidden rounded-3 shadow-sm border border-secondary-subtle transition hover-lift">
+                                                                    <img src="{{ $att['file_path'] }}"
+                                                                        class="d-block"
+                                                                        style="max-height: 200px; max-width: 100%; object-fit: cover;">
+                                                                </div>
+                                                            @else
+                                                                <a href="{{ $att['file_path'] }}" target="_blank"
+                                                                    class="d-flex align-items-center gap-2 p-2 bg-body-tertiary rounded border border-secondary-subtle text-decoration-none text-body shadow-sm hover-lift transition">
+                                                                    <div class="bg-body rounded p-1">
+                                                                        <i class="bi bi-file-earmark-text fs-5 text-primary"></i>
+                                                                    </div>
+                                                                    <span class="small fw-medium">{{ $att['file_name'] }}</span>
+                                                                </a>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                <!-- Meta: Name and Time -->
+                                                <div class="mt-1 d-flex align-items-center gap-2 small {{ $isOwn ? 'justify-content-end' : 'justify-content-start flex-row-reverse' }} px-1"> 
+                                                     <span class="text-secondary opacity-75" style="font-size: 10px;">{{ $msg['created_at_human'] }}</span>
+                                                     @if(!$isOwn) 
+                                                        <span class="fw-bold text-secondary opacity-75" style="font-size: 10px;">{{ $msg['user_name'] }}</span> 
+                                                     @else
+                                                        <!-- Optional checklist for read status could go here -->
+                                                        <i class="bi bi-check2-all text-primary opacity-75" style="font-size: 12px;"></i>
+                                                     @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @empty
+                                    <div
+                                        class="h-100 d-flex flex-column align-items-center justify-content-center text-center opacity-50 py-5">
+                                        <div class="bg-secondary bg-opacity-10 p-3 rounded-circle mb-3">
+                                            <i class="bi bi-chat-heart fs-1 text-secondary"></i>
+                                        </div>
+                                        <p class="small text-secondary fw-bold">No messages yet.</p>
+                                        <p class="small text-secondary" style="font-size: 0.8rem;">Start the conversation with your team!</p>
                                     </div>
-                                @endif
-                            @empty
-                                <div
-                                    class="h-100 d-flex flex-column align-items-center justify-content-center text-center opacity-50">
-                                    <i class="bi bi-chat-square-dots fs-1 mb-3"></i>
-                                    <p class="small text-secondary">No messages yet. break the ice!</p>
-                                </div>
-                            @endforelse
+                                @endforelse
+                            </div>
                         </div>
 
                         <!-- Input Area -->
-                        <div class="p-3 border-top border-white border-opacity-10 bg-subtle">
+                        <div class="p-3 border-top border-secondary-subtle bg-body-tertiary">
                             <form wire:submit.prevent="sendMessage">
                                 @if(count($attachments) > 0)
                                     <div
-                                        class="d-flex flex-wrap gap-2 mb-2 p-2 bg-secondary bg-opacity-10 rounded border border-white border-opacity-10">
+                                        class="d-flex flex-wrap gap-2 mb-2 p-2 bg-secondary bg-opacity-10 rounded border border-secondary-subtle bg-body">
                                         @foreach($attachments as $index => $att)
                                             <div class="position-relative">
                                                 <span class="badge bg-secondary">{{ $att->getClientOriginalName() }}</span>
@@ -252,30 +279,30 @@
                                     </div>
                                 @endif
 
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-link text-secondary"
+                                <div class="input-group bg-body rounded-pill shadow-sm border border-secondary-subtle overflow-hidden">
+                                    <button type="button" class="btn btn-link text-secondary ps-3 border-0 text-decoration-none"
                                         onclick="document.getElementById('fileInput').click()">
-                                        <i class="bi bi-plus-circle-fill fs-5"></i>
+                                        <i class="bi bi-paperclip fs-5"></i>
                                     </button>
                                     <input type="file" wire:model="attachments" id="fileInput" class="d-none" multiple>
 
                                     <input type="text" wire:model.live.debounce.250ms="newMessage"
-                                        class="form-control bg-dark border-0 rounded-pill text-white shadow-inner px-4"
+                                        class="form-control border-0 bg-transparent text-body shadow-none px-2"
                                         placeholder="Type a message to {{ $conversation->type === 'project' ? '#general' : $title }}..."
-                                        {{ $loading ? 'disabled' : '' }}
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
+                                        {{ $loading ? 'disabled' : '' }} 
+                                        style="height: 48px;">
 
-                                    <button class="btn btn-link text-secondary" type="button">
+                                    <button class="btn btn-link text-secondary border-0 text-decoration-none" type="button">
                                         <i class="bi bi-emoji-smile fs-5"></i>
                                     </button>
-                                    <button class="btn btn-primary rounded-circle shadow ms-2"
-                                        style="width: 42px; height: 42px;" type="submit" {{ (empty($newMessage) && empty($attachments)) ? 'disabled' : '' }}>
-                                        <i class="bi bi-send-fill text-white"></i>
+                                    <button class="btn btn-primary border-0 m-1 rounded-circle d-flex align-items-center justify-content-center transition-transform active-scale-95"
+                                        style="width: 40px; height: 40px;" type="submit" {{ (empty($newMessage) && empty($attachments)) ? 'disabled' : '' }}>
+                                        <i class="bi bi-send-fill text-white ms-1" style="font-size: 0.9rem;"></i>
                                     </button>
                                 </div>
-                                <div class="text-end mt-1">
-                                    <small class="text-secondary" style="font-size: 10px;">
-                                        <i class="bi bi-circle-fill text-success me-1" style="font-size: 6px;"></i>Connected
+                                <div class="text-end mt-2 me-2">
+                                    <small class="text-secondary opacity-75" style="font-size: 10px;">
+                                        Press <span class="fw-bold">Enter</span> to send
                                     </small>
                                 </div>
                             </form>
@@ -292,24 +319,23 @@
                     @endif
 
                 @else
-                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-4 bg-body">
                         <div class="bg-secondary bg-opacity-10 p-4 rounded-circle mb-3">
                             <i class="bi bi-chat-quote-fill fs-1 text-secondary"></i>
                         </div>
-                        <h4 class="fw-bold mb-2">Select a Conversation</h4>
+                        <h4 class="fw-bold mb-2 text-body">Select a Conversation</h4>
                         <p class="text-secondary small">Choose a project workspace or direct message from the sidebar.</p>
                     </div>
                 @endif
             </div>
 
             <!-- RIGHT COLUMN: Context Info -->
-            <div class="col-lg-3 border-start border-white border-opacity-10 d-none d-lg-flex flex-column h-100 bg-sidebar"
-                style="background-color: var(--bs-body-bg);">
+            <div class="col-lg-3 border-start border-secondary-subtle d-none d-lg-flex flex-column h-100 bg-body">
                 @if($conversation && $conversation->type === 'project')
                     <!-- Team Members Info -->
-                    <div class="p-4 border-bottom border-white border-opacity-10">
+                    <div class="p-4 border-bottom border-secondary-subtle">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75">Team Members</h6>
+                            <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75 text-body">Team Members</h6>
                             <span class="badge bg-secondary rounded-pill">{{ $conversation->participants->count() }}</span>
                         </div>
                         <div class="d-flex flex-column gap-3 overflow-auto custom-scrollbar" style="max-height: 40vh;">
@@ -319,11 +345,11 @@
                                         <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
                                             class="rounded-circle" width="36" height="36">
                                         <span
-                                            class="position-absolute bottom-0 end-0 bg-success border border-2 border-dark rounded-circle"
+                                            class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle"
                                             style="width: 10px; height: 10px;"></span>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <div class="fw-bold small">{{ $user->name }}</div>
+                                        <div class="fw-bold small text-body">{{ $user->name }}</div>
                                         <div class="text-secondary small" style="font-size: 10px;">
                                             @if($user->id === $conversation->project->owner_id)
                                                 <span class="text-primary fw-bold">Owner</span> •
@@ -346,7 +372,7 @@
                     <!-- Quick Tasks -->
                     <div class="p-4 flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75">Quick Tasks</h6>
+                            <h6 class="fw-bold mb-0 text-uppercase small tracking-wide opacity-75 text-body">Quick Tasks</h6>
                             <a href="#" class="text-primary small text-decoration-none fw-bold" style="font-size: 11px;"
                                 wire:click.prevent="setTab('tasks')">View All</a>
                         </div>
@@ -395,7 +421,7 @@
                         <div class="p-5 text-center">
                             <img src="{{ $other->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($other->name) }}"
                                 class="rounded-circle mb-3 shadow" width="80" height="80">
-                            <h5 class="fw-bold">{{ $other->name }}</h5>
+                            <h5 class="fw-bold text-body">{{ $other->name }}</h5>
                             <p class="text-secondary small">{{ $other->major ?? 'Student' }}</p>
 
                             <div class="d-grid gap-2 mt-4">

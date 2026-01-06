@@ -37,19 +37,25 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Get student role
+        $studentRole = \App\Models\Role::where('slug', 'student')->first();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $studentRole?->id, // Assign student role by default
         ]);
 
         event(new Registered($user));
 
+        // Login user temporarily to show verify email page
         Auth::login($user);
 
-        // Send welcome email
-        Mail::to($user->email)->send(new WelcomeEmail($user));
+        // Send welcome email (optional, you might want to send this after verification)
+        // Mail::to($user->email)->send(new WelcomeEmail($user));
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('verification.notice')
+            ->with('success', 'Account created! Please check your email to verify your account.');
     }
 }
