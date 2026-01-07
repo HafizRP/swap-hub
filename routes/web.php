@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', ProjectController::class);
     Route::get('/projects/{project}/workspace', [ProjectController::class, 'workspace'])->name('projects.workspace');
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.members.add');
+    Route::post('/projects/{project}/webhook/reconnect', [ProjectController::class, 'reconnectWebhook'])->name('projects.webhook.reconnect');
     Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.members.remove');
     Route::post('/projects/{project}/validate/{user}', [ProjectController::class, 'validateMember'])->name('projects.members.validate');
 

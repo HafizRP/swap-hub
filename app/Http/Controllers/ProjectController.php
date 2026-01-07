@@ -136,7 +136,14 @@ class ProjectController extends Controller
     public function edit(\App\Models\Project $project)
     {
         $this->authorizeOwner($project);
-        return view('projects.edit', compact('project'));
+
+        $repositories = [];
+        if (auth()->user()->github_token) {
+            $githubService = new \App\Services\GitHubService();
+            $repositories = $githubService->getUserRepositories(auth()->user());
+        }
+
+        return view('projects.edit', compact('project', 'repositories'));
     }
 
     /**
@@ -367,6 +374,31 @@ class ProjectController extends Controller
         if (auth()->id() !== $project->owner_id) {
             abort(403);
         }
+    }
+
+    /**
+     * Reconnect GitHub webhook manually.
+     */
+    public function reconnectWebhook(\App\Models\Project $project)
+    {
+        $this->authorizeOwner($project);
+
+        $user = auth()->user();
+        if (!$user->github_token) {
+            return back()->with('error', 'Please connect your GitHub account in Profile settings first.');
+        }
+
+        if (!$project->github_repo_url) {
+            return back()->with('error', 'Please add a GitHub Repository URL first.');
+        }
+
+        $this->setupGitHubWebhook($project, $user->github_token);
+
+        if ($project->fresh()->github_webhook_status === 'active') {
+            return back()->with('status', 'GitHub Webhook connected successfully!');
+        }
+
+        return back()->with('error', 'Failed to connect GitHub Webhook. properly.');
     }
 
     /**
