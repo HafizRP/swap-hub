@@ -65,9 +65,20 @@ class GitHubWebhookController extends Controller
             $branch = str_replace('refs/heads/', '', $payload['ref']);
             $pusher = $payload['pusher']['name'] ?? 'Someone';
 
+            // Format commits for Markdown
+            $commitList = "";
+            foreach (array_slice($payload['commits'], 0, 5) as $commit) {
+                // Get first line only
+                $subject = explode("\n", $commit['message'])[0];
+                $commitList .= "- " . $subject . "\n";
+            }
+            if ($commitCount > 5) {
+                $commitList .= "- ... and " . ($commitCount - 5) . " more\n";
+            }
+
             $message = $project->conversation->messages()->create([
                 'user_id' => null,
-                'content' => "🚀 **GitHub Sync**: {$pusher} pushed {$commitCount} commit(s) to `{$branch}` in `{$project->github_repo_name}`.",
+                'content' => "🚀 **GitHub Sync**: {$pusher} pushed {$commitCount} commit(s) to `{$branch}`\n\n" . trim($commitList),
             ]);
 
             broadcast(new \App\Events\MessageSent($message));
