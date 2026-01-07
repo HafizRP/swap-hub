@@ -13,7 +13,7 @@ Fitur ini memungkinkan Anda untuk **otomatis setup GitHub webhook** ketika membu
 ✅ **Real-time Tracking** - Instant commit activity updates  
 ✅ **Status Monitoring** - Track webhook status (active/failed)  
 ✅ **Duplicate Prevention** - Checks existing webhooks  
-✅ **Error Handling** - Graceful failure with status updates  
+✅ **Error Handling** - Graceful failure with status update
 
 ---
 
