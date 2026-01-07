@@ -443,14 +443,19 @@
             let conversationId = {{ $conversation->id }};
             const channelName = `chat.${conversationId}`;
 
-            window.Echo.private(channelName)
-                .listen('.message.sent', (e) => {
-                    console.log('New message in chat ' + conversationId, e);
-                    $wire.call('loadMessages');
-                    setTimeout(() => {
-                        window.dispatchEvent(new CustomEvent('scroll-to-bottom'));
-                    }, 100);
-                });
+            // Only setup Echo if it's available
+            if (window.Echo) {
+                window.Echo.private(channelName)
+                    .listen('.message.sent', (e) => {
+                        console.log('New message in chat ' + conversationId, e);
+                        $wire.call('loadMessages');
+                        setTimeout(() => {
+                            window.dispatchEvent(new CustomEvent('scroll-to-bottom'));
+                        }, 100);
+                    });
+            } else {
+                console.warn('Echo not initialized - real-time updates disabled');
+            }
 
             Livewire.on('update-url', (data) => {
                 const url = data.url;
