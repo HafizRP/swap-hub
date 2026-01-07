@@ -159,24 +159,16 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top bg-white border-bottom border-light">
+    <nav class="navbar fixed-top bg-white border-bottom border-light">
         <div class="container py-2">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <i class="bi bi-grid-1x2-fill text-primary"></i>
                 Swap Hub
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <!-- Links could go here -->
-                </ul>
-                <div class="d-flex gap-2">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
-                    @endauth
-                </div>
+            <div class="d-flex gap-2">
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                @endauth
             </div>
         </div>
     </nav>
