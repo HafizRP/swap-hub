@@ -17,7 +17,7 @@ php artisan queue:work
 
 ### 2. Access the Chat
 
-1. Login to your application
+1. Login to your applicatio
 2. Navigate to `/chat`
 3. You should see the conversation list on the left
 
