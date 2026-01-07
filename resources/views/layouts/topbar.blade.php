@@ -6,14 +6,15 @@
         </button>
 
         <!-- Search -->
-        <div class="d-none d-md-block flex-grow-1 me-4" style="max-width: 400px;">
+        <form action="{{ route('projects.index') }}" method="GET" class="d-none d-md-block flex-grow-1 me-4"
+            style="max-width: 400px;">
             <div class="input-group bg-light rounded-pill border border-light">
                 <span class="input-group-text bg-transparent border-0 text-secondary ps-3"><i
                         class="bi bi-search"></i></span>
-                <input type="text" class="form-control bg-transparent border-0 shadow-none"
-                    placeholder="Search for projects or students..." style="font-size: 0.9rem;">
+                <input type="text" name="search" class="form-control bg-transparent border-0 shadow-none"
+                    placeholder="Search for projects..." style="font-size: 0.9rem;" value="{{ request('search') }}">
             </div>
-        </div>
+        </form>
 
         <!-- Right Side -->
         <ul class="navbar-nav ms-auto align-items-center gap-1">
