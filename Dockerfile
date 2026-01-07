@@ -14,6 +14,9 @@ COPY env-server.txt* .env* ./
 RUN if [ ! -f .env ] && [ -f env-server.txt ]; then cp env-server.txt .env; fi
 
 RUN npm install
+
+# Force rebuild by adding timestamp (prevents cache)
+RUN date > /tmp/build-timestamp
 RUN npm run build
 
 # Stage 2: Build Backend Dependencies
