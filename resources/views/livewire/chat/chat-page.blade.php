@@ -238,7 +238,9 @@
 
                                                 <!-- Meta: Name and Time -->
                                                 <div class="mt-1 d-flex align-items-center gap-2 small {{ $isOwn ? 'justify-content-end' : 'justify-content-start flex-row-reverse' }} px-1"> 
-                                                     <span class="text-secondary opacity-75" style="font-size: 10px;">{{ $msg['created_at_human'] }}</span>
+                                                     <span class="text-secondary opacity-75" style="font-size: 10px;" 
+                                                        x-data="{ date: new Date('{{ $msg['created_at'] }}') }" 
+                                                        x-text="date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })"></span>
                                                      @if(!$isOwn) 
                                                         <span class="fw-bold text-secondary opacity-75" style="font-size: 10px;">{{ $msg['user_name'] }}</span> 
                                                      @else

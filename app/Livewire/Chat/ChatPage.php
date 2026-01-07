@@ -87,6 +87,7 @@ class ChatPage extends Component
                     'user_avatar' => $message->user
                         ? ($message->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->user->name) . '&background=6366f1&color=fff')
                         : 'https://ui-avatars.com/api/?name=System&background=10b981&color=fff',
+                    'created_at' => $message->created_at->toISOString(),
                     'created_at_human' => $message->created_at->format('H:i'),
                     'attachments' => $message->attachments->map(function ($att) {
                         return [
