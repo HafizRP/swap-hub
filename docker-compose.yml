@@ -28,13 +28,6 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
       REDIS_HOST: redis
-      BROADCAST_CONNECTION: reverb
-      REVERB_APP_ID: swap-hub
-      REVERB_APP_KEY: swap-hub-key
-      REVERB_APP_SECRET: swap-hub-secret
-      REVERB_HOST: reverb
-      REVERB_PORT: "8080"
-      REVERB_SCHEME: http
 
   nginx:
     image: nginx:alpine
