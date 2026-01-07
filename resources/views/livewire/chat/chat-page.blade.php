@@ -286,7 +286,7 @@
                                     </button>
                                     <input type="file" wire:model="attachments" id="fileInput" class="d-none" multiple>
 
-                                    <input type="text" wire:model.live="newMessage"
+                                    <input type="text" wire:model.live.debounce.250ms="newMessage"
                                         class="form-control border-0 bg-transparent text-body shadow-none px-2"
                                         placeholder="Type a message to {{ $conversation->type === 'project' ? '#general' : $title }}..."
                                         {{ $loading ? 'disabled' : '' }} 
