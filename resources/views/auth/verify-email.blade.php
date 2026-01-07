@@ -8,9 +8,8 @@
         <div class="auth-hero">
             <div class="auth-hero-content">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                    </div>
+                    <img src="{{ asset('icon-dark.png') }}" alt="Swap Hub" style="width: 40px; height: 40px;"
+                        class="object-fit-contain">
                     <span>Swap Hub</span>
                 </div>
 

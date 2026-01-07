@@ -39,10 +39,13 @@
     
     <!-- Logo & Toggle -->
     <div class="d-flex align-items-center p-4 mb-2" :class="sidebarExpanded ? 'justify-content-between' : 'justify-content-center flex-column gap-3'">
-        <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-dark gap-2">
-            <div class="bg-primary rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
-                <svg class="text-white" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            </div>
+        <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-dark gap-2"
+           x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
+           @theme-changed.window="darkMode = localStorage.getItem('theme') === 'dark'">
+            <img :src="darkMode ? '{{ asset('icon-dark.png') }}' : '{{ asset('icon.png') }}'" 
+                 alt="Swap Hub" 
+                 style="width: 32px; height: 32px;"
+                 class="object-fit-contain flex-shrink-0">
             <span class="fs-5 fw-bold text-nowrap" x-show="window.innerWidth < 768 || sidebarExpanded" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Swap Hub</span>
         </a>
         
