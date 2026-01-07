@@ -1,15 +1,21 @@
 @section('title', 'Edit Project')
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="h3 fw-black text-white mb-0">
-            {{ __('Edit Project') }}
-        </h2>
-    </x-slot>
-
     <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-lg overflow-hidden">
+                <!-- Header -->
+                <div class="mb-4">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2">
+                            <li class="breadcrumb-item"><a href="{{ route('projects.show', $project) }}"
+                                    class="text-decoration-none text-secondary small fw-bold">Back to Project</a></li>
+                            <li class="breadcrumb-item active small fw-bold" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                    <h2 class="h3 fw-black text-body mb-0">{{ __('Edit Project Details') }}</h2>
+                </div>
+
+                <div class="card border-0 shadow-lg overflow-hidden rounded-4">
                     <div class="p-1" style="background: linear-gradient(to right, #4f46e5, #818cf8);"></div>
                     <div class="card-body p-4 p-md-5">
                         <form method="POST" action="{{ route('projects.update', $project) }}">
@@ -19,85 +25,89 @@
                             <!-- Title -->
                             <div class="mb-4">
                                 <label for="title"
-                                    class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Project
+                                    class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">Project
                                     Title</label>
                                 <input type="text" id="title" name="title" value="{{ old('title', $project->title) }}"
-                                    required autofocus
-                                    class="form-control form-control-lg bg-dark border-0 rounded-4 px-4 py-3 text-white placeholder-secondary focus:ring-2 focus:ring-primary transition shadow-inner"
-                                    placeholder="e.g. Building a Sustainable Campus Mobile App"
-                                    style="background-color: rgba(255,255,255,0.05) !important;">
+                                    required
+                                    class="form-control form-control-lg rounded-3 px-4 py-3 fw-bold border-secondary-subtle focus-ring"
+                                    placeholder="e.g. Building a Sustainable Campus Mobile App">
                                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
                             </div>
 
                             <!-- Description -->
                             <div class="mb-4">
                                 <label for="description"
-                                    class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Description</label>
-                                <textarea id="description" name="description" rows="5" required
-                                    class="form-control bg-dark border-0 rounded-4 px-4 py-3 text-white placeholder-secondary focus:ring-2 focus:ring-primary transition shadow-inner"
-                                    placeholder="Describe what you want to achieve, the stack you're using, and who you're looking for..."
-                                    style="background-color: rgba(255,255,255,0.05) !important;">{{ old('description', $project->description) }}</textarea>
+                                    class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">Description</label>
+                                <textarea id="description" name="description" rows="6" required
+                                    class="form-control rounded-3 px-4 py-3 border-secondary-subtle focus-ring"
+                                    placeholder="Describe your project...">{{ old('description', $project->description) }}</textarea>
                                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
                             </div>
 
                             <div class="row g-4 mb-5">
-                                <!-- GitHub Repo URL -->
-                                <div class="col-md-6">
-                                    <label for="github_repo_url"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">GitHub
-                                        Repository</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-dark border-0 text-secondary rounded-start-4"
-                                            style="background-color: rgba(255,255,255,0.05) !important;">
-                                            <svg style="width: 20px;" fill="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                                            </svg>
-                                        </span>
-                                        <input type="url" id="github_repo_url" name="github_repo_url"
-                                            value="{{ old('github_repo_url', $project->github_repo_url) }}"
-                                            class="form-control form-control-lg bg-dark border-0 rounded-end-4 px-4 py-3 text-white placeholder-secondary focus:ring-2 focus:ring-primary transition shadow-inner"
-                                            placeholder="https://github.com/user/repo"
-                                            style="background-color: rgba(255,255,255,0.05) !important;">
-                                    </div>
-                                    <x-input-error :messages="$errors->get('github_repo_url')" class="mt-2" />
-
-                                    @if($project->github_webhook_status)
-                                        <div class="mt-2">
-                                            <span
-                                                class="badge {{ $project->github_webhook_status === 'active' ? 'bg-success' : 'bg-warning' }} bg-opacity-10 text-{{ $project->github_webhook_status === 'active' ? 'success' : 'warning' }} small">
-                                                Webhook: {{ ucfirst($project->github_webhook_status) }}
-                                            </span>
+                                <!-- GitHub Integration -->
+                                <div class="col-12">
+                                    <div class="bg-body-tertiary rounded-4 p-4 border border-secondary-subtle">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                            <i class="bi bi-github fs-5"></i>
+                                            <h6 class="fw-bold mb-0">GitHub Integration</h6>
                                         </div>
-                                    @endif
-                                </div>
 
-                                <!-- GitHub Repo Name -->
-                                <div class="col-md-6">
-                                    <label for="github_repo_name"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Repository
-                                        Name</label>
-                                    <input type="text" id="github_repo_name" name="github_repo_name"
-                                        value="{{ old('github_repo_name', $project->github_repo_name) }}"
-                                        class="form-control form-control-lg bg-dark border-0 rounded-4 px-4 py-3 text-white placeholder-secondary focus:ring-2 focus:ring-primary transition shadow-inner"
-                                        placeholder="e.g. username/repo"
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
-                                    <x-input-error :messages="$errors->get('github_repo_name')" class="mt-2" />
+                                        @if(count($repositories) > 0)
+                                            <label for="github_repo_url"
+                                                class="form-label small fw-bold text-secondary">Select Repository</label>
+                                            <select id="github_repo_url" name="github_repo_url"
+                                                onchange="document.getElementById('github_repo_name').value = this.options[this.selectedIndex].text"
+                                                class="form-select form-select-lg border-secondary-subtle mb-3">
+                                                <option value="">Select a repository (Optional)</option>
+                                                @foreach($repositories as $repo)
+                                                    <option value="{{ $repo['html_url'] }}" {{ old('github_repo_url', $project->github_repo_url) == $repo['html_url'] ? 'selected' : '' }}>
+                                                        {{ $repo['full_name'] }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <input type="hidden" id="github_repo_name" name="github_repo_name"
+                                                value="{{ old('github_repo_name', $project->github_repo_name) }}">
+
+                                            <!-- Webhook Status & Reconnect -->
+                                            @if($project->github_repo_url)
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center bg-body p-3 rounded-3 border border-secondary-subtle">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="small fw-bold text-secondary">Webhook Status:</span>
+                                                        <span
+                                                            class="badge {{ $project->github_webhook_status === 'active' ? 'bg-success' : 'bg-warning' }} bg-opacity-10 text-{{ $project->github_webhook_status === 'active' ? 'success' : 'warning' }} border border-{{ $project->github_webhook_status === 'active' ? 'success' : 'warning' }} border-opacity-25">
+                                                            {{ ucfirst($project->github_webhook_status ?? 'Not Setup') }}
+                                                        </span>
+                                                    </div>
+                                                    <button form="reconnectWebhookForm" type="submit"
+                                                        class="btn btn-sm btn-outline-primary fw-bold" data-bs-toggle="tooltip"
+                                                        title="Reconnect GitHub Webhook">
+                                                        <i class="bi bi-arrow-repeat me-1"></i>Reconnect Loop
+                                                    </button>
+                                                </div>
+                                            @endif
+
+                                        @else
+                                            <div class="alert alert-warning border-0 small mb-0">
+                                                <i class="bi bi-exclamation-circle me-1"></i> No repositories found.
+                                                <a href="{{ route('profile.edit') }}"
+                                                    class="text-decoration-underline fw-bold">Connect GitHub Account</a>
+                                            </div>
+                                        @endif
+                                        <x-input-error :messages="$errors->get('github_repo_url')" class="mt-2" />
+                                    </div>
                                 </div>
 
                                 <!-- Category -->
                                 <div class="col-md-6">
                                     <label for="category"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Project
-                                        Category</label>
+                                        class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">Category</label>
                                     <select id="category" name="category" required
-                                        class="form-select form-select-lg bg-dark border-0 rounded-4 px-4 py-3 text-white focus:ring-2 focus:ring-primary transition shadow-inner"
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
+                                        class="form-select form-select-lg border-secondary-subtle">
                                         <option value="Development" {{ old('category', $project->category) == 'Development' ? 'selected' : '' }}>Development</option>
-                                        <option value="Design" {{ old('category', $project->category) == 'Design' ? 'selected' : '' }}>Design
-                                        </option>
-                                        <option value="Marketing" {{ old('category', $project->category) == 'Marketing' ? 'selected' : '' }}>
-                                            Marketing</option>
+                                        <option value="Design" {{ old('category', $project->category) == 'Design' ? 'selected' : '' }}>Design</option>
+                                        <option value="Marketing" {{ old('category', $project->category) == 'Marketing' ? 'selected' : '' }}>Marketing</option>
                                     </select>
                                     <x-input-error :messages="$errors->get('category')" class="mt-2" />
                                 </div>
@@ -105,11 +115,9 @@
                                 <!-- Status -->
                                 <div class="col-md-6">
                                     <label for="status"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Project
-                                        Status</label>
+                                        class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">Status</label>
                                     <select id="status" name="status" required
-                                        class="form-select form-select-lg bg-dark border-0 rounded-4 px-4 py-3 text-white focus:ring-2 focus:ring-primary transition shadow-inner"
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
+                                        class="form-select form-select-lg border-secondary-subtle">
                                         <option value="planning" {{ old('status', $project->status) == 'planning' ? 'selected' : '' }}>Planning</option>
                                         <option value="active" {{ old('status', $project->status) == 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="completed" {{ old('status', $project->status) == 'completed' ? 'selected' : '' }}>Completed</option>
@@ -121,39 +129,35 @@
                                 <!-- Start Date -->
                                 <div class="col-md-6">
                                     <label for="start_date"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">Start
+                                        class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">Start
                                         Date</label>
                                     <input type="date" id="start_date" name="start_date"
                                         value="{{ old('start_date', $project->start_date?->format('Y-m-d')) }}"
-                                        class="form-control form-control-lg bg-dark border-0 rounded-4 px-4 py-3 text-white focus:ring-2 focus:ring-primary transition shadow-inner"
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
+                                        class="form-control form-control-lg border-secondary-subtle">
                                     <x-input-error :messages="$errors->get('start_date')" class="mt-2" />
                                 </div>
 
                                 <!-- End Date -->
                                 <div class="col-md-6">
                                     <label for="end_date"
-                                        class="form-label small fw-black text-uppercase text-secondary tracking-widest mb-2">End
+                                        class="form-label small fw-bold text-uppercase text-secondary tracking-wide mb-2">End
                                         Date</label>
                                     <input type="date" id="end_date" name="end_date"
                                         value="{{ old('end_date', $project->end_date?->format('Y-m-d')) }}"
-                                        class="form-control form-control-lg bg-dark border-0 rounded-4 px-4 py-3 text-white focus:ring-2 focus:ring-primary transition shadow-inner"
-                                        style="background-color: rgba(255,255,255,0.05) !important;">
+                                        class="form-control form-control-lg border-secondary-subtle">
                                     <x-input-error :messages="$errors->get('end_date')" class="mt-2" />
                                 </div>
                             </div>
 
-                            <div class="pt-4 border-top border-white border-opacity-10 mt-5">
-                                <div class="d-flex gap-3">
-                                    <a href="{{ route('projects.show', $project) }}"
-                                        class="btn btn-outline-secondary rounded-4 py-3 fw-black fs-6 flex-grow-1">
-                                        Cancel
-                                    </a>
-                                    <button type="submit"
-                                        class="btn btn-primary rounded-4 py-3 fw-black fs-6 shadow-lg transition flex-grow-1">
-                                        Update Project
-                                    </button>
-                                </div>
+                            <div class="d-flex gap-3 pt-4 border-top border-secondary-subtle">
+                                <a href="{{ route('projects.show', $project) }}"
+                                    class="btn btn-outline-secondary rounded-pill py-3 px-5 fw-bold flex-grow-1">
+                                    Cancel
+                                </a>
+                                <button type="submit"
+                                    class="btn btn-primary rounded-pill py-3 px-5 fw-bold shadow-sm transition flex-grow-1">
+                                    Update Project
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -161,4 +165,10 @@
             </div>
         </div>
     </div>
+
+    <!-- External Form for Webhook Reconnect -->
+    <form id="reconnectWebhookForm" action="{{ route('projects.webhook.reconnect', $project) }}" method="POST"
+        class="d-none">
+        @csrf
+    </form>
 </x-app-layout>

@@ -1,24 +1,22 @@
 @section('title', $project->title)
 <x-app-layout>
-    <x-slot name="header">
+    <div class="mb-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-4">
             <div class="flex-grow-1">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('projects.index') }}"
-                                class="text-decoration-none text-secondary hover-primary small fw-bold">Projects</a>
-                        </li>
-                        <li class="breadcrumb-item active small fw-bold" aria-current="page">Detail</li>
-                    </ol>
-                </nav>
+                <div class="mb-3">
+                    <a href="{{ route('projects.index') }}" class="btn btn-secondary rounded-pill px-3 py-1 small fw-bold d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-left"></i> Back to Projects
+                    </a>
+                </div>
+
                 <h2 class="h3 fw-black text-body mb-0">
                     {{ $project->title }}
                 </h2>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                @if(auth()->id() === $project->owner_id)
+                @if(auth()->id() == $project->owner_id)
                     <a href="{{ route('projects.edit', $project) }}"
-                        class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-black">Edit
+                        class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-bold">Edit
                         Project</a>
                     @if($project->conversation)
                         <a href="{{ route('chat', $project->conversation) }}"
@@ -29,7 +27,6 @@
                         $member = $project->members->firstWhere('id', auth()->id());
                         $status = $member ? $member->pivot->status : null;
                     @endphp
-
                     @if($status === 'active')
                         @if($project->conversation)
                             <a href="{{ route('chat', $project->conversation) }}"
@@ -61,7 +58,7 @@
                 @endif
             </div>
         </div>
-    </x-slot>
+    </div>
 
 
     <div class="container py-5">
@@ -254,7 +251,7 @@
                                 @endforeach
                             </div>
 
-                            @if(auth()->id() === $project->owner_id)
+                            @if(auth()->id() == $project->owner_id)
                                 <button data-bs-toggle="modal" data-bs-target="#inviteMemberModal"
                                     class="btn btn-outline-secondary w-100 mt-4 rounded-3 py-3 border-dashed fw-bold opacity-75 hover-opacity-100">
                                     <i class="bi bi-plus-lg me-2"></i>Invite Talents
