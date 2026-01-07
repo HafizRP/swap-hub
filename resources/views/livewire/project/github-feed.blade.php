@@ -11,7 +11,7 @@
     </div>
 
     @if($activities->count() > 0)
-        <div class="position-relative ps-3 border-start border-white border-opacity-10">
+        <div class="position-relative ps-3 border-start border-secondary-subtle">
             @foreach($activities as $activity)
                 <div class="mb-4 position-relative">
                     <!-- Dot -->
@@ -28,12 +28,12 @@
                         @endif
                     </div>
 
-                    <div class="card border-0 shadow-sm bg-dark bg-opacity-10 ms-3">
+                    <div class="card border-0 shadow-sm bg-body-tertiary ms-3">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-start mb-1">
                                 <div>
                                     <span
-                                        class="badge bg-secondary bg-opacity-25 text-secondary border border-white border-opacity-10 mb-1"
+                                        class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 mb-1"
                                         style="font-size: 10px;">
                                         {{ str_replace('_', ' ', strtoupper($activity->type)) }}
                                     </span>
@@ -51,7 +51,7 @@
                                             $message = "$action pull request";
                                         }
                                     @endphp
-                                    <h6 class="fw-bold mb-0 text-white">{{ $actor }} {{ $message }}</h6>
+                                    <h6 class="fw-bold mb-0 text-body">{{ $actor }} {{ $message }}</h6>
                                 </div>
                                 <small class="text-secondary" style="font-size: 11px;">
                                     {{ \Carbon\Carbon::parse($activity->created_at)->diffForHumans() }}
@@ -59,13 +59,13 @@
                             </div>
 
                             @if($activity->type === 'push' && isset($payload['commits']))
-                                <ul class="list-unstyled mb-0 mt-2 bg-black bg-opacity-25 rounded p-2">
+                                <ul class="list-unstyled mb-0 mt-2 bg-body rounded p-2 border border-secondary-subtle">
                                     @foreach(array_slice($payload['commits'], 0, 3) as $commit)
                                         <li class="d-flex align-items-start gap-2 mb-1 last-mb-0">
                                             <i class="bi bi-git text-secondary opacity-50 small mt-1"></i>
                                             <div class="small w-100">
                                                 <a href="{{ $commit['url'] ?? '#' }}" target="_blank"
-                                                    class="text-secondary text-decoration-none hover-text-white d-block text-truncate">
+                                                    class="text-secondary text-decoration-none hover-text-primary d-block text-truncate">
                                                     {{ $commit['message'] }}
                                                 </a>
                                             </div>

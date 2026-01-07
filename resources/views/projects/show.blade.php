@@ -11,14 +11,14 @@
                         <li class="breadcrumb-item active small fw-bold" aria-current="page">Detail</li>
                     </ol>
                 </nav>
-                <h2 class="h3 fw-black text-white mb-0">
+                <h2 class="h3 fw-black text-body mb-0">
                     {{ $project->title }}
                 </h2>
             </div>
             <div class="d-flex flex-wrap gap-2">
                 @if(auth()->id() === $project->owner_id)
                     <a href="{{ route('projects.edit', $project) }}"
-                        class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-black border-white border-opacity-10">Edit
+                        class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-black">Edit
                         Project</a>
                     @if($project->conversation)
                         <a href="{{ route('chat', $project->conversation) }}"
@@ -118,27 +118,38 @@
 
                     <!-- Description Card -->
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                        <div class="card-header bg-transparent border-bottom border-white border-opacity-10 p-4">
+                        <div class="card-header bg-transparent border-bottom border-secondary-subtle p-4">
                             <h5 class="fw-black mb-0">Project Overview</h5>
                         </div>
                         <div class="card-body p-4">
-                            <div class="project-description text-secondary mb-3" style="font-size: 1rem; line-height: 1.8;">
-                                {!! nl2br(e($project->description)) !!}
+                            <div class="project-description text-secondary" style="font-size: 1rem; line-height: 1.8;">
+                                {!! Str::markdown($project->description) !!}
                             </div>
 
                             <style>
-                                .project-description {
-                                    white-space: pre-wrap;
-                                    word-wrap: break-word;
+                                .project-description p {
+                                    margin-bottom: 1.5rem;
+                                }
+                                .project-description p:last-child {
+                                    margin-bottom: 0;
+                                }
+                                .project-description ul, .project-description ol {
+                                    margin-bottom: 1.5rem;
+                                    padding-left: 1.5rem;
+                                }
+                                .project-description li {
+                                    margin-bottom: 0.5rem;
+                                }
+                                .project-description h1, .project-description h2, .project-description h3, .project-description h4 {
+                                    color: var(--bs-body-color);
+                                    font-weight: 700;
+                                    margin-top: 1.5rem;
+                                    margin-bottom: 1rem;
                                 }
                                 .project-description strong,
                                 .project-description b {
                                     font-weight: 700;
                                     color: var(--bs-body-color);
-                                }
-                                .project-description em,
-                                .project-description i {
-                                    font-style: italic;
                                 }
                             </style>
 
@@ -153,7 +164,7 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold text-white mb-0">
+                                            <h6 class="fw-bold text-body mb-0">
                                                 {{ $project->github_repo_name ?? 'Repository linked' }}
                                             </h6>
                                             <p class="small text-secondary mb-0">Live GitHub integration active</p>
@@ -171,10 +182,10 @@
                     <!-- GitHub Activity Timeline -->
                     <div class="card border-0 shadow-sm rounded-4">
                         <div
-                            class="card-header bg-transparent border-bottom border-white border-opacity-10 p-4 d-flex justify-content-between align-items-center">
+                            class="card-header bg-transparent border-bottom border-secondary-subtle p-4 d-flex justify-content-between align-items-center">
                             <h5 class="fw-black mb-0">Activity Feed</h5>
                             <span
-                                class="badge bg-primary bg-opacity-10 text-primary small fw-black text-uppercase tracking-widest px-2 py-1">Live
+                                class="badge bg-primary-subtle text-primary-emphasis small fw-bold text-uppercase px-2 py-1">Live
                                 Updates</span>
                         </div>
                         <div class="card-body p-4">
@@ -184,7 +195,7 @@
                                         <div class="timeline-dot position-absolute start-0 translate-middle-x bg-primary rounded-circle border border-4 border-dark"
                                             style="width: 14px; height: 14px; left: -21px !important; top: 4px;"></div>
                                         <div class="ps-2">
-                                            <p class="small text-white mb-1"><span
+                                            <p class="small text-body mb-1"><span
                                                     class="fw-black">{{ $activity->user->name }}</span> committed to <span
                                                     class="badge fw-mono"
                                                     style="background-color: rgba(108, 117, 125, 0.25) !important;">{{ substr($activity->commit_sha, 0, 7) }}</span>
@@ -215,7 +226,7 @@
 
                     <!-- Squad Members -->
                     <div class="card border-0 shadow-sm rounded-4">
-                        <div class="card-header bg-transparent border-bottom border-white border-opacity-10 p-4">
+                        <div class="card-header bg-transparent border-bottom border-secondary-subtle p-4">
                             <h5 class="fw-black mb-0">Squad Members</h5>
                         </div>
                         <div class="card-body p-4">
@@ -226,7 +237,7 @@
                                             <img src="{{ $member->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($member->name) . '&background=6366f1&color=fff' }}"
                                                 class="rounded-3" width="44" height="44" style="object-fit: cover;">
                                             <div>
-                                                <h6 class="fw-bold text-white mb-0" style="font-size: 0.9375rem;">{{ $member->name }}</h6>
+                                                <h6 class="fw-bold text-body mb-0" style="font-size: 0.9375rem;">{{ $member->name }}</h6>
                                                 <span class="small text-secondary text-uppercase fw-bold opacity-75"
                                                     style="font-size: 0.75rem; letter-spacing: 0.05em;">{{ $member->pivot->role }}</span>
                                             </div>
@@ -244,7 +255,7 @@
                             </div>
 
                             @if(auth()->id() === $project->owner_id)
-                                <button
+                                <button data-bs-toggle="modal" data-bs-target="#inviteMemberModal"
                                     class="btn btn-outline-secondary w-100 mt-4 rounded-3 py-3 border-dashed fw-bold opacity-75 hover-opacity-100">
                                     <i class="bi bi-plus-lg me-2"></i>Invite Talents
                                 </button>
@@ -256,24 +267,70 @@
                     <div class="card border-0 shadow-sm rounded-4 p-4">
                         <h5 class="fw-black mb-4">Collaboration Stats</h5>
                         <div class="d-flex flex-column gap-3">
-                            <div
-                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
-                                <span class="small fw-black text-secondary text-uppercase">Commits</span>
-                                <span class="h4 fw-black mb-0">{{ $project->githubActivities->count() }}</span>
+                            <!-- Commits -->
+                            <div class="p-3 rounded-4 bg-body-tertiary d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-git"></i>
+                                    </div>
+                                    <span class="fw-bold small text-secondary text-uppercase">Commits</span>
+                                </div>
+                                <span class="h5 fw-black mb-0">{{ $project->githubActivities->count() }}</span>
                             </div>
-                            <div
-                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
-                                <span class="small fw-black text-secondary text-uppercase">Health</span>
-                                <span class="h4 fw-black mb-0 text-success">98%</span>
+                            
+                            <!-- Health -->
+                            <div class="p-3 rounded-4 bg-body-tertiary d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                       <i class="bi bi-activity"></i>
+                                    </div>
+                                    <span class="fw-bold small text-secondary text-uppercase">Health</span>
+                                </div>
+                                <span class="h5 fw-black mb-0 text-success">Good</span>
                             </div>
-                            <div
-                                class="rounded-4 p-3 d-flex justify-content-between align-items-center bg-secondary bg-opacity-10">
-                                <span class="small fw-black text-secondary text-uppercase">Active</span>
-                                <span
-                                    class="h4 fw-black mb-0">{{ (int) ($project->created_at->diffInDays() + 1) }}d</span>
+
+                            <!-- Active -->
+                            <div class="p-3 rounded-4 bg-body-tertiary d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <span class="fw-bold small text-secondary text-uppercase">Active</span>
+                                </div>
+                                <span class="h5 fw-black mb-0">{{ (int) ($project->created_at->diffInDays() + 1) }}d</span>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal fade" id="inviteMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: var(--bs-body-bg);">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-black">Invite Talent</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-4">
+                    <form action="{{ route('projects.members.add', $project) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="email" class="form-label text-secondary small fw-bold">User Email</label>
+                            <input type="email" name="email" class="form-control rounded-3" placeholder="Enter email address" required style="background-color: var(--bs-tertiary-bg); border-color: transparent;">
+                        </div>
+                        <div class="mb-4">
+                            <label for="role" class="form-label text-secondary small fw-bold">Role</label>
+                            <select name="role" class="form-select rounded-3" style="background-color: var(--bs-tertiary-bg); border-color: transparent;">
+                                <option value="member">Member</option>
+                                <option value="admin">Admin</option>
+                                <option value="collaborator">Collaborator</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-bold">Add Member</button>
+                    </form>
                 </div>
             </div>
         </div>

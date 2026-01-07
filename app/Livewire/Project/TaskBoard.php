@@ -10,6 +10,9 @@ class TaskBoard extends Component
 {
     public Project $project;
 
+    // View State
+    public $viewType = 'board'; // board or list
+
     // Create Task State
     public $showCreateModal = false;
     public $title = '';

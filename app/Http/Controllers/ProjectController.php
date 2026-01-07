@@ -178,6 +178,16 @@ class ProjectController extends Controller
     public function addMember(Request $request, \App\Models\Project $project)
     {
         $userId = $request->input('user_id', auth()->id());
+
+        // Allow adding by email
+        if ($request->has('email')) {
+            $request->validate(['email' => 'required|email|exists:users,email']);
+            $userByEmail = \App\Models\User::where('email', $request->email)->first();
+            if ($userByEmail) {
+                $userId = $userByEmail->id;
+            }
+        }
+
         $role = $request->input('role', 'member');
 
         // Security: Non-owners can only add themselves
