@@ -296,7 +296,8 @@
                                         <i class="bi bi-emoji-smile fs-5"></i>
                                     </button>
                                     <button class="btn btn-primary border-0 m-1 rounded-circle d-flex align-items-center justify-content-center transition-transform active-scale-95"
-                                        style="width: 40px; height: 40px;" type="submit">
+                                        style="width: 40px; height: 40px;" type="submit"
+                                        {{ (empty($newMessage) && count($attachments) === 0) || $loading ? 'disabled' : '' }}>
                                         <i class="bi bi-send-fill text-white ms-1" style="font-size: 0.9rem;"></i>
                                     </button>
                                 </div>
