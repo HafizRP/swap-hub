@@ -447,17 +447,7 @@
             if (window.Echo) {
                 window.Echo.private(channelName)
                     .listen('.message.sent', (e) => {
-                        console.log('EVENT RECEIVED (.message.sent):', e);
                         $wire.call('loadMessages');
-                        setTimeout(() => window.dispatchEvent(new CustomEvent('scroll-to-bottom')), 100);
-                    })
-                    .listen('message.sent', (e) => {
-                        console.log('EVENT RECEIVED (message.sent):', e);
-                        $wire.call('loadMessages');
-                        setTimeout(() => window.dispatchEvent(new CustomEvent('scroll-to-bottom')), 100);
-                    })
-                    .error((error) => {
-                        console.error('Echo Subscription Error:', error);
                     });
             } else {
                 console.warn('Echo not initialized - real-time updates disabled');

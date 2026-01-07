@@ -99,6 +99,9 @@ class ChatPage extends Component
                 ];
             })
             ->toArray();
+
+        // Ensure scroll to bottom after refreshing messages
+        $this->dispatch('scroll-to-bottom');
     }
 
     public function removeAttachment($index)
