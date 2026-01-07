@@ -4,78 +4,85 @@
         <div class="row g-5">
             <!-- Sidebar Filters -->
             <div class="col-lg-3">
-                <div class="d-flex flex-column gap-4 sticky-top" style="top: 100px; z-index: 10;">
-                    <div>
-                        <h5 class="fw-bold mb-3">Filter By</h5>
-                        
-                        <form action="{{ route('projects.index') }}" method="GET">
-                            <!-- Search -->
-                            <div class="position-relative mb-4">
-                                <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                    </svg>
-                                </span>
-                                <input type="text" name="search" value="{{ request('search') }}" 
-                                    class="form-control rounded-pill ps-5 py-2 border-0 shadow-sm" 
-                                    placeholder="Search keywords..."
-                                    style="background-color: var(--bs-body-bg); color: var(--bs-body-color);">
-                            </div>
+                <!-- Mobile Filter Toggle -->
+                <button class="btn btn-primary w-100 d-lg-none mb-4 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilterCollapse" aria-expanded="false" aria-controls="mobileFilterCollapse">
+                    <i class="bi bi-funnel-fill me-2"></i> Filters & Search
+                </button>
 
-                            <!-- Filters Accordion -->
-                            <div class="accordion accordion-flush shadow-sm rounded-3 overflow-hidden" id="accordionFilters" style="background-color: var(--bs-body-bg);">
-                                
-                                <!-- Project Type (Category) -->
-                                <div class="accordion-item bg-transparent">
-                                    <h2 class="accordion-header" id="headingType">
-                                        <button class="accordion-button fw-bold {{ request('category') ? '' : 'collapsed' }} bg-transparent text-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapseType">
-                                            Project Type
-                                        </button>
-                                    </h2>
-                                    <div id="collapseType" class="accordion-collapse collapse {{ request('category') ? 'show' : '' }}" data-bs-parent="#accordionFilters">
-                                        <div class="accordion-body pt-0">
-                                            @foreach(['Development', 'Design', 'Marketing', 'Research'] as $cat)
+                <div class="collapse d-lg-block" id="mobileFilterCollapse">
+                    <div class="d-flex flex-column gap-4 sticky-top" style="top: 100px; z-index: 10;">
+                        <div>
+                            <h5 class="fw-bold mb-3 d-none d-lg-block">Filter By</h5>
+                            
+                            <form action="{{ route('projects.index') }}" method="GET">
+                                <!-- Search -->
+                                <div class="position-relative mb-4">
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="search" value="{{ request('search') }}" 
+                                        class="form-control rounded-pill ps-5 py-2 border-0 shadow-sm" 
+                                        placeholder="Search keywords..."
+                                        style="background-color: var(--bs-body-bg); color: var(--bs-body-color);">
+                                </div>
+
+                                <!-- Filters Accordion -->
+                                <div class="accordion accordion-flush shadow-sm rounded-3 overflow-hidden" id="accordionFilters" style="background-color: var(--bs-body-bg);">
+                                    
+                                    <!-- Project Type (Category) -->
+                                    <div class="accordion-item bg-transparent">
+                                        <h2 class="accordion-header" id="headingType">
+                                            <button class="accordion-button fw-bold {{ request('category') ? '' : 'collapsed' }} bg-transparent text-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapseType">
+                                                Project Type
+                                            </button>
+                                        </h2>
+                                        <div id="collapseType" class="accordion-collapse collapse {{ request('category') ? 'show' : '' }}" data-bs-parent="#accordionFilters">
+                                            <div class="accordion-body pt-0">
+                                                @foreach(['Development', 'Design', 'Marketing', 'Research'] as $cat)
+                                                    <div class="form-check my-2">
+                                                        <input class="form-check-input" type="radio" name="category" value="{{ $cat }}" id="cat-{{ $cat }}" 
+                                                            {{ request('category') == $cat ? 'checked' : '' }} onchange="this.form.submit()">
+                                                        <label class="form-check-label text-secondary small" for="cat-{{ $cat }}">
+                                                            {{ $cat }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
                                                 <div class="form-check my-2">
-                                                    <input class="form-check-input" type="radio" name="category" value="{{ $cat }}" id="cat-{{ $cat }}" 
-                                                        {{ request('category') == $cat ? 'checked' : '' }} onchange="this.form.submit()">
-                                                    <label class="form-check-label text-secondary small" for="cat-{{ $cat }}">
-                                                        {{ $cat }}
+                                                    <input class="form-check-input" type="radio" name="category" value="" id="cat-all" 
+                                                        {{ !request('category') ? 'checked' : '' }} onchange="this.form.submit()">
+                                                    <label class="form-check-label text-secondary small" for="cat-all">
+                                                        All Types
                                                     </label>
                                                 </div>
-                                            @endforeach
-                                            <div class="form-check my-2">
-                                                <input class="form-check-input" type="radio" name="category" value="" id="cat-all" 
-                                                    {{ !request('category') ? 'checked' : '' }} onchange="this.form.submit()">
-                                                <label class="form-check-label text-secondary small" for="cat-all">
-                                                    All Types
-                                                </label>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Status -->
-                                <div class="accordion-item bg-transparent">
-                                    <h2 class="accordion-header" id="headingStatus">
-                                        <button class="accordion-button fw-bold items-center bg-transparent text-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatus" aria-expanded="true">
-                                            Status
-                                        </button>
-                                    </h2>
-                                    <div id="collapseStatus" class="accordion-collapse collapse show" data-bs-parent="#accordionFilters">
-                                        <div class="accordion-body pt-0">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <label class="form-check-label text-secondary small" for="statusOpen">
-                                                    Open for application
-                                                </label>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" role="switch" id="statusOpen" checked disabled>
+                                    <!-- Status -->
+                                    <div class="accordion-item bg-transparent">
+                                        <h2 class="accordion-header" id="headingStatus">
+                                            <button class="accordion-button fw-bold items-center bg-transparent text-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatus" aria-expanded="true">
+                                                Status
+                                            </button>
+                                        </h2>
+                                        <div id="collapseStatus" class="accordion-collapse collapse show" data-bs-parent="#accordionFilters">
+                                            <div class="accordion-body pt-0">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <label class="form-check-label text-secondary small" for="statusOpen">
+                                                        Open for application
+                                                    </label>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="statusOpen" checked disabled>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,7 +100,7 @@
                 <div class="row g-4">
                     @forelse($projects as $project)
                         <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 zoom-hover" style="background-color: var(--bs-body-bg);">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 zoom-hover">
                                 <div class="card-body p-4 d-flex flex-column">
                                     <!-- Header -->
                                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -114,7 +121,7 @@
 
                                     <!-- Description -->
                                     <p class="small text-secondary mb-4 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 4.5em;">
-                                        {{ Str::limit($project->description, 100) }}
+                                        {{ Str::limit(strip_tags(Str::markdown($project->description)), 120) }}
                                     </p>
 
                                     <!-- Tags -->

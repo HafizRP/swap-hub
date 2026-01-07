@@ -45,7 +45,7 @@
             <img :src="darkMode ? '{{ asset('icon-dark.png') }}' : '{{ asset('icon.png') }}'" 
                  alt="Swap Hub" 
                  style="width: 32px; height: 32px;"
-                 class="object-fit-contain flex-shrink-0">
+                 class="object-fit-contain flex-shrink-0 rounded-3">
             <span class="fs-5 fw-bold text-nowrap" x-show="window.innerWidth < 768 || sidebarExpanded" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Swap Hub</span>
         </a>
         

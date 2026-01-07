@@ -19,7 +19,7 @@
         /* Chat Bubbles */
         .chat-bubble {
             border-radius: 18px;
-            padding: 10px 16px;
+            padding: 12px 20px;
             position: relative;
             max-width: 100%;
             width: fit-content;
@@ -47,8 +47,8 @@
             border: none;
             border-bottom: 2px solid transparent;
             color: var(--bs-secondary);
-            padding: 1rem 0;
-            margin-right: 1.5rem;
+            padding: 0.75rem 1.25rem;
+            margin-right: 0.5rem;
             font-weight: 500;
             transition: all 0.2s;
         }
@@ -182,11 +182,14 @@
                             x-init="$el.scrollTop = $el.scrollHeight"
                             @scroll-to-bottom.window="document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight">
                             
-                            <div class="d-flex flex-column gap-3">
+                            <div class="d-flex flex-column" style="gap: 2px;">
+                                @php $prevUserId = null; @endphp
                                 @forelse($messages as $msg)
                                     @php
                                         $isOwn = $msg['user_id'] == auth()->id();
                                         $isSystem = !$msg['user_id'];
+                                        $isSameUser = $prevUserId === $msg['user_id'];
+                                        $prevUserId = $msg['user_id'];
                                     @endphp
 
                                     @if($isSystem)
@@ -197,17 +200,30 @@
                                                 {!! nl2br(e($msg['content'])) !!}
                                             </span>
                                         </div>
+                                        @php $prevUserId = null; @endphp {{-- Reset grouping after system msg --}}
                                     @else
-                                        <div class="d-flex align-items-end gap-2 {{ $isOwn ? 'flex-row-reverse' : '' }}">
+                                        <div class="d-flex align-items-end gap-2 {{ $isOwn ? 'flex-row-reverse' : '' }} {{ $isSameUser ? 'mt-1' : 'mt-3' }} group-hover-meta">
                                             <!-- Avatar -->
-                                            <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm flex-shrink-0" width="32" height="32" 
-                                                 data-bs-toggle="tooltip" title="{{ $msg['user_name'] }}" style="margin-bottom: 2px;">
+                                            @if(!$isOwn)
+                                                @if(!$isSameUser)
+                                                    <img src="{{ $msg['user_avatar'] }}" class="rounded-circle shadow-sm flex-shrink-0" width="32" height="32" 
+                                                        data-bs-toggle="tooltip" title="{{ $msg['user_name'] }}" style="margin-bottom: 2px;">
+                                                @else
+                                                    <div style="width: 32px;" class="flex-shrink-0"></div> {{-- Spacer --}}
+                                                @endif
+                                            @endif
 
                                             <div class="d-flex flex-column {{ $isOwn ? 'align-items-end' : 'align-items-start' }}" style="max-width: 75%;">
                                                 
+                                                <!-- Name (Only show if new group and not own - optional, or just rely on tooltip) -->
+                                                @if(!$isOwn && !$isSameUser)
+                                                    <span class="text-secondary fw-bold ms-1 mb-1" style="font-size: 10px;">{{ $msg['user_name'] }}</span>
+                                                @endif
+
                                                 <!-- Message Bubble -->
                                                 @if(!empty(trim($msg['content'])))
-                                                <div class="chat-bubble shadow-sm {{ $isOwn ? 'chat-bubble-own' : 'chat-bubble-other' }}">
+                                                <div class="chat-bubble shadow-sm {{ $isOwn ? 'chat-bubble-own' : 'chat-bubble-other' }}"
+                                                     style="{{ $isSameUser ? ($isOwn ? 'border-top-right-radius: 4px;' : 'border-top-left-radius: 4px;') : '' }}">
                                                     {!! nl2br(e($msg['content'])) !!}
                                                 </div>
                                                 @endif
@@ -236,17 +252,11 @@
                                                     </div>
                                                 @endif
 
-                                                <!-- Meta: Name and Time -->
-                                                <div class="mt-1 d-flex align-items-center gap-2 small {{ $isOwn ? 'justify-content-end' : 'justify-content-start flex-row-reverse' }} px-1"> 
-                                                     <span class="text-secondary opacity-75" style="font-size: 10px;" 
+                                                <!-- Meta: Time (Show on last message of group or hover? For now keep it to ensure data visibility) -->
+                                                 <div class="mt-1 d-flex align-items-center gap-2 small {{ $isOwn ? 'justify-content-end' : 'justify-content-start flex-row-reverse' }} px-1 opacity-50"> 
+                                                     <span class="text-secondary" style="font-size: 10px;" 
                                                         x-data="{ date: new Date('{{ $msg['created_at'] }}') }" 
                                                         x-text="date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })"></span>
-                                                     @if(!$isOwn) 
-                                                        <span class="fw-bold text-secondary opacity-75" style="font-size: 10px;">{{ $msg['user_name'] }}</span> 
-                                                     @else
-                                                        <!-- Optional checklist for read status could go here -->
-                                                        <i class="bi bi-check2-all text-primary opacity-75" style="font-size: 12px;"></i>
-                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
