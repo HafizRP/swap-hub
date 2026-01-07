@@ -1,14 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
         <!-- Logo -->
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
-            <div class="bg-primary rounded-3 p-1 d-flex align-items-center justify-content-center shadow-sm"
-                style="width: 32px; height: 32px;">
-                <svg class="text-white" style="width: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-            </div>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}" 
+           x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
+           x-init="$watch('$store.darkMode', value => darkMode = value)">
+            <img :src="darkMode ? '{{ asset('icon-dark.png') }}' : '{{ asset('icon.png') }}'" 
+                 alt="Swap Hub" 
+                 style="width: 32px; height: 32px;"
+                 class="object-fit-contain">
             <span class="fw-black tracking-tighter">SWAP HUB</span>
         </a>
 

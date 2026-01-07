@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Swap Hub') }} | Kolaborasi Mahasiswa #1</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -162,7 +165,8 @@
     <nav class="navbar fixed-top bg-white border-bottom border-light">
         <div class="container py-2">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <i class="bi bi-grid-1x2-fill text-primary"></i>
+                <img src="{{ asset('icon.png') }}" alt="Swap Hub" style="width: 32px; height: 32px;"
+                    class="object-fit-contain">
                 Swap Hub
             </a>
             <div class="d-flex gap-2">
@@ -369,7 +373,8 @@
             <div class="row g-5">
                 <div class="col-lg-4">
                     <a class="d-flex align-items-center gap-2 mb-3 text-decoration-none text-dark" href="#">
-                        <i class="bi bi-grid-1x2-fill text-primary"></i>
+                        <img src="{{ asset('icon.png') }}" alt="Swap Hub" style="width: 28px; height: 28px;"
+                            class="object-fit-contain">
                         <span class="fw-bold fs-5">Swap Hub</span>
                     </a>
                     <p class="text-secondary small">Platform kolaborasi #1 untuk mahasiswa Indonesia. Bangun karirmu
