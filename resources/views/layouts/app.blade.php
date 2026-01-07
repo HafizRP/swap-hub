@@ -275,7 +275,14 @@
                                 if ('Notification' in window && Notification.permission === 'granted') {
                                     const title = (e.conversation_type === 'project' && e.conversation_name)
                                         ? e.conversation_name : (e.user_name || 'New Message');
-                                    const body = e.content.substring(0, 100);
+
+                                    // Strip Markdown for Toast
+                                    let bodyText = e.content || '';
+                                    bodyText = bodyText.replace(/(\*\*|__)(.*?)\1/g, '$2'); // Bold/Italic
+                                    bodyText = bodyText.replace(/(`)(.*?)\1/g, '$2'); // Inline Code
+                                    bodyText = bodyText.replace(/^\s*-\s/gm, '• '); // Lists
+
+                                    const body = bodyText.substring(0, 100) + (bodyText.length > 100 ? '...' : '');
 
                                     try {
                                         const n = new Notification(title, { body: body, icon: e.user_avatar });

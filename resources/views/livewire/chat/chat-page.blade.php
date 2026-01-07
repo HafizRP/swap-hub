@@ -194,12 +194,15 @@
 
                                     @if($isSystem)
                                         <div class="text-center my-3">
-                                            <span
-                                                class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3 py-1 fw-normal shadow-sm"
-                                                style="font-size: 11px;">
-                                                {!! nl2br(e($msg['content'])) !!}
+                                            <span class="small bg-secondary-subtle px-3 py-1 rounded-pill text-secondary d-inline-block border border-secondary-subtle">
+                                                {!! Str::markdown($msg['content']) !!}
                                             </span>
                                         </div>
+                                        <style>
+                                            /* Remove bottom margin from markdown paragraphs in bubbles */
+                                            .chat-bubble p:last-child { margin-bottom: 0; }
+                                            .chat-bubble ul, .chat-bubble ol { margin-bottom: 0; padding-left: 1.2em; }
+                                        </style>
                                         @php $prevUserId = null; @endphp {{-- Reset grouping after system msg --}}
                                     @else
                                         <div class="d-flex align-items-end gap-2 {{ $isOwn ? 'flex-row-reverse' : '' }} {{ $isSameUser ? 'mt-1' : 'mt-3' }} group-hover-meta">
@@ -222,9 +225,9 @@
 
                                                 <!-- Message Bubble -->
                                                 @if(!empty(trim($msg['content'])))
-                                                <div class="chat-bubble shadow-sm {{ $isOwn ? 'chat-bubble-own' : 'chat-bubble-other' }}"
+                                                <div class="chat-bubble shadow-sm {{ $isOwn ? 'text-white bg-primary chat-bubble-own' : 'bg-body border border-secondary-subtle chat-bubble-other' }}"
                                                      style="{{ $isSameUser ? ($isOwn ? 'border-top-right-radius: 4px;' : 'border-top-left-radius: 4px;') : '' }}">
-                                                    {!! nl2br(e($msg['content'])) !!}
+                                                    {!! Str::markdown($msg['content']) !!}
                                                 </div>
                                                 @endif
 
