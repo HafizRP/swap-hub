@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => 'log', // env('BROADCAST_CONNECTION', 'null'),
+    'default' => env('BROADCAST_CONNECTION', 'null'),
 
     /*
     |--------------------------------------------------------------------------
