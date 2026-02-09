@@ -104,7 +104,7 @@ docker-compose exec app bash
 
 ### Docker Deployment
 
-See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
+See [DOCKER.md](docs/DOCKER.md) for detailed Docker deployment guide.
 
 ```bash
 # Production deployment
@@ -142,7 +142,7 @@ php artisan migrate --force
 
 ### Configure Jenkins Pipeline
 
-See [JENKINS.md](JENKINS.md) for comprehensive Jenkins configuration guide.
+See [JENKINS.md](docs/JENKINS.md) for comprehensive Jenkins configuration guide.
 
 **Quick Steps:**
 1. Create new Pipeline job in Jenkins
@@ -173,10 +173,14 @@ See [JENKINS.md](JENKINS.md) for comprehensive Jenkins configuration guide.
 
 ## 📚 Documentation
 
-- [DOCKER.md](DOCKER.md) - Docker deployment guide
-- [JENKINS.md](JENKINS.md) - Jenkins CI/CD setup
-- [GITHUB-OAUTH.md](GITHUB-OAUTH.md) - GitHub OAuth login setup
-- [GITHUB-WEBHOOK-SETUP.md](GITHUB-WEBHOOK-SETUP.md) - Auto-setup GitHub webhooks
+- [DOCKER.md](docs/DOCKER.md) - Docker deployment guide
+- [JENKINS.md](docs/JENKINS.md) - Jenkins CI/CD setup
+- [GITHUB-OAUTH.md](docs/GITHUB-OAUTH.md) - GitHub OAuth login setup
+- [GITHUB-WEBHOOK-SETUP.md](docs/GITHUB-WEBHOOK-SETUP.md) - Auto-setup GitHub webhooks
+- [GMAIL_SETUP.md](docs/GMAIL_SETUP.md) - Gmail SMTP setup for email verification
+- [TESTING-GUIDE.md](docs/TESTING-GUIDE.md) - Testing guide for Livewire chat
+- [TEST_CASES.md](docs/TEST_CASES.md) - Test cases checklist
+- [SPESIFIKASI_DATABASE.md](docs/SPESIFIKASI_DATABASE.md) - Database specification
 - [Jenkinsfile](Jenkinsfile) - Pipeline configuration
 
 ## 🔧 Configuration
@@ -259,6 +263,6 @@ This project is open-sourced software licensed under the [MIT license](https://o
 ---
 
 **Need Help?** 
-- 📖 Check the [documentation](JENKINS.md)
+- 📖 Check the [documentation](docs/JENKINS.md)
 - 🐛 [Report issues](https://github.com/your-username/swap-hub/issues)
 - 💬 [Discussions](https://github.com/your-username/swap-hub/discussions)
