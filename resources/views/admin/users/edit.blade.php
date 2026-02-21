@@ -79,8 +79,8 @@
                 <select id="role" name="role" class="form-select bg-dark border-0 rounded-4 px-4 py-3 focus:ring-2 focus:ring-primary shadow-inner"
                     style="background-color: rgba(255,255,255,0.05) !important;"
                     {{ $user->id === auth()->id() ? 'disabled' : '' }}>
-                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
-                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrator</option>
+                    <option value="user" {{ $user->role?->slug === 'student' || $user->role?->slug === 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ $user->role?->slug === 'admin' ? 'selected' : '' }}>Administrator</option>
                 </select>
                 @if($user->id === auth()->id())
                     <small class="text-warning d-block mt-2">⚠️ You cannot change your own role</small>

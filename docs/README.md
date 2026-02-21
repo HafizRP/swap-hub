@@ -5,27 +5,27 @@ This folder contains all documentation files for the Swap Hub project.
 ## 📖 Available Documentation
 
 ### Setup & Configuration
-- **[DOCKER.md](DOCKER.md)** - Complete Docker deployment guide
-- **[JENKINS.md](JENKINS.md)** - Jenkins CI/CD pipeline setup and configuration
-- **[GITHUB-OAUTH.md](GITHUB-OAUTH.md)** - GitHub OAuth login setup (detailed)
+- **[docker.md](docker.md)** - Complete Docker deployment guide
+- **[jenkins.md](jenkins.md)** - Jenkins CI/CD pipeline setup and configuration
+- **[github-oauth.md](github-oauth.md)** - GitHub OAuth login setup (detailed)
 - **[github-oauth-quick-ref.md](github-oauth-quick-ref.md)** - GitHub OAuth quick reference
-- **[GITHUB-WEBHOOK-SETUP.md](GITHUB-WEBHOOK-SETUP.md)** - Auto-setup GitHub webhooks
-- **[GITHUB-WEBHOOK-TROUBLESHOOTING.md](GITHUB-WEBHOOK-TROUBLESHOOTING.md)** - Webhook troubleshooting guide
-- **[GMAIL_SETUP.md](GMAIL_SETUP.md)** - Gmail SMTP setup for email verification
+- **[github-webhook-setup.md](github-webhook-setup.md)** - Auto-setup GitHub webhooks
+- **[github-webhook-troubleshooting.md](github-webhook-troubleshooting.md)** - Webhook troubleshooting guide
+- **[gmail-setup.md](gmail-setup.md)** - Gmail SMTP setup for email verification
 
 ### Testing & Quality Assurance
-- **[TESTING-GUIDE.md](TESTING-GUIDE.md)** - Testing guide for Livewire chat features
-- **[TEST_CASES.md](TEST_CASES.md)** - Comprehensive test cases checklist
+- **[testing-guide.md](testing-guide.md)** - Testing guide for Livewire chat features
+- **[test-cases.md](test-cases.md)** - Comprehensive test cases checklist
 
 ### Database
-- **[SPESIFIKASI_DATABASE.md](SPESIFIKASI_DATABASE.md)** - Complete database specification (Indonesian)
+- **[spesifikasi-database.md](spesifikasi-database.md)** - Complete database specification (Indonesian)
 
 ## 🚀 Quick Links
 
-- **Getting Started**: Start with [DOCKER.md](DOCKER.md) for deployment
-- **Authentication**: See [GITHUB-OAUTH.md](GITHUB-OAUTH.md) for OAuth setup
-- **CI/CD**: Check [JENKINS.md](JENKINS.md) for automated deployment
-- **Testing**: Follow [TESTING-GUIDE.md](TESTING-GUIDE.md) for testing procedures
+- **Getting Started**: Start with [docker.md](docker.md) for deployment
+- **Authentication**: See [github-oauth.md](github-oauth.md) for OAuth setup
+- **CI/CD**: Check [jenkins.md](jenkins.md) for automated deployment
+- **Testing**: Follow [testing-guide.md](testing-guide.md) for testing procedures
 
 ## 📝 Notes
 

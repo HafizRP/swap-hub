@@ -14,7 +14,7 @@
                          class="rounded-circle" width="32" height="32">
                     <div class="d-none d-md-block text-end">
                         <p class="mb-0 fw-bold small lh-1">{{ auth()->user()->name }}</p>
-                        <span class="text-secondary" style="font-size: 10px;">{{ auth()->user()->role ?? 'Student' }}</span>
+                        <span class="text-secondary" style="font-size: 10px;">{{ auth()->user()->role->name ?? 'Student' }}</span>
                     </div>
                 </div>
             </div>
