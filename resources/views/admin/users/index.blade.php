@@ -93,9 +93,9 @@
                                         </a>
                                         @if($user->id !== auth()->id())
                                             <button type="button"
-                                                class="btn btn-outline-{{ $user->role === 'admin' ? 'warning' : 'success' }}"
-                                                onclick="confirmRoleChange('{{ route('admin.users.toggle-role', $user) }}', '{{ $user->role === 'admin' ? 'Demote' : 'Promote' }}', '{{ $user->name }}')"
-                                                title="{{ $user->role === 'admin' ? 'Demote to User' : 'Promote to Admin' }}">
+                                                class="btn btn-outline-{{ $user->role?->slug === 'admin' ? 'warning' : 'success' }}"
+                                                onclick="confirmRoleChange('{{ route('admin.users.toggle-role', $user) }}', '{{ $user->role?->slug === 'admin' ? 'Demote' : 'Promote' }}', '{{ $user->name }}')"
+                                                title="{{ $user->role?->slug === 'admin' ? 'Demote to User' : 'Promote to Admin' }}">
                                                 <i class="bi bi-arrow-repeat"></i>
                                             </button>
 

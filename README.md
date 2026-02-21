@@ -104,7 +104,7 @@ docker-compose exec app bash
 
 ### Docker Deployment
 
-See [DOCKER.md](docs/DOCKER.md) for detailed Docker deployment guide.
+See [docker.md](docs/docker.md) for detailed Docker deployment guide.
 
 ```bash
 # Production deployment
@@ -142,7 +142,7 @@ php artisan migrate --force
 
 ### Configure Jenkins Pipeline
 
-See [JENKINS.md](docs/JENKINS.md) for comprehensive Jenkins configuration guide.
+See [jenkins.md](docs/jenkins.md) for comprehensive Jenkins configuration guide.
 
 **Quick Steps:**
 1. Create new Pipeline job in Jenkins
@@ -173,14 +173,14 @@ See [JENKINS.md](docs/JENKINS.md) for comprehensive Jenkins configuration guide.
 
 ## 📚 Documentation
 
-- [DOCKER.md](docs/DOCKER.md) - Docker deployment guide
-- [JENKINS.md](docs/JENKINS.md) - Jenkins CI/CD setup
-- [GITHUB-OAUTH.md](docs/GITHUB-OAUTH.md) - GitHub OAuth login setup
-- [GITHUB-WEBHOOK-SETUP.md](docs/GITHUB-WEBHOOK-SETUP.md) - Auto-setup GitHub webhooks
-- [GMAIL_SETUP.md](docs/GMAIL_SETUP.md) - Gmail SMTP setup for email verification
-- [TESTING-GUIDE.md](docs/TESTING-GUIDE.md) - Testing guide for Livewire chat
-- [TEST_CASES.md](docs/TEST_CASES.md) - Test cases checklist
-- [SPESIFIKASI_DATABASE.md](docs/SPESIFIKASI_DATABASE.md) - Database specification
+- [docker.md](docs/docker.md) - Docker deployment guide
+- [jenkins.md](docs/jenkins.md) - Jenkins CI/CD setup
+- [github-oauth.md](docs/github-oauth.md) - GitHub OAuth login setup
+- [github-webhook-setup.md](docs/github-webhook-setup.md) - Auto-setup GitHub webhooks
+- [gmail-setup.md](docs/gmail-setup.md) - Gmail SMTP setup for email verification
+- [testing-guide.md](docs/testing-guide.md) - Testing guide for Livewire chat
+- [test-cases.md](docs/test-cases.md) - Test cases checklist
+- [spesifikasi-database.md](docs/spesifikasi-database.md) - Database specification
 - [Jenkinsfile](Jenkinsfile) - Pipeline configuration
 
 ## 🔧 Configuration
@@ -205,7 +205,7 @@ PUSHER_APP_ID=your-app-id
 PUSHER_APP_KEY=your-app-key
 PUSHER_APP_SECRET=your-app-secret
 
-# GitHub OAuth (see GITHUB-OAUTH.md for setup)
+# GitHub OAuth (see docs/github-oauth.md for setup)
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
 GITHUB_REDIRECT_URI=http://localhost:5541/auth/github/callback
@@ -263,6 +263,6 @@ This project is open-sourced software licensed under the [MIT license](https://o
 ---
 
 **Need Help?** 
-- 📖 Check the [documentation](docs/JENKINS.md)
+- 📖 Check the [documentation](docs/jenkins.md)
 - 🐛 [Report issues](https://github.com/your-username/swap-hub/issues)
 - 💬 [Discussions](https://github.com/your-username/swap-hub/discussions)
