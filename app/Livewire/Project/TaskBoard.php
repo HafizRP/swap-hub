@@ -5,6 +5,7 @@ namespace App\Livewire\Project;
 use App\Models\Project;
 use App\Models\Task;
 use Livewire\Component;
+use App\Jobs\CreateGoogleCalendarEvent;
 
 class TaskBoard extends Component
 {
@@ -37,7 +38,7 @@ class TaskBoard extends Component
     {
         $this->validate();
 
-        $this->project->tasks()->create([
+        $task = $this->project->tasks()->create([
             'title' => $this->title,
             'description' => $this->description,
             'assigned_to' => $this->assigned_to ?: null,
@@ -46,6 +47,8 @@ class TaskBoard extends Component
             'created_by' => auth()->id(),
             'due_date' => $this->due_date,
         ]);
+
+        CreateGoogleCalendarEvent::dispatch($task);
 
         $this->reset(['title', 'description', 'assigned_to', 'priority', 'due_date', 'showCreateModal']);
         $this->dispatch('task-created');

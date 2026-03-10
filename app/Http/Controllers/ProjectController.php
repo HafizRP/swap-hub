@@ -84,6 +84,9 @@ class ProjectController extends Controller
             'is_validated' => true
         ]);
 
+        // Auto-create Google Calendar for this project
+        \App\Jobs\CreateProjectGoogleCalendar::dispatch($project);
+
         // Auto-setup GitHub webhook if requested and user has GitHub token
         if ($request->boolean('setup_webhook') && $validated['github_repo_url'] && auth()->user()->github_token) {
             $this->setupGitHubWebhook($project, auth()->user()->github_token);
@@ -212,8 +215,11 @@ class ProjectController extends Controller
             $project->conversation->participants()->syncWithoutDetaching([$userId]);
         }
 
-        // Send email notification to project owner
+        // Add member to project's Google Calendar
         $member = \App\Models\User::find($userId);
+        \App\Jobs\AddMemberToProjectCalendar::dispatch($project, $member, 'reader');
+
+        // Send email notification to project owner
         if ($project->owner_id !== $userId) {
             Mail::to($project->owner->email)->send(
                 new ProjectMemberAdded($project, $member, $project->owner)
@@ -290,10 +296,12 @@ class ProjectController extends Controller
         // Add to conversation
         if ($project->conversation) {
             $project->conversation->participants()->syncWithoutDetaching([$user->id]);
-
-            // Optional: Send Welcome Message
-            // \App\Models\Message::create([...]);
         }
+
+        // Add accepted member to project's Google Calendar
+        // Map project role → Google Calendar ACL role (valid: reader, writer, owner)
+        $calendarRole = ($memberPivot->role === 'contributor') ? 'reader' : 'writer';
+        \App\Jobs\AddMemberToProjectCalendar::dispatch($project, $user, $calendarRole);
 
         // Notify User
         // Mail::to($user->email)->send(new ApplicationAccepted($project));
