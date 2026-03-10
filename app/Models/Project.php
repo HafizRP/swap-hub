@@ -26,6 +26,7 @@ class Project extends Model
         'status',
         'start_date',
         'end_date',
+        'google_calendar_id',
     ];
 
     protected $casts = [

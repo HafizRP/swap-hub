@@ -18,6 +18,7 @@ class Task extends Model
         'status',
         'priority',
         'due_date',
+        'google_event_id',
     ];
 
     protected $casts = [
