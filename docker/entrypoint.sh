@@ -7,14 +7,8 @@ echo "🚀 Starting Laravel application setup..."
 if [ "$1" = "php-fpm" ]; then
     # Initialize .env if not exists
     if [ ! -f .env ]; then
-        echo "📝 .env not found."
-        if [ -f env-server.txt ]; then
-            echo "✅ Using env-server.txt as .env"
-            cp env-server.txt .env
-        else
-            echo "⚠️  env-server.txt not found, falling back to .env.example"
-            cp .env.example .env
-        fi
+        echo "📝 .env not found, copying from .env.example..."
+        cp .env.example .env
         chown www-data:www-data .env
     else
         echo "✅ Existing .env found, skipping overwrite."
