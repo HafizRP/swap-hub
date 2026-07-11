@@ -11,13 +11,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'conversation_id',
-        'user_id',
-        'content',
-        'is_read',
-        'read_at',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_read' => 'boolean',

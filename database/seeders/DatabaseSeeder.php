@@ -24,25 +24,35 @@ class DatabaseSeeder extends Seeder
         $this->call(SkillSeeder::class);
         $skills = \App\Models\Skill::all();
 
-        // 3. Create main test user (admin)
-        $testUser = User::factory()->create([
-            'name' => 'Demo Student',
-            'email' => 'test@example.com',
-            'major' => 'Computer Science',
-            'university' => 'Stanford University',
-            'bio' => 'Full-stack developer looking to collaborate on high-impact projects.',
-            'reputation_points' => 500,
-            'github_username' => 'teststudent',
-            'role_id' => $adminRole->id, // Admin role
-        ]);
-
-        // Assign some skills to test user
-        $testUser->skills()->attach(
-            $skills->random(3)->pluck('id'),
-            ['proficiency_level' => 'advanced']
+        // 3. Create main test user (admin) if not exists
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Demo Student',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+                'major' => 'Computer Science',
+                'university' => 'Stanford University',
+                'bio' => 'Full-stack developer looking to collaborate on high-impact projects.',
+                'reputation_points' => 500,
+                'github_username' => 'teststudent',
+                'role_id' => $adminRole->id, // Admin role
+            ]
         );
 
-        // 4. Create additional sample users (all students)
+        // Assign some skills to test user
+        $testUser->skills()->sync(
+            $skills->random(3)->mapWithKeys(function ($skill) {
+                return [$skill->id => ['proficiency_level' => 'advanced']];
+            })
+        );
+
+        // 4. Create additional sample users if they don't exist
+        if (User::where('role_id', $studentRole->id)->count() >= 20) {
+            $this->command->info('Dummy data already exists. Skipping...');
+            return;
+        }
+
         $users = User::factory(20)->create([
             'role_id' => $studentRole->id, // Student role
         ]);

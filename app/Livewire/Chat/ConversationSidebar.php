@@ -46,18 +46,11 @@ class ConversationSidebar extends Component
             ->orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($conv) {
-                $otherParticipant = $conv->participants->where('id', '!=', auth()->id())->first();
-                return [
-                    'id' => $conv->id,
-                    'type' => $conv->type,
-                    'name' => $conv->name ?? ($otherParticipant->name ?? 'Unknown'),
-                    'avatar' => $conv->type === 'project'
-                        ? 'https://ui-avatars.com/api/?name=' . urlencode($conv->name) . '&background=4f46e5&color=fff'
-                        : ($otherParticipant->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($otherParticipant->name ?? 'U') . '&background=10b981&color=fff'),
-                    'latest_message' => ($conv->latestMessage->content ?? null) ?: (($conv->latestMessage?->attachments->isNotEmpty()) ? '[Attachment]' : 'Start a conversation...'),
-                    'is_active' => $conv->id == $this->currentConversationId,
-                    'unread_count' => $conv->unread_count,
-                ];
+                $formatted = $conv->formatForChatList();
+                $formatted['latest_message'] = ($conv->latestMessage->content ?? null) ?: (($conv->latestMessage?->attachments->isNotEmpty()) ? '[Attachment]' : 'Start a conversation...');
+                $formatted['is_active'] = $conv->id == $this->currentConversationId;
+                $formatted['unread_count'] = $conv->unread_count;
+                return $formatted;
             });
     }
 
