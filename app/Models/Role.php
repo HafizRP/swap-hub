@@ -9,11 +9,7 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'description',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * Get the users that have this role.

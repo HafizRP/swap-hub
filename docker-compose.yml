@@ -3,30 +3,44 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: ${APP_ENV}
     image: swap-hub-app
     container_name: swap-hub-app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      # Only mount storage for persistence
+      - ./:/var/www
       - storage-data:/var/www/storage
+      - ./public:/var/www/public
     networks:
       - swap-hub-network
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: '0.80'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "php", "artisan", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     environment:
       APP_NAME: "Swap Hub"
-      APP_ENV: production
-      APP_KEY: "base64:vK8rX9mN2pQ5wL3jH6fT1yU4sR7eW0oI9aB8cD5gF2h="
-      APP_DEBUG: "false"
-      APP_URL: "http://localhost"
+      APP_ENV: ${APP_ENV}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
       DB_CONNECTION: mysql
       DB_HOST: db
-      DB_PORT: "3306"
-      DB_DATABASE: swap_hub
-      DB_USERNAME: root
-      DB_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: redis
 
   nginx:
@@ -41,21 +55,40 @@ services:
     networks:
       - swap-hub-network
     depends_on:
-      - app
+      app:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   db:
     image: mariadb:10.11
     container_name: swap-hub-db
     restart: unless-stopped
-    ports:
-      - "3307:3306"
     environment:
-      MARIADB_DATABASE: swap_hub
-      MARIADB_ROOT_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - swap-hub-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis:alpine
@@ -63,44 +96,16 @@ services:
     restart: unless-stopped
     networks:
       - swap-hub-network
-
-  # Reverb service disabled - using Pusher instead
-  # reverb:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   image: swap-hub-app
-  #   container_name: swap-hub-reverb
-  #   restart: unless-stopped
-  #   command: php artisan reverb:start
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     APP_NAME: "Swap Hub"
-  #     APP_ENV: production
-  #     APP_KEY: "base64:vK8rX9mN2pQ5wL3jH6fT1yU4sR7eW0oI9aB8cD5gF2h="
-  #     APP_DEBUG: "false"
-  #     APP_URL: "http://localhost"
-  #     DB_CONNECTION: mysql
-  #     DB_HOST: db
-  #     DB_PORT: "3306"
-  #     DB_DATABASE: swap_hub
-  #     DB_USERNAME: root
-  #     DB_PASSWORD: "nd+BHrttSQHGVhYRR7rCwgfqg8pRU6Nm697E/7/zsAQ="
-  #     REDIS_HOST: redis
-  #     BROADCAST_CONNECTION: reverb
-  #     REVERB_APP_ID: swap-hub
-  #     REVERB_APP_KEY: swap-hub-key
-  #     REVERB_APP_SECRET: swap-hub-secret
-  #     REVERB_HOST: 0.0.0.0
-  #     REVERB_PORT: "8080"
-  #     REVERB_SCHEME: http
-  #   networks:
-  #     - swap-hub-network
-  #   depends_on:
-  #     - app
-  #     - db
-  #     - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   swap-hub-network:
@@ -110,6 +115,4 @@ volumes:
   dbdata:
     driver: local
   storage-data:
-    driver: local
-  app-files:
     driver: local

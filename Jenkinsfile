@@ -26,16 +26,14 @@ pipeline {
             steps {
                 echo '⚙️ Setting up environment...'
                 script {
-                    // Copy environment file
+                    // Copy environment file if exists, otherwise use example
                     sh '''
                         if [ -f env-server.txt ]; then
                             cp env-server.txt .env
                             echo "✅ Environment file copied from env-server.txt"
                         elif [ ! -f .env ]; then
                             cp .env.example .env
-                            echo "✅ Environment file copied from .env.example"
-                        else
-                            echo "✅ Environment file already exists"
+                            echo "⚠️ .env not found, using .env.example"
                         fi
                     '''
                 }
@@ -47,83 +45,47 @@ pipeline {
                 stage('PHP Dependencies') {
                     steps {
                         echo '📦 Installing PHP dependencies...'
-                        sh '''
-                            docker run --rm -v $(pwd):/app -w /app composer:latest \
-                                composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
-                        '''
+                        sh 'docker run --rm -v $(pwd):/app -w /app composer:latest composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs'
                     }
                 }
                 
                 stage('Node Dependencies') {
                     steps {
                         echo '📦 Installing Node dependencies...'
-                        sh '''
-                            docker run --rm -v $(pwd):/app -w /app node:20-alpine \
-                                npm ci
-                        '''
+                        sh 'docker run --rm -v $(pwd):/app -w /app node:20-alpine npm ci'
                     }
                 }
+            }
+        }
+        
+        stage('Linting') {
+            steps {
+                echo '🧹 Checking code style (Laravel Pint)...'
+                sh 'docker run --rm -v $(pwd):/app -w /app php:8.4-cli php vendor/bin/pint --test'
             }
         }
         
         stage('Build Assets') {
             steps {
                 echo '🏗️ Building frontend assets...'
-                sh '''
-                    docker run --rm -v $(pwd):/app -w /app node:20-alpine \
-                        npm run build
-                '''
+                sh 'docker run --rm -v $(pwd):/app -w /app node:20-alpine npm run build'
             }
         }
         
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                script {
-                    try {
-                        sh '''
-                            docker run --rm -v $(pwd):/var/www -w /var/www \
-                                php:8.4-cli php artisan test --parallel
-                        '''
-                    } catch (Exception e) {
-                        echo "⚠️ Tests failed but continuing deployment"
-                        currentBuild.result = 'UNSTABLE'
-                    }
-                }
-            }
-        }
-        
-        stage('Build Docker Images') {
-            steps {
-                echo '🐳 Building Docker images...'
-                sh '''
-                    docker-compose build --no-cache
-                '''
-            }
-        }
-        
-        stage('Stop Old Containers') {
-            steps {
-                echo '🛑 Stopping old containers...'
-                sh '''
-                    docker-compose down || true
-                '''
+                // No try-catch here: if tests fail, the pipeline STOPS.
+                sh 'docker run --rm -v $(pwd):/var/www -w /var/www php:8.4-cli php artisan test --parallel'
             }
         }
         
         stage('Deploy') {
             steps {
-                echo '🚀 Deploying application...'
+                echo '🚀 Deploying application (Zero-Downtime Recreate)...'
                 sh '''
-                    # Start containers
-                    docker-compose up -d
-                    
-                    # Wait for containers to be healthy
-                    echo "⏳ Waiting for containers to start..."
-                    sleep 10
-                    
-                    # Check container status
-                    docker-compose ps
+                    # Pull and build new images, then restart containers with minimal downtime
+                    docker-compose up -d --build --remove-orphans
                 '''
             }
         }
@@ -131,18 +93,15 @@ pipeline {
         stage('Database Migration') {
             steps {
                 echo '🗄️ Running database migrations...'
-                sh '''
-                    docker-compose exec -T app php artisan migrate --force
-                '''
+                sh 'docker-compose exec -T app php artisan migrate --force'
             }
         }
         
-        stage('Cache Optimization') {
+        stage('Optimize') {
             steps {
-                echo '⚡ Optimizing application cache...'
+                echo '⚡ Optimizing application performance...'
                 sh '''
-                    docker-compose exec -T app php artisan config:cache
-                    docker-compose exec -T app php artisan route:cache
+                    docker-compose exec -T app php artisan optimize
                     docker-compose exec -T app php artisan view:cache
                 '''
             }
@@ -152,29 +111,22 @@ pipeline {
             steps {
                 echo '🏥 Performing health check...'
                 script {
-                    sh '''
-                        # Wait a bit for application to be ready
-                        sleep 5
-                        
-                        # Check if application is responding
-                        curl -f http://localhost:${APP_PORT} || exit 1
-                        
-                        echo "✅ Application is healthy!"
-                    '''
+                    // Retry mechanism for health check
+                    timeout(time: 2, unit: 'MINUTES') {
+                        waitUntil {
+                            def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' http://localhost:${APP_PORT}", returnStdout: true).trim()
+                            return (response == '200')
+                        }
+                    }
+                    echo "✅ Application is healthy!"
                 }
             }
         }
         
         stage('Cleanup') {
             steps {
-                echo '🧹 Cleaning up...'
-                sh '''
-                    # Remove dangling images
-                    docker image prune -f
-                    
-                    # Remove unused volumes
-                    docker volume prune -f
-                '''
+                echo '🧹 Cleaning up old Docker resources...'
+                sh 'docker image prune -f'
             }
         }
     }
@@ -183,37 +135,16 @@ pipeline {
         success {
             echo '✅ Pipeline completed successfully!'
             echo "🌐 Application is running at: http://localhost:${APP_PORT}"
-            
-            // Optional: Send notification
-            // slackSend color: 'good', message: "Deployment successful: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
         }
         
         failure {
-            echo '❌ Pipeline failed!'
-            
-            // Rollback on failure
-            sh '''
-                echo "🔄 Rolling back..."
-                docker-compose down
-            '''
-            
-            // Optional: Send notification
-            // slackSend color: 'danger', message: "Deployment failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+            echo '❌ Pipeline failed! Deployment aborted or rolled back.'
+            // Optional: Archive Laravel logs for debugging
+            sh 'docker-compose logs app > laravel_error.log || true'
+            archiveArtifacts artifacts: 'laravel_error.log', allowEmptyArchive: true
         }
         
         always {
-            echo '📊 Generating reports...'
-            
-            // Archive logs
-            sh '''
-                mkdir -p logs
-                docker-compose logs > logs/docker-compose.log 2>&1 || true
-            '''
-            
-            // Archive artifacts
-            archiveArtifacts artifacts: 'logs/*.log', allowEmptyArchive: true
-            
-            // Clean workspace
             cleanWs()
         }
     }
