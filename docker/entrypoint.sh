@@ -21,21 +21,22 @@ if [ "$1" = "php-fpm" ]; then
         php artisan storage:link || true
     fi
 
+    # Migrate database
+    if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
+        echo "🗄️ Running database migrations and seeders..."
+        php artisan migrate || true
+        php artisan db:seed || true
+    else
+        echo "🗄️ Running database migrations..."
+        php artisan migrate || true
+    fi
+
     if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
         echo "⚡ Clearing caches for development..."
         php artisan optimize:clear
     else
         echo "⚡ Optimizing application for production..."
         php artisan optimize
-    fi
-
-    # Migrate database
-    if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
-        echo "🗄️ Running database migrations and seeders..."
-        php artisan migrate --seed
-    else
-        echo "🗄️ Running database migrations..."
-        php artisan migrate
     fi
 
     echo "✨ Application setup complete!"
