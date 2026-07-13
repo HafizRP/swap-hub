@@ -1,19 +1,13 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: ${APP_ENV}
-    image: swap-hub-app
-    container_name: swap-hub-app
+    image: swap-hub-app-${APP_ENV}:latest
+    container_name: swap-hub-app-${APP_ENV}
     restart: unless-stopped
+    ports:
+      - "5541:80"
     working_dir: /var/www
     volumes:
-      - ./:/var/www
       - storage-data:/var/www/storage
-      - ./public:/var/www/public
-    networks:
-      - swap-hub-network
     depends_on:
       db:
         condition: service_healthy
@@ -37,48 +31,23 @@ services:
       APP_URL: ${APP_URL}
       DB_CONNECTION: mysql
       DB_HOST: db
-      DB_PORT: ${DB_PORT}
+      DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: redis
 
-  nginx:
-    image: nginx:alpine
-    container_name: swap-hub-nginx
-    restart: unless-stopped
-    ports:
-      - "5541:80"
-    volumes:
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
-      - ./public:/var/www/public:ro
-    networks:
-      - swap-hub-network
-    depends_on:
-      app:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 256M
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   db:
     image: mariadb:10.11
-    container_name: swap-hub-db
+    container_name: swap-hub-db-${APP_ENV}
     restart: unless-stopped
+    ports:
+      - "${DB_PORT}:3306"
     environment:
       MARIADB_DATABASE: ${DB_DATABASE}
       MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - swap-hub-network
+      - ./${APP_ENV}/dbdata:/var/lib/mysql
     deploy:
       resources:
         limits:
@@ -92,10 +61,10 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: swap-hub-redis
+    container_name: swap-hub-redis-${APP_ENV}
     restart: unless-stopped
-    networks:
-      - swap-hub-network
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
     deploy:
       resources:
         limits:
@@ -107,12 +76,7 @@ services:
       timeout: 10s
       retries: 3
 
-networks:
-  swap-hub-network:
-    driver: bridge
-
 volumes:
-  dbdata:
-    driver: local
   storage-data:
     driver: local
+    name: swap-hub-storage-${APP_ENV}

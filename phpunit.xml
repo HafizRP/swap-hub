@@ -28,9 +28,9 @@
         <env force="true" name="DB_DATABASE" value=":memory:"/>
         <env force="true" name="MAIL_MAILER" value="array"/>
         <env force="true" name="QUEUE_CONNECTION" value="sync"/>
-        <env force="true" name="SESSION_DRIVER" value="array"/>
         <env force="true" name="PULSE_ENABLED" value="false"/>
         <env force="true" name="TELESCOPE_ENABLED" value="false"/>
         <env force="true" name="NIGHTWATCH_ENABLED" value="false"/>
+        <env force="true" name="SESSION_DRIVER" value="array"/>
     </php>
 </phpunit>
