@@ -24,3 +24,6 @@ env-server.txt
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Docker database data mounts
+/*/dbdata
