@@ -1,6 +1,6 @@
 # 🔄 Swap Hub
 
-Platform untuk skill swap dan property exchange berbasis Laravel.
+Platform kolaborasi proyek dan skill swap mahasiswa berbasis Laravel.
 
 ## 📋 Table of Contents
 
@@ -14,24 +14,26 @@ Platform untuk skill swap dan property exchange berbasis Laravel.
 
 ## ✨ Features
 
-- 🏠 Property listing and management
-- 💬 Real-time chat with Pusher
-- 🔐 Authentication with GitHub OAuth login
-- 📊 Admin dashboard
-- 🔍 Advanced search and filtering
-- 📱 Responsive design
-- 🐳 Docker support
-- 🚀 CI/CD with Jenkins
+- 👥 **Project Matchmaking & Member Management** — Create projects, define required skills, accept/reject applications, and manage project members.
+- 📋 **Interactive Kanban Task Board** — Manage project tasks with visual Kanban/list views, priority settings, and assignees.
+- 📅 **Google Calendar Integration** — Automatic creation of project calendars, syncing task events/due dates, and managing member access permissions.
+- 💬 **Real-time Chat** — Project and direct chat rooms built with Livewire and Pusher (supports Markdown rendering & automated GitHub notifications).
+- 🚀 **GitHub Webhook Syncing** — Automatic repository webhook integration to log commit activities, award member reputation points, and post live updates to project chat.
+- 🔐 **Multi-Provider Authentication** — Secure user login with Google and GitHub OAuth options alongside standard email verification.
+- 📊 **Reputation & Skill Validation** — Peer review system where members rate contributions and validate skills upon project completion.
+- 🩺 **Admin Dashboard & System Health** — Complete user/project management and live system health monitoring.
+- 🐳 **Docker Support & Jenkins CI/CD** — Standardized environments and automated deployment pipeline.
 
 ## 🛠 Tech Stack
 
-- **Backend:** Laravel 11
-- **Frontend:** Blade, TailwindCSS, Alpine.js
-- **Database:** MySQL/MariaDB
-- **Cache:** Redis
-- **Real-time:** Pusher
+- **Backend:** Laravel 12 (PHP 8.4)
+- **Frontend:** Blade, Livewire 3, TailwindCSS, Alpine.js, Bootstrap 5 (welcome page)
+- **Database:** MariaDB / MySQL
+- **Cache & Queue:** Redis
+- **Real-time Broadcast:** Pusher
 - **Containerization:** Docker & Docker Compose
 - **CI/CD:** Jenkins
+- **Calendar API:** Spatie Google Calendar
 
 ## 🚀 Quick Start
 
@@ -42,17 +44,31 @@ Platform untuk skill swap dan property exchange berbasis Laravel.
 
 ### Installation
 
+**Option A: Automate Setup with Composer (Recommended)**
 ```bash
 # Clone repository
 git clone https://github.com/your-username/swap-hub.git
 cd swap-hub
 
-# Start with Docker Compose
-docker-compose up -d --build
-
-# Application will be available at:
-# http://localhost:5541
+# Run the automated composer script to set up environment, build, and start containers
+composer compose:start
 ```
+
+**Option B: Start Manually with Docker Compose**
+```bash
+# Clone repository
+git clone https://github.com/your-username/swap-hub.git
+cd swap-hub
+
+# Copy env file
+cp .env.example .env
+
+# Build and start services
+docker compose up -d --build
+```
+
+**Access the application at:**
+[http://localhost:5541](http://localhost:5541)
 
 That's it! The application will automatically:
 - ✅ Install dependencies
@@ -176,11 +192,9 @@ See [jenkins.md](docs/jenkins.md) for comprehensive Jenkins configuration guide.
 - [docker.md](docs/docker.md) - Docker deployment guide
 - [jenkins.md](docs/jenkins.md) - Jenkins CI/CD setup
 - [github-oauth.md](docs/github-oauth.md) - GitHub OAuth login setup
+- [github-oauth-quick-ref.md](docs/github-oauth-quick-ref.md) - GitHub OAuth quick reference
 - [github-webhook-setup.md](docs/github-webhook-setup.md) - Auto-setup GitHub webhooks
 - [gmail-setup.md](docs/gmail-setup.md) - Gmail SMTP setup for email verification
-- [testing-guide.md](docs/testing-guide.md) - Testing guide for Livewire chat
-- [test-cases.md](docs/test-cases.md) - Test cases checklist
-- [spesifikasi-database.md](docs/spesifikasi-database.md) - Database specification
 - [Jenkinsfile](Jenkinsfile) - Pipeline configuration
 
 ## 🔧 Configuration
@@ -230,7 +244,7 @@ php artisan test --filter=TestName
 
 ```bash
 # Docker logs
-docker-compose logs -f app
+docker compose logs -f app
 
 # Laravel logs
 tail -f storage/logs/laravel.log
@@ -239,7 +253,7 @@ tail -f storage/logs/laravel.log
 ### Container Stats
 
 ```bash
-docker stats swap-hub-app swap-hub-nginx swap-hub-db
+docker stats swap-hub-app-development swap-hub-db-development swap-hub-redis-development
 ```
 
 ## 🤝 Contributing
