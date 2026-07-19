@@ -1,101 +1,111 @@
-<div class="h-100 d-flex flex-column position-relative">
+<div class="h-full flex flex-col relative" x-data="{ openDropdownId: null }">
     
-    <div class="d-flex justify-content-between align-items-center mb-4 px-3 pt-2">
-        <h5 class="mb-0 fw-bold d-flex align-items-center gap-2 text-body">
-            <i class="bi bi-kanban text-primary"></i> Board
+    <div class="flex justify-between items-center mb-6 px-3 pt-2">
+        <h5 class="mb-0 font-bold flex items-center gap-2 text-slate-800 dark:text-slate-100 text-base">
+            <i class="bi bi-kanban text-indigo-600 dark:text-indigo-400"></i> Board
         </h5>
         
-        <div class="d-flex align-items-center gap-3">
+        <div class="flex items-center gap-3">
             <!-- View Toggle Segmented Control -->
-            <div class="bg-body-tertiary p-1 rounded-3 d-inline-flex border border-secondary-subtle">
+            <div class="bg-slate-100 dark:bg-slate-700/50 p-1 rounded-lg inline-flex border border-slate-200 dark:border-slate-700 shadow-sm">
                 <button wire:click="$set('viewType', 'board')" 
-                    class="btn btn-sm border-0 rounded-2 d-flex align-items-center gap-2 {{ $viewType === 'board' ? 'bg-body shadow-sm text-primary fw-bold' : 'text-secondary opacity-75 hover-opacity-100' }}"
-                    style="transition: all 0.2s ease; min-width: 80px; justify-content: center;">
-                    <i class="bi bi-grid-fill"></i> <span class="small">Board</span>
+                    class="px-4 py-1.5 rounded-md text-xs transition-all duration-150 flex items-center gap-2 border-0 outline-none {{ $viewType === 'board' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-650 dark:text-indigo-455 font-bold' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400' }}">
+                    <i class="bi bi-grid-fill"></i> <span>Board</span>
                 </button>
                 <button wire:click="$set('viewType', 'list')" 
-                    class="btn btn-sm border-0 rounded-2 d-flex align-items-center gap-2 {{ $viewType === 'list' ? 'bg-body shadow-sm text-primary fw-bold' : 'text-secondary opacity-75 hover-opacity-100' }}"
-                    style="transition: all 0.2s ease; min-width: 80px; justify-content: center;">
-                    <i class="bi bi-list-ul"></i> <span class="small">List</span>
+                    class="px-4 py-1.5 rounded-md text-xs transition-all duration-150 flex items-center gap-2 border-0 outline-none {{ $viewType === 'list' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-655 dark:text-indigo-455 font-bold' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400' }}">
+                    <i class="bi bi-list-ul"></i> <span>List</span>
                 </button>
             </div>
-
-            <button wire:click="$set('showCreateModal', true)" class="btn btn-primary btn-sm d-flex align-items-center gap-2 shadow-sm rounded-pill px-3 fw-bold">
-                <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">New Task</span>
+ 
+            <button wire:click="$set('showCreateModal', true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-4 rounded-full text-xs transition-colors flex items-center gap-2 shadow border-0">
+                <i class="bi bi-plus-lg"></i> <span>New Task</span>
             </button>
         </div>
     </div>
-
-    <div class="flex-grow-1 overflow-hidden px-2 pb-2" style="min-height: 0;">
+ 
+    <div class="flex-grow overflow-hidden px-2 pb-2" style="min-height: 0;">
         @php
             $statuses = [
-                'todo' => ['label' => 'To Do', 'color' => 'secondary'],
-                'in_progress' => ['label' => 'In Progress', 'color' => 'primary'],
-                'review' => ['label' => 'Review', 'color' => 'warning'],
-                'done' => ['label' => 'Done', 'color' => 'success']
+                'todo' => ['label' => 'To Do', 'color' => 'bg-slate-500', 'text' => 'text-slate-600 dark:text-slate-400', 'badgeBg' => 'bg-slate-500/10'],
+                'in_progress' => ['label' => 'In Progress', 'color' => 'bg-indigo-600', 'text' => 'text-indigo-600 dark:text-indigo-400', 'badgeBg' => 'bg-indigo-500/10'],
+                'review' => ['label' => 'Review', 'color' => 'bg-amber-500', 'text' => 'text-amber-600 dark:text-amber-400', 'badgeBg' => 'bg-amber-500/10'],
+                'done' => ['label' => 'Done', 'color' => 'bg-emerald-500', 'text' => 'text-emerald-600 dark:text-emerald-400', 'badgeBg' => 'bg-emerald-500/10']
             ];
         @endphp
-
+ 
         @if($viewType === 'board')
-            <div class="row g-3 h-100 flex-nowrap overflow-x-auto pb-2" style="scrollbar-width: thin; scroll-behavior: smooth;">
+            <div class="flex gap-4 h-full flex-nowrap overflow-x-auto pb-4 custom-scrollbar" style="scroll-behavior: smooth;">
                 @foreach($statuses as $key => $status)
-                    <div class="col-12 col-md-6 col-lg-3 h-100" style="min-width: 320px;">
-                        <div class="bg-body-tertiary rounded-4 p-3 h-100 d-flex flex-column border border-secondary-subtle shadow-sm">
-                            <div class="d-flex justify-content-between align-items-center mb-3 px-1">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="d-inline-block rounded-circle bg-{{ $status['color'] }}" style="width: 8px; height: 8px;"></span>
-                                    <h6 class="fw-bold text-uppercase small text-body mb-0 tracking-wide">{{ $status['label'] }}</h6>
+                    <div class="shrink-0 h-full w-[300px] md:w-[320px]">
+                        <div class="bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-4 h-full flex flex-col border border-slate-200 dark:border-slate-700/60 shadow-sm">
+                            <div class="flex justify-between items-center mb-4 px-1 shrink-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-block rounded-full w-2.5 h-2.5 {{ $status['color'] }}"></span>
+                                    <h6 class="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-100 mb-0">{{ $status['label'] }}</h6>
                                 </div>
-                                <span class="badge bg-body text-body border border-secondary-subtle shadow-sm rounded-pill">{{ $tasks->get($key)?->count() ?? 0 }}</span>
+                                <span class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-350 text-[10px] font-bold rounded-full px-2.5 py-0.5 border border-slate-200 dark:border-slate-700 shadow-sm">{{ $tasks->get($key)?->count() ?? 0 }}</span>
                             </div>
         
-                            <div class="d-flex flex-column gap-2 flex-grow-1 overflow-y-auto custom-scrollbar pe-1" style="min-height: 0;">
+                            <div class="flex flex-col gap-3 flex-grow overflow-y-auto custom-scrollbar pr-1" style="min-height: 0;">
                                 @forelse($tasks->get($key) ?? [] as $task)
                                     @php
-                                        $priorityColor = $task->priority === 'high' ? 'danger' : ($task->priority === 'medium' ? 'warning' : 'info');
+                                        $priorityStyles = $task->priority === 'high' 
+                                            ? ['border' => 'border-l-red-500', 'badge' => 'bg-red-500/10 text-red-600 dark:text-red-400'] 
+                                            : ($task->priority === 'medium' ? ['border' => 'border-l-amber-500', 'badge' => 'bg-amber-500/10 text-amber-600 dark:text-amber-450'] : ['border' => 'border-l-sky-500', 'badge' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400']);
                                     @endphp
-                                    <div class="card border-0 shadow-sm task-card hover-lift border-start border-3 border-{{ $priorityColor }}">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <span class="badge rounded-pill bg-{{ $priorityColor }} bg-opacity-10 text-{{ $priorityColor }} small fw-bold" style="font-size: 10px;">
-                                                    {{ ucfirst($task->priority) }}
+                                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/80 hover-lift transition-all border-l-4 {{ $priorityStyles['border'] }}">
+                                        <div class="p-4">
+                                            <div class="flex justify-between items-start mb-2.5">
+                                                <span class="rounded-full text-[10px] font-bold {{ $priorityStyles['badge'] }} px-2 py-0.5 uppercase">
+                                                    {{ $task->priority }}
                                                 </span>
                                                 
-                                                <div class="dropdown">
-                                                    <button class="btn btn-link btn-sm p-0 text-muted" type="button" data-bs-toggle="dropdown">
+                                                <!-- Dropdown menu (Alpine.js) -->
+                                                <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+                                                    <button @click.stop="dropdownOpen = !dropdownOpen" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-transparent border-0 p-0 outline-none cursor-pointer">
                                                         <i class="bi bi-three-dots-vertical"></i>
                                                     </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                                        <li><h6 class="dropdown-header">Move To</h6></li>
+                                                    <div x-show="dropdownOpen" 
+                                                         x-transition
+                                                         class="absolute right-0 mt-1 w-44 rounded-lg shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 z-[1050]" 
+                                                         style="display: none;">
+                                                        <h6 class="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/50 mb-1">Move To</h6>
                                                         @foreach($statuses as $sKey => $sVal)
                                                             @if($sKey !== $key)
-                                                                <li><button class="dropdown-item small" wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">{{ $sVal['label'] }}</button></li>
+                                                                <button class="w-full text-left px-4 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 border-0 bg-transparent" 
+                                                                        wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">
+                                                                    {{ $sVal['label'] }}
+                                                                </button>
                                                             @endif
                                                         @endforeach
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li><button class="dropdown-item text-danger small" wire:click="deleteTask({{ $task->id }})" wire:confirm="Are you sure you want to delete this task?">Delete</button></li>
-                                                    </ul>
+                                                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
+                                                        <button class="w-full text-left px-4 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 border-0 bg-transparent" 
+                                                                wire:click="deleteTask({{ $task->id }})" wire:confirm="Are you sure you want to delete this task?">
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
         
-                                            <h6 class="fw-bold mb-1 text-truncate" title="{{ $task->title }}">{{ $task->title }}</h6>
+                                            <h6 class="font-bold text-sm text-slate-800 dark:text-slate-100 mb-1 truncate" title="{{ $task->title }}">{{ $task->title }}</h6>
                                             @if($task->description)
-                                                <p class="small text-secondary mb-3 text-truncate">{{ $task->description }}</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 truncate">{{ $task->description }}</p>
                                             @else
                                                 <div class="mb-3"></div>
                                             @endif
         
-                                            <div class="d-flex justify-content-between align-items-end pt-2 border-top border-light">
-                                                <div class="d-flex align-items-center gap-1" title="Assignee: {{ $task->assignee->name ?? 'Unassigned' }}">
+                                            <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                                <div class="flex items-center gap-2" title="Assignee: {{ $task->assignee->name ?? 'Unassigned' }}">
                                                     @if($task->assignee)
                                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&background=random" class="rounded-circle" width="24" height="24">
                                                     @else
-                                                        <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center text-secondary" style="width: 24px; height: 24px;">
+                                                        <div class="rounded-circle bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs" style="width: 24px; height: 24px;">
                                                             <i class="bi bi-person"></i>
                                                         </div>
                                                     @endif
                                                     @if($task->due_date)
-                                                        <span class="small text-{{ $task->due_date->isPast() ? 'danger' : 'secondary' }} ms-1" style="font-size: 10px;">
+                                                        <span class="text-[10px] font-medium {{ $task->due_date->isPast() ? 'text-red-500 font-bold' : 'text-slate-400 dark:text-slate-500' }} ml-1">
                                                             <i class="bi bi-calendar"></i> {{ $task->due_date->format('M d') }}
                                                         </span>
                                                     @endif
@@ -104,7 +114,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <!-- Empty state per column handled by flex layout usually, or we can leave empty -->
+                                    <!-- Empty state -->
                                 @endforelse
                             </div>
                         </div>
@@ -113,76 +123,87 @@
             </div>
         @else
             <!-- List View -->
-            <div class="card border-0 shadow-sm h-100 overflow-hidden rounded-4">
-                <div class="card-body p-0 overflow-auto custom-scrollbar">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-body-secondary sticky-top z-1">
+            <div class="bg-white dark:bg-slate-800 border border-slate-205 border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden h-full flex flex-col">
+                <div class="overflow-auto custom-scrollbar flex-grow">
+                    <table class="w-full text-left border-collapse align-middle text-nowrap">
+                        <thead class="bg-slate-50 dark:bg-slate-700/30 sticky top-0 z-1 border-b border-slate-200 dark:border-slate-700">
                             <tr>
-                                <th class="ps-4 text-secondary small text-uppercase" style="width: 40%">Task</th>
-                                <th class="text-secondary small text-uppercase">Status</th>
-                                <th class="text-secondary small text-uppercase">Priority</th>
-                                <th class="text-secondary small text-uppercase">Assignee</th>
-                                <th class="text-secondary small text-uppercase">Due Date</th>
-                                <th class="text-end pe-4 text-secondary small text-uppercase">Actions</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0" style="width: 40%">Task</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Status</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Priority</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Assignee</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Due Date</th>
+                                <th class="px-6 py-3.5 text-right text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
                             @php $allTasks = $tasks->flatten(); @endphp
                             @forelse($allTasks as $task)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-body">{{ $task->title }}</div>
+                                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-750/30 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-sm text-slate-850 dark:text-slate-100">{{ $task->title }}</div>
                                         @if($task->description)
-                                            <div class="small text-secondary text-truncate" style="max-width: 300px;">{{ $task->description }}</div>
+                                            <div class="text-xs text-slate-450 dark:text-slate-400 truncate max-w-[300px] mt-0.5">{{ $task->description }}</div>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="dropdown">
-                                             <button class="btn btn-sm badge bg-{{ $statuses[$task->status]['color'] ?? 'secondary' }} bg-opacity-10 text-{{ $statuses[$task->status]['color'] ?? 'secondary' }} border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                                {{ $statuses[$task->status]['label'] ?? ucfirst($task->status) }}
+                                    <td class="px-6 py-4">
+                                        <div class="relative" x-data="{ openListDropdown: false }" @click.outside="openListDropdown = false">
+                                             <button @click.stop="openListDropdown = !openListDropdown" class="rounded-full px-3 py-1 text-xs font-semibold border-0 {{ $statuses[$task->status]['badgeBg'] }} {{ $statuses[$task->status]['text'] }} flex items-center gap-1.5">
+                                                {{ $statuses[$task->status]['label'] ?? ucfirst($task->status) }} <i class="bi bi-chevron-down text-[10px]"></i>
                                              </button>
-                                             <ul class="dropdown-menu shadow-sm border-0">
+                                             <div x-show="openListDropdown" 
+                                                  x-transition
+                                                  class="absolute left-0 mt-1 w-40 rounded-lg shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-205 dark:border-slate-700 z-[1050]" 
+                                                  style="display: none;">
                                                 @foreach($statuses as $sKey => $sVal)
-                                                    <li><button class="dropdown-item small" wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">{{ $sVal['label'] }}</button></li>
+                                                    <button class="w-full text-left px-4 py-1.5 text-xs text-slate-750 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 border-0 bg-transparent" 
+                                                            wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">
+                                                        {{ $sVal['label'] }}
+                                                    </button>
                                                 @endforeach
-                                             </ul>
+                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-{{ $task->priority === 'high' ? 'danger' : ($task->priority === 'medium' ? 'warning' : 'info') }} bg-opacity-10 text-{{ $task->priority === 'high' ? 'danger' : ($task->priority === 'medium' ? 'dark' : 'info') }}" style="font-size: 11px;">
-                                            {{ ucfirst($task->priority) }}
+                                    <td class="px-6 py-4">
+                                        @php
+                                            $priorityBadge = $task->priority === 'high' 
+                                                ? 'bg-red-500/10 text-red-600' 
+                                                : ($task->priority === 'medium' ? 'bg-amber-500/10 text-amber-650' : 'bg-sky-500/10 text-sky-600');
+                                        @endphp
+                                        <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase {{ $priorityBadge }}">
+                                            {{ $task->priority }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4">
                                         @if($task->assignee)
-                                            <div class="d-flex align-items-center gap-2">
-                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&background=random" class="rounded-circle" width="24" height="24">
-                                                <span class="small">{{ $task->assignee->name }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&background=random" class="rounded-circle shrink-0" width="24" height="24">
+                                                <span class="text-xs text-slate-800 dark:text-slate-200">{{ $task->assignee->name }}</span>
                                             </div>
                                         @else
-                                            <span class="small text-secondary font-italic">Unassigned</span>
+                                            <span class="text-xs text-slate-400 dark:text-slate-500 italic">Unassigned</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4">
                                         @if($task->due_date)
-                                            <span class="small text-{{ $task->due_date->isPast() ? 'danger' : 'secondary' }}">
+                                            <span class="text-xs {{ $task->due_date->isPast() ? 'text-red-505 text-red-500 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
                                                 {{ $task->due_date->format('M d, Y') }}
                                             </span>
                                         @else
-                                            <span class="small text-secondary">-</span>
+                                            <span class="text-xs text-slate-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-link btn-sm text-danger p-0" wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?">
-                                            <i class="bi bi-trash"></i>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-red-500 bg-transparent border-0 p-0 transition-colors cursor-pointer" wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?">
+                                            <i class="bi bi-trash text-base"></i>
                                         </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 opacity-50">
-                                        <i class="bi bi-clipboard fs-1 mb-2"></i>
-                                        <p class="small mb-0">No tasks found</p>
+                                    <td colspan="6" class="text-center py-10 opacity-50">
+                                        <i class="bi bi-clipboard text-4xl mb-2 block text-slate-400"></i>
+                                        <p class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-0">No tasks found</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -192,55 +213,57 @@
             </div>
         @endif
     </div>
-
+ 
     <!-- Create Task Modal Overlay -->
     @if($showCreateModal)
-        <div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex align-items-center justify-content-center p-3" style="z-index: 2000; backdrop-filter: blur(4px);">
-            <div class="card border-0 shadow-lg rounded-4" style="width: 90%; max-width: 500px;">
-                <div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0">Create New Task</h5>
-                    <button wire:click="$set('showCreateModal', false)" class="btn-close"></button>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm" x-transition>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+                <div class="p-5 flex justify-between items-center border-b border-slate-100 dark:border-slate-700/50">
+                    <h5 class="font-bold text-slate-850 dark:text-slate-100 text-base">Create New Task</h5>
+                    <button wire:click="$set('showCreateModal', false)" class="text-slate-400 hover:text-slate-655 dark:hover:text-slate-300 bg-transparent border-0 p-0 outline-none">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
-                <div class="card-body px-4 pb-4">
+                <div class="p-5">
                     <form wire:submit.prevent="createTask">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">Task Title</label>
-                            <input type="text" wire:model="title" class="form-control" placeholder="What needs to be done?">
-                            @error('title') <span class="text-danger small">{{ $message }}</span> @enderror
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Task Title</label>
+                            <input type="text" wire:model="title" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-450 focus:outline-none focus:border-indigo-500" placeholder="What needs to be done?">
+                            @error('title') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">Description</label>
-                            <textarea wire:model="description" class="form-control" rows="3" placeholder="Add details..."></textarea>
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Description</label>
+                            <textarea wire:model="description" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-405 focus:outline-none focus:border-indigo-500" rows="3" placeholder="Add details..."></textarea>
                         </div>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <label class="form-label small fw-bold text-secondary">Assign To</label>
-                                <select wire:model="assigned_to" class="form-select">
+ 
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="col-span-1">
+                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Assign To</label>
+                                <select wire:model="assigned_to" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-2.5 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
                                     <option value="">Unassigned</option>
                                     @foreach($members as $member)
                                         <option value="{{ $member->id }}">{{ $member->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-6">
-                                <label class="form-label small fw-bold text-secondary">Priority</label>
-                                <select wire:model="priority" class="form-select">
+                            <div class="col-span-1">
+                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Priority</label>
+                                <select wire:model="priority" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-2.5 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
                                     <option value="high">High</option>
                                 </select>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold text-secondary">Due Date</label>
-                                <input type="date" wire:model="due_date" class="form-control">
+                            <div class="col-span-2">
+                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Due Date</label>
+                                <input type="date" wire:model="due_date" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-850 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
                             </div>
                         </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="button" wire:click="$set('showCreateModal', false)" class="btn btn-light rounded-pill px-4">Cancel</button>
-                            <button type="submit" class="btn btn-primary rounded-pill px-4">Create Task</button>
+ 
+                        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                            <button type="button" wire:click="$set('showCreateModal', false)" class="bg-slate-105 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-250 font-bold py-2 px-5 rounded-full text-xs transition-colors border-0">Cancel</button>
+                            <button type="submit" class="bg-indigo-650 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-full text-xs transition-colors border-0 shadow">Create Task</button>
                         </div>
                     </form>
                 </div>

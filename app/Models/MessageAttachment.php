@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageAttachment extends Model
 {
-    protected $fillable = ['message_id', 'file_path', 'file_name', 'file_type'];
+    protected $guarded = ['id'];
 
     public function message()
     {

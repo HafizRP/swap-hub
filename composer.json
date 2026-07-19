@@ -12,7 +12,8 @@
         "laravel/reverb": "^1.0",
         "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.7"
+        "livewire/livewire": "^3.7",
+        "spatie/laravel-google-calendar": "^3.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -48,6 +49,26 @@
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+        ],
+        "compose:build": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker build --target $(grep -E '^APP_ENV=' .env | cut -d '=' -f2 | tr -d '\\r') -t swap-hub-app-$(grep -E '^APP_ENV=' .env | cut -d '=' -f2 | tr -d '\\r'):latest ."
+        ],
+        "compose:start": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@composer compose:build",
+            "docker compose up -d"
+        ],
+        "docker:start": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker compose up -d --no-deps app"
+        ],
+        "docker:stop": [
+            "docker compose rm -sf app"
+        ],
+        "compose:down": [
+            "docker compose down"
         ],
         "test": [
             "@php artisan config:clear --ansi",

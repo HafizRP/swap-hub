@@ -12,18 +12,7 @@ class GitHubActivity extends Model
     use HasFactory;
 
     protected $table = 'github_activities';
-    protected $fillable = [
-        'project_id',
-        'user_id',
-        'activity_type',
-        'commit_sha',
-        'commit_message',
-        'branch',
-        'additions',
-        'deletions',
-        'metadata',
-        'activity_at',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'metadata' => 'array',

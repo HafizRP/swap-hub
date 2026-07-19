@@ -14,19 +14,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'owner_id',
-        'github_repo_url',
-        'github_repo_name',
-        'github_webhook_id',
-        'github_webhook_status',
-        'category',
-        'status',
-        'start_date',
-        'end_date',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'start_date' => 'date',

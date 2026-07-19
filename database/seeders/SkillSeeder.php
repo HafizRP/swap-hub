@@ -53,7 +53,10 @@ class SkillSeeder extends Seeder
         ];
 
         foreach ($skills as $skill) {
-            \App\Models\Skill::create($skill);
+            \App\Models\Skill::firstOrCreate(
+                ['name' => $skill['name']],
+                $skill
+            );
         }
     }
 }
