@@ -4,16 +4,50 @@
 
 Dokumentasi ini menjelaskan cara mengkonfigurasi Jenkins yang sudah ada untuk automated deployment project Swap Hub.
 
-## Prerequisites
+## 📦 Apa Saja yang Harus Disiapkan? (Preparation)
 
-✅ Jenkins server sudah running  
-✅ Docker dan Docker Compose terinstall di Jenkins server  
-✅ Git terinstall di Jenkins server  
-✅ Jenkins user memiliki akses ke Docker
+Sebelum melakukan setup di dashboard Jenkins, pastikan hal-hal berikut sudah siap:
+
+1. **Jenkins Server**: Jenkins sudah terinstall dan berjalan di server (misal: berjalan di port `8080`).
+2. **Akses Root/Terminal**: Untuk mengambil *initial admin password* dan konfigurasi Docker.
+3. **Docker & Git**: Docker, Docker Compose, dan Git sudah terinstall di Jenkins server.
+4. **Koneksi Internet**: Untuk mendownload plugin Jenkins saat setup.
+5. **Git Credentials (Opsional)**: Username & Personal Access Token (PAT) GitHub atau SSH Key, jika repository bersifat private.
 
 ---
 
-## 1. Configure Jenkins
+## 🛠️ 1. Initial Jenkins Dashboard Setup (Setup Awal)
+
+Jika ini adalah pertama kalinya Jenkins diakses, ikuti langkah berikut:
+
+### 1. Unlock Jenkins
+1. Buka browser dan akses dashboard Jenkins: `http://<ip-server-anda>:8080`
+2. Anda akan diminta untuk memasukkan **Administrator password**.
+3. Buka terminal di server Anda dan jalankan perintah berikut untuk melihat password:
+   ```bash
+   sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+   ```
+4. Copy teks hasil perintah tersebut, paste ke dalam kolom di browser, lalu klik **Continue**.
+
+### 2. Customize Jenkins (Install Plugins)
+1. Di layar berikutnya, pilih **"Install suggested plugins"**.
+2. Tunggu hingga proses instalasi plugin dasar selesai.
+
+### 3. Create First Admin User
+1. Isi form untuk membuat akun Admin (Username, Password, Full Name, Email).
+2. Simpan baik-baik kredensial ini untuk login selanjutnya.
+3. Klik **Save and Continue**.
+
+### 4. Instance Configuration
+1. Konfirmasi Jenkins URL (biarkan default sesuai IP/Domain server Anda).
+2. Klik **Save and Finish**, lalu klik **Start using Jenkins**.
+3. Anda sekarang berada di halaman utama Dashboard Jenkins!
+
+---
+
+## ⚙️ 2. Konfigurasi Plugin Tambahan & Docker Access
+
+Setelah masuk ke Dashboard utama, lakukan konfigurasi berikut:
 
 ### Install Required Plugins
 
@@ -44,7 +78,7 @@ sudo -u jenkins docker ps
 
 ---
 
-## 2. Create Pipeline Job
+## 🚀 3. Create Pipeline Job
 
 ### Step-by-Step:
 
@@ -77,7 +111,7 @@ sudo -u jenkins docker ps
 
 ---
 
-## 3. Configure GitHub Webhook (Optional)
+## 🔗 4. Configure GitHub Webhook (Optional)
 
 Untuk automatic builds on push:
 
@@ -103,7 +137,7 @@ Untuk automatic builds on push:
 
 ---
 
-## 4. Environment Variables (Optional)
+## 🔐 5. Environment Variables (Optional)
 
 Configure di: **Manage Jenkins → Configure System → Global properties → Environment variables**
 
@@ -115,7 +149,7 @@ Configure di: **Manage Jenkins → Configure System → Global properties → En
 
 ---
 
-## 5. Test Pipeline
+## 🧪 6. Test Pipeline
 
 ### Manual Build:
 
