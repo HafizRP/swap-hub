@@ -1,72 +1,66 @@
-<div class="h-100 d-flex flex-column">
+<div class="h-full flex flex-col">
     <!-- Toolbar -->
-    <div
-        class="p-4 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center bg-subtle">
-        <div class="d-flex align-items-center gap-3">
-            <div class="input-group" style="width: 250px;">
-                <span class="input-group-text bg-dark border-0 text-secondary ps-3">
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/40">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full overflow-hidden w-[250px] shadow-sm">
+                <span class="pl-4 pr-2 text-slate-400">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" wire:model.live.debounce.300ms="search"
-                    class="form-control bg-dark border-0 text-white placeholder-secondary"
+                    class="bg-transparent border-0 w-full outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 py-1.5 px-1 text-xs"
                     placeholder="Search files...">
             </div>
-
-            <div class="btn-group">
+ 
+            <div class="inline-flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
                 <button wire:click="$set('typeFilter', 'all')"
-                    class="btn btn-sm {{ $typeFilter === 'all' ? 'btn-secondary' : 'btn-outline-secondary' }}">All</button>
+                    class="px-3 py-1.5 text-xs font-semibold transition-colors {{ $typeFilter === 'all' ? 'bg-slate-200 dark:bg-slate-700 text-slate-850 dark:text-slate-100' : 'bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">All</button>
                 <button wire:click="$set('typeFilter', 'image')"
-                    class="btn btn-sm {{ $typeFilter === 'image' ? 'btn-secondary' : 'btn-outline-secondary' }}">Images</button>
+                    class="px-3 py-1.5 text-xs font-semibold border-l border-slate-200 dark:border-slate-700 transition-colors {{ $typeFilter === 'image' ? 'bg-slate-200 dark:bg-slate-700 text-slate-850 dark:text-slate-100' : 'bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">Images</button>
                 <button wire:click="$set('typeFilter', 'document')"
-                    class="btn btn-sm {{ $typeFilter === 'document' ? 'btn-secondary' : 'btn-outline-secondary' }}">Docs</button>
+                    class="px-3 py-1.5 text-xs font-semibold border-l border-slate-200 dark:border-slate-700 transition-colors {{ $typeFilter === 'document' ? 'bg-slate-200 dark:bg-slate-700 text-slate-850 dark:text-slate-100' : 'bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">Docs</button>
             </div>
         </div>
-
-        <div class="d-flex gap-2">
-            <!-- Upload functionality could go here, integrated with chat input basically -->
-            <button class="btn btn-primary btn-sm rounded-pill" onclick="document.querySelector('#fileInput').click()">
-                <i class="bi bi-upload me-1"></i> Upload
+ 
+        <div class="flex gap-2">
+            <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-4 rounded-full text-xs transition-colors border-0 shadow" onclick="document.querySelector('#fileInput').click()">
+                <i class="bi bi-upload mr-1"></i> Upload
             </button>
         </div>
     </div>
-
+ 
     <!-- File Grid -->
-    <div class="flex-grow-1 overflow-auto p-4 custom-scrollbar">
+    <div class="flex-grow overflow-auto p-4 custom-scrollbar">
         @if($files->count() > 0)
-            <div class="row g-3">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 @foreach($files as $file)
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-                        <div class="card h-100 border-0 shadow-sm bg-dark bg-opacity-25 hover-lift group">
-                            <div class="card-body p-3 d-flex flex-column">
-                                <div class="mb-3 position-relative rounded-3 overflow-hidden bg-dark d-flex align-items-center justify-content-center"
-                                    style="height: 120px;">
+                    <div class="col-span-1">
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover-lift group transition-all h-full">
+                            <div class="p-3 flex flex-col h-full">
+                                <div class="mb-3 relative rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center h-[120px]">
                                     @if(Str::startsWith($file->file_type, 'image/'))
-                                        <img src="{{ asset('storage/' . $file->file_path) }}" class="w-100 h-100 object-fit-cover">
+                                        <img src="{{ asset('storage/' . $file->file_path) }}" class="w-full h-full object-cover">
                                     @else
-                                        <i class="bi bi-file-earmark-text display-4 text-secondary"></i>
+                                        <i class="bi bi-file-earmark-text text-4xl text-slate-450 dark:text-slate-500"></i>
                                     @endif
-
+ 
                                     <!-- Overlay Actions -->
-                                    <div
-                                        class="position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-50 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 transition-opacity">
+                                    <div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                                         <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank"
-                                            class="btn btn-light btn-sm rounded-circle shadow-sm m-1" title="Download/View">
-                                            <i class="bi bi-download"></i>
+                                            class="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full p-2.5 shadow-md flex items-center justify-center transition-transform hover:scale-105" title="Download/View">
+                                            <i class="bi bi-download text-sm"></i>
                                         </a>
                                     </div>
                                 </div>
-
+ 
                                 <div class="mt-auto">
-                                    <h6 class="text-white small fw-bold text-truncate mb-1" title="{{ $file->file_name }}">
+                                    <h6 class="text-slate-850 dark:text-slate-100 text-xs font-bold truncate mb-1" title="{{ $file->file_name }}">
                                         {{ $file->file_name }}
                                     </h6>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-secondary" style="font-size: 10px;">
+                                    <div class="flex justify-between items-center">
+                                        <small class="text-slate-400 dark:text-slate-500 text-[10px]">
                                             {{ $file->created_at->format('M d, Y') }}
                                         </small>
-                                        <span
-                                            class="badge bg-secondary bg-opacity-25 text-secondary border border-white border-opacity-10 rounded-1"
-                                            style="font-size: 9px;">
+                                        <span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-350 rounded text-[9px] px-1.5 py-0.5 border border-slate-205 dark:border-slate-600 font-bold shrink-0">
                                             {{ strtoupper(pathinfo($file->file_name, PATHINFO_EXTENSION)) }}
                                         </span>
                                     </div>
@@ -77,10 +71,10 @@
                 @endforeach
             </div>
         @else
-            <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center opacity-50">
-                <i class="bi bi-folder2-open display-1 mb-3 text-secondary"></i>
-                <p class="text-secondary">No files shared yet.</p>
-                <small class="text-secondary">Files sent in chat will appear here.</small>
+            <div class="h-full flex flex-col items-center justify-content-center text-center opacity-50 py-12">
+                <i class="bi bi-folder2-open text-5xl mb-3 text-slate-450 dark:text-slate-500"></i>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-bold mb-1">No files shared yet.</p>
+                <small class="text-slate-400 dark:text-slate-650 text-xs">Files sent in chat will appear here.</small>
             </div>
         @endif
     </div>

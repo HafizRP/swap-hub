@@ -11,17 +11,7 @@ class ProjectMember extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'project_id',
-        'user_id',
-        'role',
-        'status',
-        'message',
-        'is_validated',
-        'contribution_rating',
-        'contribution_notes',
-        'joined_at',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_validated' => 'boolean',

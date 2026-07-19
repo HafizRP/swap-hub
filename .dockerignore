@@ -8,11 +8,11 @@ README.md
 *.md
 
 # Environment files (will be created in container)
-# .env
+.env
 
 # Node modules and vendor are installed during build, so we keep them
-# node_modules
-# vendor
+node_modules
+vendor
 
 # IDE files
 .idea
@@ -29,6 +29,9 @@ Thumbs.db
 tests
 phpunit.xml
 .phpunit.result.cache
+
+# Database local volumes
+/*/dbdata
 
 # Storage and cache (will be generated)
 storage/logs/*
