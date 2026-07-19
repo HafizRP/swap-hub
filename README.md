@@ -1,5 +1,5 @@
 # 🔄 Swap Hub
-Swap Hub adalah platform kolaborasi proyek dan skill swap antar mahasiswa yang dikembangkan menggunakan Laravel. Platform ini memfasilitasi mahasiswa dalam mencari rekan tim yang tepat, mengelola tugas melalui Kanban board interaktif, serta menyelaraskan jadwal proyek secara otomatis dengan integrasi Google Calendar. Dengan dukungan obrolan waktu nyata (real-time chat), pencatatan aktivitas otomatis via webhook GitHub, dan sistem validasi keahlian antar anggota, Swap Hub membantu mahasiswa membangun portofolio profesional terverifikasi sejak masa perkuliahan.
+Swap Hub is a Laravel-based project collaboration and skill swapping platform designed for students. The platform helps students find matching team partners, manage tasks using an interactive Kanban board, and automatically synchronize project schedules via Google Calendar integration. With real-time chat, automatic activity logging through GitHub webhooks, and a peer-to-peer skill validation system, Swap Hub enables students to build verified professional portfolios during their college years.
 
 ## 📋 Table of Contents
 
