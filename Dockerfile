@@ -2,31 +2,49 @@
 ARG TARGET_ENV=development
 
 # ==============================================================================
-# Stage 1: Base PHP image with extensions
+# Stage 1: Base PHP Alpine image with runtime extensions & minimal tools
 # ==============================================================================
-FROM php:8.4-fpm AS base
+FROM php:8.4-fpm-alpine AS base
 
-# Add highly optimized PHP extension installer
+# Add PHP extension installer helper
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Install basic tools and let the installer handle complex extensions
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    zip unzip curl nginx \
-    && install-php-extensions pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install essential runtime tools & PHP extensions in a single cached layer
+RUN apk add --no-cache \
+    bash \
+    curl \
+    nginx \
+    ca-certificates \
+    tzdata \
+    && install-php-extensions \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    intl \
+    opcache \
+    redis \
+    && rm -rf /tmp/* /var/cache/apk/*
 
-# Configure internal Nginx for standalone HTTP access using app.conf
-COPY docker/nginx/conf.d/app.conf /etc/nginx/sites-available/default
+# Configure Alpine Nginx
+COPY docker/nginx/conf.d/app.conf /etc/nginx/http.d/default.conf
 
 WORKDIR /var/www
 
-# Copy Entrypoint and Expose port
+# Copy Entrypoint and Expose ports
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE 9000 80
+EXPOSE 80 9000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -f http://127.0.0.1:80/ || exit 1
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
+
+
 
 # ==============================================================================
 # Stage 2: Development Environment
@@ -39,13 +57,12 @@ LABEL environment="development"
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Node.js and NPM for frontend development
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+RUN apk add --no-cache nodejs npm
 
-# Leverage layer caching: Copy dependency files first
+# Leverage layer caching: Copy dependency manifests first
 COPY composer.json composer.lock ./
 COPY package.json package-lock.json* ./
 
@@ -53,7 +70,7 @@ COPY package.json package-lock.json* ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
     && npm install
 
-# Copy the rest of the application
+# Copy application source code
 COPY . .
 
 
@@ -66,9 +83,9 @@ WORKDIR /app
 
 # Leverage layer caching for Node dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --prefer-offline --no-audit
 
-# Copy the rest of the application and build frontend assets
+# Copy application source and build frontend assets
 COPY . .
 RUN npm run build
 
@@ -76,22 +93,23 @@ RUN npm run build
 # ==============================================================================
 # Stage 4: Backend Builder (Production Only)
 # ==============================================================================
-FROM composer:latest AS backend-builder
+FROM composer:2 AS backend-builder
 
 WORKDIR /app
 
 # Leverage layer caching for PHP dependencies
 COPY composer.json composer.lock ./
-# Install dependencies without autoloader and scripts to maximize cache usage
-RUN composer install --no-interaction --prefer-dist --no-dev --no-autoloader --no-scripts --ignore-platform-reqs
+
+# Install production dependencies without autoloader to maximize cache usage
+RUN composer install --no-dev --no-interaction --prefer-dist --no-autoloader --no-scripts --ignore-platform-reqs
 
 # Copy application code and generate optimized autoloader for production
 COPY . .
-RUN composer dump-autoload --optimize --no-dev
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
 
 
 # ==============================================================================
-# Stage 5: Production Environment
+# Stage 5: Production Environment (Ultra-lightweight)
 # ==============================================================================
 FROM base AS production
 
@@ -105,24 +123,25 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/conf.d/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY docker/php/conf.d/security.ini $PHP_INI_DIR/conf.d/security.ini
 
-# Copy application code FIRST
-COPY . .
+# Copy application code with proper ownership to avoid duplicate filesystem layers
+COPY --chown=www-data:www-data . .
 
-# Then copy vendor and assets from builders to overlay the app code
-COPY --from=backend-builder /app/vendor ./vendor
-COPY --from=frontend-builder /app/public/build ./public/build
+# Copy vendor and compiled assets from builders
+COPY --chown=www-data:www-data --from=backend-builder /app/vendor ./vendor
+COPY --chown=www-data:www-data --from=frontend-builder /app/public/build ./public/build
 
-# Fix permissions for Laravel storage and bootstrap cache
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Set up storage and cache structure with proper permissions
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 # Production environment variables
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 
+
 # ==============================================================================
 # Final Stage
 # ==============================================================================
-# This stage uses the TARGET_ENV build argument to determine which stage to
-# build. By default, it builds the 'development' stage.
 FROM ${TARGET_ENV}
+
