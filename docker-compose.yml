@@ -1,10 +1,14 @@
 services:
   app:
-    image: swap-hub-app-${APP_ENV}:latest
-    container_name: swap-hub-app-${APP_ENV}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${APP_ENV:-development}
+    image: swap-hub-app-${APP_ENV:-development}:latest
+    container_name: swap-hub-app-${APP_ENV:-development}
     restart: unless-stopped
     ports:
-      - "5541:80"
+      - "${APP_PORT:-5541}:80"
     working_dir: /var/www
     volumes:
       - storage-data:/var/www/storage
@@ -19,35 +23,37 @@ services:
           cpus: '0.80'
           memory: 512M
     healthcheck:
-      test: ["CMD", "php", "artisan", "--version"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:80/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 20s
     environment:
-      APP_NAME: "Swap Hub"
-      APP_ENV: ${APP_ENV}
+      APP_NAME: "${APP_NAME:-Swap Hub}"
+      APP_ENV: ${APP_ENV:-development}
       APP_KEY: ${APP_KEY}
-      APP_DEBUG: ${APP_DEBUG}
-      APP_URL: ${APP_URL}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:5541}
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE:-swap_hub}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
       REDIS_HOST: redis
+      REDIS_PORT: 6379
 
   db:
     image: mariadb:10.11
-    container_name: swap-hub-db-${APP_ENV}
+    container_name: swap-hub-db-${APP_ENV:-development}
     restart: unless-stopped
     ports:
-      - "${DB_PORT}:3306"
+      - "${DB_PORT:-3306}:3306"
     environment:
-      MARIADB_DATABASE: ${DB_DATABASE}
-      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_DATABASE:-swap_hub}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-root}
     volumes:
-      - ./${APP_ENV}/dbdata:/var/lib/mysql
+      - ./${APP_ENV:-development}/dbdata:/var/lib/mysql
     deploy:
       resources:
         limits:
@@ -61,10 +67,10 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: swap-hub-redis-${APP_ENV}
+    container_name: swap-hub-redis-${APP_ENV:-development}
     restart: unless-stopped
     ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "${REDIS_PORT:-6379}:6379"
     deploy:
       resources:
         limits:
@@ -79,4 +85,5 @@ services:
 volumes:
   storage-data:
     driver: local
-    name: swap-hub-storage-${APP_ENV}
+    name: swap-hub-storage-${APP_ENV:-development}
+
