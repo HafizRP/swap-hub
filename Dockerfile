@@ -16,6 +16,7 @@ RUN apk add --no-cache \
     nginx \
     ca-certificates \
     tzdata \
+    dos2unix \
     && install-php-extensions \
     pdo_mysql \
     mbstring \
@@ -36,7 +37,7 @@ WORKDIR /var/www
 
 # Copy Entrypoint and Expose ports
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80 9000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

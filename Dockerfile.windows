@@ -1,0 +1,85 @@
+# escape=`
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+LABEL maintainer="Swap Hub"
+LABEL os="windows"
+LABEL windows_version="ltsc2022"
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# 1. Install IIS and CGI features
+RUN Install-WindowsFeature -Name Web-Server, Web-CGI, Web-Http-Errors, Web-Static-Content, Web-Default-Doc, Web-Http-Logging
+
+# 2. Install Visual C++ Redistributable (Required for PHP on Windows)
+RUN Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile 'C:\vc_redist.x64.exe'; `
+    Start-Process 'C:\vc_redist.x64.exe' -ArgumentList '/install', '/quiet', '/norestart' -NoNewWindow -Wait; `
+    Remove-Item 'C:\vc_redist.x64.exe'
+
+# 3. Install IIS URL Rewrite Module (Required for Laravel route handling)
+RUN Invoke-WebRequest -Uri 'https://download.microsoft.com/download/1/2/8/128E2E03-C533-4842-92A8-EC3A73042068/rewrite_amd64_en-US.msi' -OutFile 'C:\rewrite.msi'; `
+    Start-Process 'msiexec.exe' -ArgumentList '/i', 'C:\rewrite.msi', '/quiet', '/norestart' -NoNewWindow -Wait; `
+    Remove-Item 'C:\rewrite.msi'
+
+# 4. Download and configure PHP 8.3 NTS x64
+RUN New-Item -ItemType Directory -Path 'C:\php' | Out-Null; `
+    try { `
+        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/php-8.3.17-nts-Win32-vs16-x64.zip' -OutFile 'C:\php.zip'; `
+    } catch { `
+        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/archives/php-8.3.17-nts-Win32-vs16-x64.zip' -OutFile 'C:\php.zip'; `
+    } `
+    Expand-Archive -Path 'C:\php.zip' -DestinationPath 'C:\php'; `
+    Remove-Item 'C:\php.zip'; `
+    Copy-Item 'C:\php\php.ini-production' 'C:\php\php.ini'
+
+# 5. Enable required PHP extensions in php.ini
+RUN $ini = Get-Content 'C:\php\php.ini'; `
+    $ini = $ini -replace ';extension_dir = "ext"', 'extension_dir = "C:\php\ext"'; `
+    $ini = $ini -replace ';extension=curl', 'extension=curl'; `
+    $ini = $ini -replace ';extension=fileinfo', 'extension=fileinfo'; `
+    $ini = $ini -replace ';extension=gd', 'extension=gd'; `
+    $ini = $ini -replace ';extension=intl', 'extension=intl'; `
+    $ini = $ini -replace ';extension=mbstring', 'extension=mbstring'; `
+    $ini = $ini -replace ';extension=openssl', 'extension=openssl'; `
+    $ini = $ini -replace ';extension=pdo_mysql', 'extension=pdo_mysql'; `
+    $ini = $ini -replace ';extension=zip', 'extension=zip'; `
+    $ini = $ini -replace ';cgi.force_redirect = 1', 'cgi.force_redirect = 0'; `
+    $ini = $ini -replace ';cgi.fix_pathinfo=1', 'cgi.fix_pathinfo = 1'; `
+    $ini = $ini -replace ';fastcgi.impersonate = 1', 'fastcgi.impersonate = 1'; `
+    $ini | Set-Content 'C:\php\php.ini'
+
+# 6. Install Composer
+RUN New-Item -ItemType Directory -Path 'C:\composer' | Out-Null; `
+    Invoke-WebRequest -Uri 'https://getcomposer.org/composer-stable.phar' -OutFile 'C:\composer\composer.phar'; `
+    Set-Content -Path 'C:\composer\composer.bat' -Value ('@echo off' + [Environment]::NewLine + 'php C:\composer\composer.phar %*')
+
+# 7. Install Node.js LTS
+RUN Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.18.0/node-v20.18.0-win-x64.zip' -OutFile 'C:\node.zip'; `
+    Expand-Archive -Path 'C:\node.zip' -DestinationPath 'C:\node_temp'; `
+    Move-Item 'C:\node_temp\node-v20.18.0-win-x64' 'C:\nodejs'; `
+    Remove-Item 'C:\node.zip', 'C:\node_temp' -Recurse -Force
+
+# 8. Add PHP, Composer, and Node.js to System PATH
+RUN $path = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
+    [Environment]::SetEnvironmentVariable('PATH', "$path;C:\php;C:\composer;C:\nodejs", 'Machine')
+
+# 9. Download Microsoft ServiceMonitor to keep IIS running in foreground
+RUN Invoke-WebRequest -Uri 'https://dotnetbinaries.blob.core.windows.net/servicemonitor/2.0.1.10/ServiceMonitor.exe' -OutFile 'C:\ServiceMonitor.exe'
+
+# 10. Configure IIS FastCGI and Default Website Root to C:\app\public
+RUN Import-Module WebAdministration; `
+    & "$env:SystemRoot\system32\inetsrv\appcmd.exe" set config /section:system.webServer/fastCGI /+"""[fullPath='C:\php\php-cgi.exe']"""; `
+    & "$env:SystemRoot\system32\inetsrv\appcmd.exe" set config /section:system.webServer/handlers /+"""[name='PHP-FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='C:\php\php-cgi.exe',resourceType='Either']"""; `
+    Set-ItemProperty 'IIS:\Sites\Default Web Site' -Name physicalPath -Value 'C:\app\public'
+
+WORKDIR C:\app
+
+# 11. Copy application files and pre-install dependencies
+COPY . C:\app
+
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts; `
+    npm install; `
+    npm run build
+
+EXPOSE 80
+
+ENTRYPOINT ["powershell", "-ExecutionPolicy", "Bypass", "-File", "C:\\app\\docker\\entrypoint.ps1"]

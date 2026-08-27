@@ -70,6 +70,23 @@
         "compose:down": [
             "docker compose down"
         ],
+        "windows:build": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker compose -f docker-compose.windows.yml build"
+        ],
+        "windows:start": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "docker compose -f docker-compose.windows.yml up -d"
+        ],
+        "windows:stop": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker compose -f docker-compose.windows.yml down"
+        ],
+        "windows:logs": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker compose -f docker-compose.windows.yml logs -f"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
