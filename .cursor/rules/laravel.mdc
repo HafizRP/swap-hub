@@ -1,0 +1,25 @@
+---
+description: Standards and guidelines for PHP 8.4 and Laravel 12 code
+globs: app/**/*.php, routes/**/*.php, database/**/*.php, config/**/*.php
+alwaysApply: false
+---
+
+# Laravel 12 & PHP 8.4 Standards
+
+## Code Style & Architecture
+- **PHP Version:** PHP 8.4. Use constructor property promotion, strict typing where applicable, typed properties, and explicit return types on methods.
+- **Controllers:** Keep controllers thin. Extract business logic into service classes (`app/Services/`).
+- **Validation:** Use Form Requests (`app/Http/Requests`) or Livewire validation rules. Do not perform inline controller validation.
+- **Database & Eloquent:**
+  - Explicitly define relationship return types (`BelongsTo`, `HasMany`, `BelongsToMany`).
+  - Maintain `$fillable` on models.
+  - Never mutate existing migrations that have run. Always create a new migration for schema changes (`database/migrations/`).
+- **Code Style (Pint):** Adhere to the Laravel Pint preset defined in `pint.json`. Verify formatting with `vendor/bin/pint`.
+
+## Command Execution
+The host environment may run an older PHP version. Run all commands inside Docker:
+```bash
+docker compose exec app php artisan <command>
+docker compose exec app php artisan test
+docker compose exec app php vendor/bin/pint --test
+```
