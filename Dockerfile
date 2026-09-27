@@ -19,6 +19,7 @@ RUN apk add --no-cache \
     dos2unix \
     && install-php-extensions \
     pdo_mysql \
+    pdo_sqlite \
     mbstring \
     exif \
     pcntl \

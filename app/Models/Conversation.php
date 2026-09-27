@@ -41,8 +41,8 @@ class Conversation extends Model
             'type' => $this->type,
             'name' => $this->name ?? ($otherParticipant->name ?? 'Unknown'),
             'avatar' => $this->type === 'project'
-                ? 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=4f46e5&color=fff'
-                : ($otherParticipant->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($otherParticipant->name ?? 'U') . '&background=10b981&color=fff'),
+                ? 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=4f46e5&color=fff'
+                : ($otherParticipant->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($otherParticipant->name ?? 'U').'&background=10b981&color=fff'),
             'latest_message' => $this->latestMessage->content ?? 'No messages yet...',
             'latest_message_time' => $this->latestMessage ? $this->latestMessage->created_at->format('H:i') : '',
             'unread' => $this->pivot->last_read_at < ($this->latestMessage->created_at ?? now()->subYear()),

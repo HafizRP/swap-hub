@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -60,8 +59,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withPivot('role', 'is_validated', 'contribution_rating', 'contribution_notes', 'joined_at')
             ->withTimestamps();
     }
-
-
 
     public function conversations()
     {

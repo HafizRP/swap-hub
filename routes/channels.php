@@ -9,7 +9,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
     $conversation = \App\Models\Conversation::find($conversationId);
 
-    if (!$conversation) {
+    if (! $conversation) {
         return false;
     }
 

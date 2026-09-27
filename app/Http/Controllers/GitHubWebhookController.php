@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\User;
+use App\Services\GitHubWebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -12,8 +13,17 @@ class GitHubWebhookController extends Controller
     /**
      * Handle incoming GitHub webhooks.
      */
-    public function handle(Request $request)
+    public function handle(Request $request, GitHubWebhookService $webhookService)
     {
+        $signature = $request->header('X-Hub-Signature-256');
+        $rawPayload = $request->getContent();
+
+        if (! $webhookService->verifySignature($rawPayload, $signature)) {
+            Log::warning('GitHub Webhook: Invalid or missing HMAC signature');
+
+            return response()->json(['message' => 'Invalid signature'], 401);
+        }
+
         $payload = $request->all();
         $event = $request->header('X-GitHub-Event');
 
@@ -34,7 +44,7 @@ class GitHubWebhookController extends Controller
         $repoUrl = $payload['repository']['html_url'];
         $project = Project::where('github_repo_url', $repoUrl)->first();
 
-        if (!$project) {
+        if (! $project) {
             return response()->json(['message' => 'Project not found'], 404);
         }
 
@@ -66,19 +76,19 @@ class GitHubWebhookController extends Controller
             $pusher = $payload['pusher']['name'] ?? 'Someone';
 
             // Format commits for Markdown
-            $commitList = "";
+            $commitList = '';
             foreach (array_slice($payload['commits'], 0, 5) as $commit) {
                 // Get first line only
                 $subject = explode("\n", $commit['message'])[0];
-                $commitList .= "- " . $subject . "\n";
+                $commitList .= '- '.$subject."\n";
             }
             if ($commitCount > 5) {
-                $commitList .= "- ... and " . ($commitCount - 5) . " more\n";
+                $commitList .= '- ... and '.($commitCount - 5)." more\n";
             }
 
             $message = $project->conversation->messages()->create([
                 'user_id' => null,
-                'content' => "🚀 **GitHub Sync**: {$pusher} pushed {$commitCount} commit(s) to `{$branch}`\n\n" . trim($commitList),
+                'content' => "🚀 **GitHub Sync**: {$pusher} pushed {$commitCount} commit(s) to `{$branch}`\n\n".trim($commitList),
             ]);
 
             broadcast(new \App\Events\MessageSent($message));

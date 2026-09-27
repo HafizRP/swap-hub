@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
         // 4. Create additional sample users if they don't exist
         if (User::where('role_id', $studentRole->id)->count() >= 20) {
             $this->command->info('Dummy data already exists. Skipping...');
+
             return;
         }
 
@@ -86,7 +87,7 @@ class DatabaseSeeder extends Seeder
             $conversation = \App\Models\Conversation::create([
                 'type' => 'project',
                 'project_id' => $project->id,
-                'name' => $project->title . ' Chat',
+                'name' => $project->title.' Chat',
             ]);
 
             // Add members to conversation
@@ -96,9 +97,10 @@ class DatabaseSeeder extends Seeder
             // Seed some messages with sequential dates
             $messageDate = (clone $project->created_at);
             for ($i = 0; $i < 10; $i++) {
-                $messageDate = (clone $messageDate)->modify('+' . rand(1, 24) . ' hours');
-                if ($messageDate > now())
+                $messageDate = (clone $messageDate)->modify('+'.rand(1, 24).' hours');
+                if ($messageDate > now()) {
                     $messageDate = now();
+                }
 
                 \App\Models\Message::factory()->create([
                     'conversation_id' => $conversation->id,

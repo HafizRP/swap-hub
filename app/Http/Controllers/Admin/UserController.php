@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -24,14 +25,18 @@ class UserController extends Controller
 
         // Filter by role
         if ($request->has('role') && $request->role !== 'all') {
-            $query->whereHas('role', function ($q) use ($request) {
-                $q->where('slug', $request->role);
+            $roleSlug = $request->role === 'user' ? 'student' : $request->role;
+            $query->whereHas('role', function ($q) use ($roleSlug) {
+                $q->where('slug', $roleSlug);
             });
         }
 
-        // Sort
-        $sortBy = $request->get('sort', 'created_at');
-        $sortOrder = $request->get('order', 'desc');
+        // Sort with allowlist
+        $allowedSorts = ['id', 'name', 'email', 'university', 'reputation_points', 'created_at', 'updated_at'];
+        $allowedOrders = ['asc', 'desc'];
+
+        $sortBy = in_array($request->get('sort'), $allowedSorts, true) ? $request->get('sort') : 'created_at';
+        $sortOrder = in_array(strtolower((string) $request->get('order', '')), $allowedOrders, true) ? strtolower((string) $request->get('order')) : 'desc';
         $query->orderBy($sortBy, $sortOrder);
 
         $users = $query->paginate(20)->withQueryString();
@@ -55,12 +60,25 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
-            'role' => ['required', 'in:user,admin'],
+            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
+            'role' => ['required', 'in:user,student,admin'],
             'reputation_points' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $user->update($validated);
+        $roleSlug = in_array($validated['role'], ['user', 'student'], true) ? 'student' : 'admin';
+        $role = Role::where('slug', $roleSlug)->first();
+
+        $updateData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'reputation_points' => $validated['reputation_points'] ?? $user->reputation_points,
+        ];
+
+        if ($role && $user->id !== auth()->id()) {
+            $updateData['role_id'] = $role->id;
+        }
+
+        $user->update($updateData);
 
         return redirect()->route('admin.users.show', $user)
             ->with('success', 'User updated successfully.');
@@ -91,13 +109,19 @@ class UserController extends Controller
             'admin_password' => 'required|string',
         ]);
 
-        if (!\Illuminate\Support\Facades\Hash::check($request->admin_password, auth()->user()->password)) {
+        if (! \Illuminate\Support\Facades\Hash::check($request->admin_password, auth()->user()->password)) {
             return back()->withErrors(['admin_password' => 'Incorrect password provided.']);
         }
 
-        $user->update([
-            'role' => $user->role === 'admin' ? 'user' : 'admin'
-        ]);
+        $isCurrentlyAdmin = $user->role && $user->role->slug === 'admin';
+        $targetSlug = $isCurrentlyAdmin ? 'student' : 'admin';
+        $targetRole = Role::where('slug', $targetSlug)->first();
+
+        if ($targetRole) {
+            $user->update([
+                'role_id' => $targetRole->id,
+            ]);
+        }
 
         return back()->with('success', 'User role updated successfully.');
     }

@@ -3,10 +3,10 @@
 namespace App\Jobs;
 
 use App\Models\Project;
+use Google_Service_Calendar_Calendar;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Spatie\GoogleCalendar\GoogleCalendarFactory;
-use Google_Service_Calendar_Calendar;
 
 class CreateProjectGoogleCalendar implements ShouldQueue
 {
@@ -40,7 +40,7 @@ class CreateProjectGoogleCalendar implements ShouldQueue
             $service = new \Google_Service_Calendar($client);
 
             // Create a new Google Calendar for this project
-            $calendar = new Google_Service_Calendar_Calendar();
+            $calendar = new Google_Service_Calendar_Calendar;
             $calendar->setSummary("Swap Hub - {$this->project->title}");
             $calendar->setDescription("Task calendar for project: {$this->project->description}");
             $calendar->setTimeZone(config('app.timezone', 'UTC'));
@@ -59,7 +59,7 @@ class CreateProjectGoogleCalendar implements ShouldQueue
             $this->shareCalendarWithOwner($service, $calendarId);
 
         } catch (\Exception $e) {
-            \Log::error("Failed to create Google Calendar for project [{$this->project->title}]: " . $e->getMessage());
+            \Log::error("Failed to create Google Calendar for project [{$this->project->title}]: ".$e->getMessage());
         }
     }
 
@@ -72,12 +72,12 @@ class CreateProjectGoogleCalendar implements ShouldQueue
             // Load owner fresh (may not be loaded when job was serialized)
             $owner = $this->project->owner()->first();
 
-            if (!$owner || !$owner->email) {
+            if (! $owner || ! $owner->email) {
                 return;
             }
 
-            $rule = new \Google_Service_Calendar_AclRule();
-            $scope = new \Google_Service_Calendar_AclRuleScope();
+            $rule = new \Google_Service_Calendar_AclRule;
+            $scope = new \Google_Service_Calendar_AclRuleScope;
 
             $scope->setType('user');
             $scope->setValue($owner->email);
@@ -90,7 +90,7 @@ class CreateProjectGoogleCalendar implements ShouldQueue
             \Log::info("Google Calendar [{$calendarId}] shared with owner [{$owner->email}]");
 
         } catch (\Exception $e) {
-            \Log::error("Failed to share Google Calendar with owner: " . $e->getMessage());
+            \Log::error('Failed to share Google Calendar with owner: '.$e->getMessage());
         }
     }
 }

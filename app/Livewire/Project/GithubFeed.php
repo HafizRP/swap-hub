@@ -31,7 +31,7 @@ class GithubFeed extends Component
         }
 
         return view('livewire.project.github-feed', [
-            'activities' => $activities
+            'activities' => $activities,
         ]);
     }
 }

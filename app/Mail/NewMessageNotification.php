@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -31,7 +30,7 @@ class NewMessageNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Message from ' . $this->sender->name,
+            subject: 'New Message from '.$this->sender->name,
         );
     }
 

@@ -31,9 +31,13 @@ class ProjectController extends Controller
             $query->where('category', $request->category);
         }
 
-        // Sort
-        $sortBy = $request->get('sort', 'created_at');
-        $sortOrder = $request->get('order', 'desc');
+        // Sort with allowlist
+        $allowedSorts = ['id', 'title', 'status', 'category', 'created_at', 'updated_at'];
+        $allowedOrders = ['asc', 'desc'];
+
+        $sortBy = in_array($request->get('sort'), $allowedSorts, true) ? $request->get('sort') : 'created_at';
+        $sortOrder = in_array(strtolower((string) $request->get('order', '')), $allowedOrders, true) ? strtolower((string) $request->get('order')) : 'desc';
+
         $query->orderBy($sortBy, $sortOrder);
 
         $projects = $query->paginate(20)->withQueryString();

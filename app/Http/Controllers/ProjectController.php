@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MemberValidated;
+use App\Mail\ProjectMemberAdded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ProjectMemberAdded;
-use App\Mail\MemberValidated;
 
 class ProjectController extends Controller
 {
@@ -23,8 +23,8 @@ class ProjectController extends Controller
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -52,7 +52,7 @@ class ProjectController extends Controller
     {
         $repositories = [];
         if (auth()->user()->github_token) {
-            $githubService = new \App\Services\GitHubService();
+            $githubService = new \App\Services\GitHubService;
             $repositories = $githubService->getUserRepositories(auth()->user());
         }
 
@@ -81,7 +81,7 @@ class ProjectController extends Controller
         $project->members()->attach(auth()->id(), [
             'role' => 'owner',
             'status' => 'active',
-            'is_validated' => true
+            'is_validated' => true,
         ]);
 
         // Auto-create Google Calendar for this project
@@ -103,11 +103,11 @@ class ProjectController extends Controller
         $project->load(['owner', 'members', 'githubActivities']);
 
         // Lazy create conversation if it doesn't exist
-        if (!$project->conversation) {
+        if (! $project->conversation) {
             $conversation = \App\Models\Conversation::create([
                 'type' => 'project',
                 'project_id' => $project->id,
-                'name' => $project->title . ' Chat',
+                'name' => $project->title.' Chat',
             ]);
 
             // Add all current members as participants
@@ -123,7 +123,7 @@ class ProjectController extends Controller
     public function workspace(\App\Models\Project $project)
     {
         // Check if user is a member or owner
-        if ($project->owner_id !== auth()->id() && !$project->members->contains(auth()->id())) {
+        if ($project->owner_id !== auth()->id() && ! $project->members->contains(auth()->id())) {
             abort(403, 'You are not a member of this project.');
         }
 
@@ -131,7 +131,6 @@ class ProjectController extends Controller
 
         return view('projects.workspace', compact('project'));
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -142,7 +141,7 @@ class ProjectController extends Controller
 
         $repositories = [];
         if (auth()->user()->github_token) {
-            $githubService = new \App\Services\GitHubService();
+            $githubService = new \App\Services\GitHubService;
             $repositories = $githubService->getUserRepositories(auth()->user());
         }
 
@@ -179,6 +178,7 @@ class ProjectController extends Controller
     {
         $this->authorizeOwner($project);
         $project->delete();
+
         return redirect()->route('projects.index')->with('status', 'project-deleted');
     }
 
@@ -207,7 +207,7 @@ class ProjectController extends Controller
 
         // Prevent duplicates
         $project->members()->syncWithoutDetaching([
-            $userId => ['role' => $role, 'status' => 'active', 'joined_at' => now()]
+            $userId => ['role' => $role, 'status' => 'active', 'joined_at' => now()],
         ]);
 
         // Add to conversation if it exists
@@ -338,6 +338,7 @@ class ProjectController extends Controller
     {
         $this->authorizeOwner($project);
         $project->members()->detach($user->id);
+
         return back()->with('status', 'member-removed');
     }
 
@@ -356,7 +357,7 @@ class ProjectController extends Controller
         $project->members()->updateExistingPivot($user->id, [
             'is_validated' => true,
             'contribution_rating' => $validated['rating'],
-            'contribution_notes' => $validated['notes']
+            'contribution_notes' => $validated['notes'],
         ]);
 
         // Reward reputation points
@@ -392,11 +393,11 @@ class ProjectController extends Controller
         $this->authorizeOwner($project);
 
         $user = auth()->user();
-        if (!$user->github_token) {
+        if (! $user->github_token) {
             return back()->with('error', 'Please connect your GitHub account in Profile settings first.');
         }
 
-        if (!$project->github_repo_url) {
+        if (! $project->github_repo_url) {
             return back()->with('error', 'Please add a GitHub Repository URL first.');
         }
 
@@ -414,7 +415,7 @@ class ProjectController extends Controller
      */
     protected function setupGitHubWebhook(\App\Models\Project $project, string $githubToken): void
     {
-        $webhookService = new \App\Services\GitHubWebhookService();
+        $webhookService = new \App\Services\GitHubWebhookService;
 
         // Webhook URL that GitHub will call
         $webhookUrl = url('/webhooks/github');

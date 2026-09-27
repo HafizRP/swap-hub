@@ -11,7 +11,9 @@ class FileBrowser extends Component
     use WithFileUploads;
 
     public Project $project;
+
     public $search = '';
+
     public $typeFilter = 'all'; // all, image, document
 
     public function mount(Project $project)
@@ -21,7 +23,7 @@ class FileBrowser extends Component
 
     public function getFilesProperty()
     {
-        if (!$this->project->conversation) {
+        if (! $this->project->conversation) {
             return collect([]);
         }
 
@@ -30,7 +32,7 @@ class FileBrowser extends Component
                 $q->where('conversation_id', $this->project->conversation->id);
             })
             ->when($this->search, function ($q) {
-                $q->where('file_name', 'like', '%' . $this->search . '%');
+                $q->where('file_name', 'like', '%'.$this->search.'%');
             })
             ->when($this->typeFilter !== 'all', function ($q) {
                 if ($this->typeFilter === 'image') {
@@ -46,7 +48,7 @@ class FileBrowser extends Component
     public function render()
     {
         return view('livewire.project.file-browser', [
-            'files' => $this->getFilesProperty()
+            'files' => $this->getFilesProperty(),
         ]);
     }
 }

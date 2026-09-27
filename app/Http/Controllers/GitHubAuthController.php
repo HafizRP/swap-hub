@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -42,11 +41,14 @@ class GitHubAuthController extends Controller
             // Scenario: Logging in via GitHub
             $user = User::where('email', $githubUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
+                $studentRole = \App\Models\Role::where('slug', 'student')->first();
+
                 // Auto-register new user
                 $user = User::create([
                     'name' => $githubUser->getName() ?? $githubUser->getNickname(),
                     'email' => $githubUser->getEmail(),
+                    'role_id' => $studentRole?->id,
                     'github_username' => $githubUser->getNickname(),
                     'github_token' => $githubUser->token,
                     'password' => bcrypt(str()->random(32)), // Random password
@@ -70,9 +72,10 @@ class GitHubAuthController extends Controller
 
         } catch (\Exception $e) {
             if (Auth::check()) {
-                return redirect()->route('profile.edit')->with('error', 'GitHub linking failed: ' . $e->getMessage());
+                return redirect()->route('profile.edit')->with('error', 'GitHub linking failed: '.$e->getMessage());
             }
-            return redirect()->route('login')->with('error', 'GitHub login failed: ' . $e->getMessage());
+
+            return redirect()->route('login')->with('error', 'GitHub login failed: '.$e->getMessage());
         }
     }
 }

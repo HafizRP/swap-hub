@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Task;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use App\Models\Task;
 use Spatie\GoogleCalendar\GoogleCalendarFactory;
 
 class CreateGoogleCalendarEvent implements ShouldQueue
@@ -33,46 +33,48 @@ class CreateGoogleCalendarEvent implements ShouldQueue
             $calendarId = $this->task->project->google_calendar_id
                 ?? config('google-calendar.calendar_id');
 
-            if (!$calendarId) {
+            if (! $calendarId) {
                 // Calendar may not be created yet (race condition with CreateProjectGoogleCalendar)
                 // Release back to queue and retry after 30 seconds
                 if ($this->attempts() < 3) {
                     $this->release(30);
                     \Log::info("No Google Calendar ID yet for project [{$this->task->project->title}]. Retrying in 30s.");
+
                     return;
                 }
                 \Log::warning("No Google Calendar ID set for project [{$this->task->project->title}] after retries. Skipping.");
+
                 return;
             }
 
             // Build authenticated Google Calendar service
-            $config  = config('google-calendar');
-            $client  = GoogleCalendarFactory::createAuthenticatedGoogleClient($config);
+            $config = config('google-calendar');
+            $client = GoogleCalendarFactory::createAuthenticatedGoogleClient($config);
             $service = new \Google_Service_Calendar($client);
 
             // Build event
-            $googleEvent = new \Google_Service_Calendar_Event();
+            $googleEvent = new \Google_Service_Calendar_Event;
             $googleEvent->setSummary("[Swap Hub - {$this->task->project->title}] {$this->task->title}");
             $googleEvent->setDescription(
-                $this->task->description .
-                "\n\nAssignee: " . ($this->task->assignee ? $this->task->assignee->name : 'Unassigned')
+                $this->task->description.
+                "\n\nAssignee: ".($this->task->assignee ? $this->task->assignee->name : 'Unassigned')
             );
 
             // Set date
             if ($this->task->due_date) {
-                $start = new \Google_Service_Calendar_EventDateTime();
+                $start = new \Google_Service_Calendar_EventDateTime;
                 $start->setDate(\Carbon\Carbon::parse($this->task->due_date)->format('Y-m-d'));
                 $start->setTimeZone(config('app.timezone', 'UTC'));
 
-                $end = new \Google_Service_Calendar_EventDateTime();
+                $end = new \Google_Service_Calendar_EventDateTime;
                 $end->setDate(\Carbon\Carbon::parse($this->task->due_date)->addDay()->format('Y-m-d'));
                 $end->setTimeZone(config('app.timezone', 'UTC'));
             } else {
-                $start = new \Google_Service_Calendar_EventDateTime();
+                $start = new \Google_Service_Calendar_EventDateTime;
                 $start->setDateTime(\Carbon\Carbon::now()->format(\DateTime::RFC3339));
                 $start->setTimeZone(config('app.timezone', 'UTC'));
 
-                $end = new \Google_Service_Calendar_EventDateTime();
+                $end = new \Google_Service_Calendar_EventDateTime;
                 $end->setDateTime(\Carbon\Carbon::now()->addHour()->format(\DateTime::RFC3339));
                 $end->setTimeZone(config('app.timezone', 'UTC'));
             }
@@ -95,7 +97,7 @@ class CreateGoogleCalendarEvent implements ShouldQueue
             }
 
         } catch (\Exception $e) {
-            \Log::error('Failed to create Google Calendar Event: ' . $e->getMessage());
+            \Log::error('Failed to create Google Calendar Event: '.$e->getMessage());
         }
     }
 }

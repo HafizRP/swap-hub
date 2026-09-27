@@ -2,12 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\MessageSent;
-use App\Models\Message;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\NewMessageNotification;
-
 class ChatController extends Controller
 {
     /**
@@ -27,7 +21,7 @@ class ChatController extends Controller
             })
             ->first();
 
-        if (!$conversation) {
+        if (! $conversation) {
             $conversation = \App\Models\Conversation::create([
                 'type' => 'direct',
                 'name' => null, // Direct chats use participant names

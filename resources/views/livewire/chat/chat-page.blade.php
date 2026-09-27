@@ -118,7 +118,7 @@
                                     @if($isSystem)
                                         <div class="text-center my-3">
                                             <span class="text-xs bg-slate-200 dark:bg-slate-800 px-3.5 py-1 rounded-full text-slate-500 dark:text-slate-400 inline-block border border-slate-300 dark:border-slate-700">
-                                                {!! Str::markdown($msg['content']) !!}
+                                                {!! Str::markdown($msg['content'], ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                                             </span>
                                         </div>
                                         @php $prevUserId = null; @endphp {{-- Reset grouping after system msg --}}
@@ -145,7 +145,7 @@
                                                 @if(!empty(trim($msg['content'])))
                                                     <div class="shadow-sm rounded-2xl p-3 text-sm {{ $isOwn ? 'bg-indigo-600 text-white rounded-br-sm' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-sm' }}"
                                                          style="{{ $isSameUser ? ($isOwn ? 'border-top-right-radius: 4px;' : 'border-top-left-radius: 4px;') : '' }}">
-                                                        {!! Str::markdown($msg['content']) !!}
+                                                        {!! Str::markdown($msg['content'], ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                                                     </div>
                                                 @endif
  

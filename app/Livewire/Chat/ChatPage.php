@@ -3,20 +3,26 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Conversation;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\Attributes\On;
 
 class ChatPage extends Component
 {
     use WithFileUploads;
 
     public $conversationId = null;
+
     public $conversation = null;
+
     public $messages = [];
+
     public $newMessage = '';
+
     public $loading = false;
+
     public $attachments = [];
+
     public $activeTab = 'chat'; // chat, tasks, files
 
     public function mount($conversation = null)
@@ -41,7 +47,7 @@ class ChatPage extends Component
         $this->dispatch('update-conversation-ui', conversationId: $conversationId);
 
         // Check authorization
-        if (!$this->conversation->participants->contains(auth()->id())) {
+        if (! $this->conversation->participants->contains(auth()->id())) {
             abort(403);
         }
 
@@ -62,8 +68,9 @@ class ChatPage extends Component
 
     public function loadMessages()
     {
-        if (!$this->conversation) {
+        if (! $this->conversation) {
             $this->messages = [];
+
             return;
         }
 
@@ -85,14 +92,14 @@ class ChatPage extends Component
                     'user_id' => $message->user_id,
                     'user_name' => $message->user ? $message->user->name : 'System',
                     'user_avatar' => $message->user
-                        ? ($message->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->user->name) . '&background=6366f1&color=fff')
+                        ? ($message->user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($message->user->name).'&background=6366f1&color=fff')
                         : 'https://ui-avatars.com/api/?name=System&background=10b981&color=fff',
                     'created_at' => $message->created_at->toISOString(),
                     'created_at_human' => $message->created_at->format('H:i'),
                     'attachments' => $message->attachments->map(function ($att) {
                         return [
                             'id' => $att->id,
-                            'file_path' => asset('storage/' . $att->file_path),
+                            'file_path' => asset('storage/'.$att->file_path),
                             'file_name' => $att->file_name,
                             'file_type' => $att->file_type, // MIME type
                         ];
@@ -113,14 +120,29 @@ class ChatPage extends Component
 
     public function sendMessage()
     {
-        if (!$this->conversation || (empty(trim($this->newMessage)) && empty($this->attachments))) {
+        if (! $this->conversation || (empty(trim($this->newMessage)) && empty($this->attachments))) {
             return;
         }
 
         $this->validate([
-            'newMessage' => 'nullable|string|max:5000',
-            'attachments.*' => 'file|max:10240', // Validate each file
-            'attachments' => 'max:5', // Max 5 files
+            'newMessage' => ['nullable', 'string', 'max:5000'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => [
+                'file',
+                'max:10240',
+                'mimes:jpg,jpeg,png,gif,webp,svg,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar',
+                function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    $dangerousExtensions = [
+                        'php', 'php3', 'php4', 'php5', 'phtml', 'phar',
+                        'exe', 'sh', 'bat', 'cmd', 'py', 'pl', 'cgi',
+                        'bash', 'js', 'html', 'htm',
+                    ];
+                    if (in_array($ext, $dangerousExtensions, true)) {
+                        $fail('The attachment file extension is not permitted.');
+                    }
+                },
+            ],
         ]);
 
         $this->loading = true;
@@ -143,7 +165,7 @@ class ChatPage extends Component
 
             $savedAttachments[] = [
                 'id' => $att->id,
-                'file_path' => asset('storage/' . $path),
+                'file_path' => asset('storage/'.$path),
                 'file_name' => $att->file_name,
                 'file_type' => $att->file_type,
             ];
@@ -158,7 +180,7 @@ class ChatPage extends Component
             'content' => $message->content,
             'user_id' => $message->user_id,
             'user_name' => auth()->user()->name,
-            'user_avatar' => auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=6366f1&color=fff',
+            'user_avatar' => auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=6366f1&color=fff',
             'created_at' => $message->created_at->toISOString(),
             'created_at_human' => $message->created_at->format('H:i'),
             'attachments' => $savedAttachments,
@@ -199,7 +221,7 @@ class ChatPage extends Component
         }
 
         return view('livewire.chat.chat-page', [
-            'quickTasks' => $quickTasks
+            'quickTasks' => $quickTasks,
         ]);
     }
 }

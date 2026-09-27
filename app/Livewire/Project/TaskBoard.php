@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Project;
 
+use App\Jobs\CreateGoogleCalendarEvent;
 use App\Models\Project;
 use App\Models\Task;
 use Livewire\Component;
-use App\Jobs\CreateGoogleCalendarEvent;
 
 class TaskBoard extends Component
 {
@@ -16,10 +16,15 @@ class TaskBoard extends Component
 
     // Create Task State
     public $showCreateModal = false;
+
     public $title = '';
+
     public $description = '';
+
     public $assigned_to = null;
+
     public $priority = 'medium';
+
     public $due_date = null;
 
     protected $rules = [
@@ -34,8 +39,24 @@ class TaskBoard extends Component
         $this->project = $project;
     }
 
+    protected function authorizeMember(): void
+    {
+        $userId = auth()->id();
+        if (! $userId) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $isMember = $this->project->owner_id === $userId
+            || $this->project->members()->where('user_id', $userId)->exists();
+
+        if (! $isMember) {
+            abort(403, 'You are not authorized to modify tasks for this project.');
+        }
+    }
+
     public function createTask()
     {
+        $this->authorizeMember();
         $this->validate();
 
         $task = $this->project->tasks()->create([
@@ -56,12 +77,22 @@ class TaskBoard extends Component
 
     public function updateStatus($taskId, $newStatus)
     {
+        $this->authorizeMember();
+
+        if (! in_array($newStatus, ['todo', 'in_progress', 'done'], true)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'status' => 'Invalid task status.',
+            ]);
+        }
+
         $task = $this->project->tasks()->findOrFail($taskId);
         $task->update(['status' => $newStatus]);
     }
 
     public function deleteTask($taskId)
     {
+        $this->authorizeMember();
+
         $task = $this->project->tasks()->findOrFail($taskId);
         $task->delete();
     }
@@ -76,7 +107,7 @@ class TaskBoard extends Component
 
         return view('livewire.project.task-board', [
             'tasks' => $tasks,
-            'members' => $this->project->members
+            'members' => $this->project->members,
         ]);
     }
 }
