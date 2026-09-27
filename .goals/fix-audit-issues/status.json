@@ -1,6 +1,6 @@
 {
   "goal_id": "fix-audit-issues",
-  "status": "inspecting",
+  "status": "completed",
   "iteration": 1,
   "builder_model": "gemini-3.8-flash-high",
   "inspector_model": "gemini-3.8-flash-high",
