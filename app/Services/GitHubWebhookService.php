@@ -10,9 +10,9 @@ class GitHubWebhookService
     /**
      * Create a webhook for a GitHub repository.
      *
-     * @param string $repoUrl GitHub repository URL (e.g., https://github.com/user/repo)
-     * @param string $githubToken User's GitHub personal access token
-     * @param string $webhookUrl The webhook URL to receive events
+     * @param  string  $repoUrl  GitHub repository URL (e.g., https://github.com/user/repo)
+     * @param  string  $githubToken  User's GitHub personal access token
+     * @param  string  $webhookUrl  The webhook URL to receive events
      * @return array|null Returns webhook data or null on failure
      */
     public function createWebhook(string $repoUrl, string $githubToken, string $webhookUrl): ?array
@@ -21,8 +21,9 @@ class GitHubWebhookService
             // Parse repository owner and name from URL
             $repoParts = $this->parseRepoUrl($repoUrl);
 
-            if (!$repoParts) {
+            if (! $repoParts) {
                 Log::error('Invalid GitHub repository URL', ['url' => $repoUrl]);
+
                 return null;
             }
 
@@ -38,11 +39,23 @@ class GitHubWebhookService
             foreach ($existingWebhooks as $webhook) {
                 if (isset($webhook['config']['url']) && $webhook['config']['url'] === $webhookUrl) {
                     Log::info('Webhook already exists', ['webhook_id' => $webhook['id']]);
+
                     return $webhook;
                 }
             }
 
             // Create webhook
+            $webhookSecret = config('services.github.webhook_secret');
+            $hookConfig = [
+                'url' => $webhookUrl,
+                'content_type' => 'json',
+                'insecure_ssl' => '0',
+            ];
+
+            if (! empty($webhookSecret)) {
+                $hookConfig['secret'] = $webhookSecret;
+            }
+
             $response = Http::withToken($githubToken)
                 ->withHeaders([
                     'Accept' => 'application/vnd.github.v3+json',
@@ -52,11 +65,7 @@ class GitHubWebhookService
                     'name' => 'web',
                     'active' => true,
                     'events' => ['push', 'pull_request', 'issues'],
-                    'config' => [
-                        'url' => $webhookUrl,
-                        'content_type' => 'json',
-                        'insecure_ssl' => '0',
-                    ],
+                    'config' => $hookConfig,
                 ]);
 
             if ($response->successful()) {
@@ -109,6 +118,7 @@ class GitHubWebhookService
 
         } catch (\Exception $e) {
             Log::error('Exception getting GitHub webhooks', ['message' => $e->getMessage()]);
+
             return [];
         }
     }
@@ -121,7 +131,7 @@ class GitHubWebhookService
         try {
             $repoParts = $this->parseRepoUrl($repoUrl);
 
-            if (!$repoParts) {
+            if (! $repoParts) {
                 return false;
             }
 
@@ -141,6 +151,7 @@ class GitHubWebhookService
 
         } catch (\Exception $e) {
             Log::error('Exception deleting GitHub webhook', ['message' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -148,7 +159,6 @@ class GitHubWebhookService
     /**
      * Parse GitHub repository URL to extract owner and repo name.
      *
-     * @param string $url
      * @return array|null ['owner' => 'username', 'repo' => 'repository']
      */
     protected function parseRepoUrl(string $url): ?array
@@ -177,7 +187,7 @@ class GitHubWebhookService
         try {
             $repoParts = $this->parseRepoUrl($repoUrl);
 
-            if (!$repoParts) {
+            if (! $repoParts) {
                 return null;
             }
 
@@ -201,7 +211,29 @@ class GitHubWebhookService
 
         } catch (\Exception $e) {
             Log::error('Exception getting repo info', ['message' => $e->getMessage()]);
+
             return null;
         }
+    }
+
+    /**
+     * Verify GitHub webhook HMAC-SHA256 signature.
+     */
+    public function verifySignature(string $payload, ?string $signature, ?string $secret = null): bool
+    {
+        $secret = $secret ?? config('services.github.webhook_secret');
+
+        if (empty($secret) || empty($signature)) {
+            return false;
+        }
+
+        if (! str_starts_with($signature, 'sha256=')) {
+            return false;
+        }
+
+        $expectedHash = hash_hmac('sha256', $payload, $secret);
+        $providedHash = substr($signature, 7);
+
+        return hash_equals($expectedHash, $providedHash);
     }
 }

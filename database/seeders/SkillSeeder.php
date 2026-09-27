@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SkillSeeder extends Seeder
@@ -24,7 +23,7 @@ class SkillSeeder extends Seeder
             ['name' => 'Node.js', 'category' => 'Programming', 'description' => 'JavaScript runtime environment'],
             ['name' => 'SQL', 'category' => 'Programming', 'description' => 'Database query language'],
             ['name' => 'Git', 'category' => 'Programming', 'description' => 'Version control system'],
-            
+
             // Design
             ['name' => 'UI/UX Design', 'category' => 'Design', 'description' => 'User interface and experience design'],
             ['name' => 'Figma', 'category' => 'Design', 'description' => 'Collaborative design tool'],
@@ -32,20 +31,20 @@ class SkillSeeder extends Seeder
             ['name' => 'Adobe Illustrator', 'category' => 'Design', 'description' => 'Vector graphics editor'],
             ['name' => 'Graphic Design', 'category' => 'Design', 'description' => 'Visual communication design'],
             ['name' => 'Prototyping', 'category' => 'Design', 'description' => 'Creating interactive mockups'],
-            
+
             // Marketing
             ['name' => 'Digital Marketing', 'category' => 'Marketing', 'description' => 'Online marketing strategies'],
             ['name' => 'Social Media Marketing', 'category' => 'Marketing', 'description' => 'Marketing on social platforms'],
             ['name' => 'Content Writing', 'category' => 'Marketing', 'description' => 'Creating engaging content'],
             ['name' => 'SEO', 'category' => 'Marketing', 'description' => 'Search engine optimization'],
             ['name' => 'Copywriting', 'category' => 'Marketing', 'description' => 'Writing persuasive copy'],
-            
+
             // Business
             ['name' => 'Project Management', 'category' => 'Business', 'description' => 'Managing projects effectively'],
             ['name' => 'Business Analysis', 'category' => 'Business', 'description' => 'Analyzing business processes'],
             ['name' => 'Data Analysis', 'category' => 'Business', 'description' => 'Analyzing and interpreting data'],
             ['name' => 'Financial Analysis', 'category' => 'Business', 'description' => 'Analyzing financial data'],
-            
+
             // Other
             ['name' => 'Video Editing', 'category' => 'Multimedia', 'description' => 'Editing and producing videos'],
             ['name' => 'Photography', 'category' => 'Multimedia', 'description' => 'Capturing and editing photos'],

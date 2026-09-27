@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -27,11 +26,14 @@ class GoogleAuthController extends Controller
 
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
+                $studentRole = \App\Models\Role::where('slug', 'student')->first();
+
                 // Register new user
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
+                    'role_id' => $studentRole?->id,
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
                     'password' => bcrypt(str()->random(32)), // Random password
@@ -45,7 +47,7 @@ class GoogleAuthController extends Controller
 
             // Login existing user
             // If user exists but google_id is missing, link it
-            if (!$user->google_id) {
+            if (! $user->google_id) {
                 $user->update([
                     'google_id' => $googleUser->getId(),
                     'avatar' => $user->avatar ?? $googleUser->getAvatar(), // Keep existing avatar if any
@@ -57,7 +59,7 @@ class GoogleAuthController extends Controller
             return redirect()->intended(route('dashboard'));
 
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Google login failed: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Google login failed: '.$e->getMessage());
         }
     }
 }

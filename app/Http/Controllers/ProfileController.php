@@ -64,6 +64,7 @@ class ProfileController extends Controller
     public function show(\App\Models\User $user): View
     {
         $user->load(['skills', 'ownedProjects', 'projects']);
+
         return view('profile.show', compact('user'));
     }
 
@@ -78,7 +79,7 @@ class ProfileController extends Controller
         ]);
 
         $request->user()->skills()->syncWithoutDetaching([
-            $validated['skill_id'] => ['proficiency_level' => $validated['proficiency_level']]
+            $validated['skill_id'] => ['proficiency_level' => $validated['proficiency_level']],
         ]);
 
         return back()->with('status', 'skill-added');

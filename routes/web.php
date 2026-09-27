@@ -4,7 +4,6 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
-
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,8 +35,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/apply', [ProjectController::class, 'apply'])->name('projects.apply');
     Route::post('/projects/{project}/applications/{user}/accept', [ProjectController::class, 'acceptApplication'])->name('projects.applications.accept');
     Route::post('/projects/{project}/applications/{user}/reject', [ProjectController::class, 'rejectApplication'])->name('projects.applications.reject');
-
-
 
     // Chat - Full Livewire SPA
     Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');
@@ -71,4 +68,4 @@ Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController:
 // GitHub Webhook (Excluded from CSRF)
 Route::post('/webhooks/github', [\App\Http\Controllers\GitHubWebhookController::class, 'handle'])->name('github.webhook');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -2,9 +2,8 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
+use Livewire\Component;
 
 class SystemHealth extends Component
 {
@@ -19,7 +18,7 @@ class SystemHealth extends Component
             $end = microtime(true);
             $dbLatency = round(($end - $start) * 1000, 2); // ms
         } catch (\Exception $e) {
-            $dbStatus = 'Error: ' . $e->getMessage();
+            $dbStatus = 'Error: '.$e->getMessage();
         }
 
         // 2. Check Web Server (Self)
@@ -30,9 +29,13 @@ class SystemHealth extends Component
         $pusherStatus = 'Unknown';
         $pusherError = null;
 
-        // Determine host and port from ENV directly
-        $host = env('PUSHER_HOST', '127.0.0.1');
-        $port = env('PUSHER_PORT', 443);
+        // Determine host and port from config
+        $broadcastingDriver = config('broadcasting.default', 'pusher');
+        $host = config("broadcasting.connections.{$broadcastingDriver}.options.host")
+            ?? config('broadcasting.connections.pusher.options.host')
+            ?: '127.0.0.1';
+        $port = (int) (config("broadcasting.connections.{$broadcastingDriver}.options.port")
+            ?? config('broadcasting.connections.pusher.options.port', 443));
 
         try {
             // Attempt to open a socket connection to the Reverb/Pusher server

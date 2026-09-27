@@ -15,7 +15,7 @@ chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
 # Run setup when launching the main service
-if [ "$1" = "php-fpm" ] || [ "$1" = "php" ]; then
+if [ "$1" = "php-fpm" ]; then
     echo "🚀 Starting Laravel application setup..."
 
     # Clear potentially stale cache files from mounted volumes

@@ -40,7 +40,7 @@ class DashboardController extends Controller
                         'message' => \Illuminate\Support\Str::limit($message->content, 60),
                         'avatar' => null,
                         'link' => route('chat', ['conversation' => $message->conversation_id]),
-                    ]
+                    ],
                 ];
             });
 

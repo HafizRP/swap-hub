@@ -12,7 +12,7 @@ class GitHubService
      */
     public function getUserRepositories(User $user)
     {
-        if (!$user->github_token) {
+        if (! $user->github_token) {
             return [];
         }
 
@@ -30,7 +30,7 @@ class GitHubService
      */
     public function createWebhook(User $user, string $owner, string $repo)
     {
-        if (!$user->github_token) {
+        if (! $user->github_token) {
             return false;
         }
 

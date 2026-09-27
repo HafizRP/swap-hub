@@ -31,9 +31,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
-                'major', 'university', 'bio', 'avatar', 
+                'major', 'university', 'bio', 'avatar',
                 'github_username', 'github_token', 'reputation_points',
-                'phone', 'graduation_year'
+                'phone', 'graduation_year',
             ]);
         });
     }

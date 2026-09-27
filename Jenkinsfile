@@ -76,7 +76,7 @@ pipeline {
             steps {
                 echo '🧪 Running tests...'
                 // No try-catch here: if tests fail, the pipeline STOPS.
-                sh 'docker run --rm -v $(pwd):/var/www -w /var/www php:8.4-cli php artisan test --parallel'
+                sh 'docker run --rm --entrypoint php -v $(pwd):/var/www -w /var/www swap-hub-app-development:latest artisan test'
             }
         }
         

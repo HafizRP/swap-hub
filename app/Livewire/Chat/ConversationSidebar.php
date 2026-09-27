@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Chat;
 
-use App\Models\Conversation;
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ConversationSidebar extends Component
 {
     public $conversations = [];
+
     public $searchQuery = '';
+
     public $currentConversationId;
 
     #[On('update-conversation-ui')]
@@ -41,7 +42,7 @@ class ConversationSidebar extends Component
                 'messages as unread_count' => function ($query) use ($userId) {
                     $query->where('user_id', '!=', $userId)
                         ->whereRaw('created_at > (SELECT COALESCE(last_read_at, "1970-01-01") FROM conversation_user WHERE conversation_id = messages.conversation_id AND user_id = ?)', [$userId]);
-                }
+                },
             ])
             ->orderBy('updated_at', 'desc')
             ->get()
@@ -50,6 +51,7 @@ class ConversationSidebar extends Component
                 $formatted['latest_message'] = ($conv->latestMessage->content ?? null) ?: (($conv->latestMessage?->attachments->isNotEmpty()) ? '[Attachment]' : 'Start a conversation...');
                 $formatted['is_active'] = $conv->id == $this->currentConversationId;
                 $formatted['unread_count'] = $conv->unread_count;
+
                 return $formatted;
             });
     }
@@ -68,7 +70,7 @@ class ConversationSidebar extends Component
 
     public function getFilteredConversationsProperty()
     {
-        if (!$this->searchQuery) {
+        if (! $this->searchQuery) {
             return $this->conversations;
         }
 

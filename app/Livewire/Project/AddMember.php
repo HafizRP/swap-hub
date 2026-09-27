@@ -4,15 +4,17 @@ namespace App\Livewire\Project;
 
 use App\Models\Project;
 use App\Models\User;
-use App\Notifications\ProjectInvitationNotification; // We might need to create this later
+// We might need to create this later
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 class AddMember extends Component
 {
     public Project $project;
+
     public $search = '';
+
     public $searchResults = [];
+
     public $selectedUsers = [];
 
     public function mount(Project $project)
@@ -24,6 +26,7 @@ class AddMember extends Component
     {
         if (strlen($this->search) < 2) {
             $this->searchResults = [];
+
             return;
         }
 
@@ -31,8 +34,8 @@ class AddMember extends Component
         $existingMemberIds[] = $this->project->owner_id; // Exclude owner too
 
         $this->searchResults = User::where(function ($query) {
-            $query->where('name', 'like', '%' . $this->search . '%')
-                ->orWhere('email', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%')
+                ->orWhere('email', 'like', '%'.$this->search.'%');
         })
             ->whereNotIn('id', $existingMemberIds)
             ->take(5)
@@ -43,7 +46,7 @@ class AddMember extends Component
     {
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return;
         }
 
@@ -53,8 +56,8 @@ class AddMember extends Component
                 'role' => 'member',
                 'status' => 'active',
                 'joined_at' => now(),
-                'is_validated' => false
-            ]
+                'is_validated' => false,
+            ],
         ]);
 
         // Add to conversation conversation participants if exists
