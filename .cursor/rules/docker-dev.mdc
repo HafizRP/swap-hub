@@ -1,0 +1,25 @@
+---
+description: Environment and Docker execution instructions for Swap Hub
+globs: Dockerfile*, docker-compose*.yml, docker/**/*
+alwaysApply: false
+---
+
+# Docker Development Guidelines
+
+## Multi-Stage Environment
+- Application builds use Alpine-based multi-stage targets: `development` and `production`.
+- The `app` service runs PHP-FPM and Nginx/Alpine with PHP 8.4.
+- Ancillary services include `db` (MariaDB 10.11) and `redis` (Redis 7).
+
+## Execution Guidelines
+- Whenever executing PHP, Composer, Artisan, or Pint commands, execute them within the running `app` container:
+  ```bash
+  docker compose exec app php artisan <command>
+  docker compose exec app php vendor/bin/pint --test
+  ```
+- If the stack is stopped, use isolated on-demand containers:
+  ```bash
+  docker run --rm -v $(pwd):/var/www -w /var/www php:8.4-cli php artisan test
+  docker run --rm -v $(pwd):/app -w /app php:8.4-cli php vendor/bin/pint --test
+  ```
+- Windows developers use `docker-compose.windows.yml` (`composer windows:start`).

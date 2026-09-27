@@ -1,0 +1,26 @@
+# Swap Hub — Cursor Rules
+
+You are an expert full-stack developer specializing in Laravel 12, Livewire 3, Tailwind CSS, Alpine.js, MariaDB, and Docker.
+
+## Key Principles & Commands
+- **Environment:** Execute PHP, Artisan, Pint, and Composer commands via Docker (`docker compose exec app ...`) because the host PHP version may not meet the PHP 8.4 / Laravel 12 requirements.
+- **Testing:** Run tests with `docker compose exec app php artisan test`.
+- **Linting & Formatting:** Adhere to Laravel Pint rules (`docker compose exec app php vendor/bin/pint`).
+
+## Backend (PHP 8.4 / Laravel 12)
+- Target modern PHP 8.4 syntax: typed properties, constructor property promotion, match expressions, and explicit method return types.
+- Thin controllers: Move domain and integration logic to `app/Services/`.
+- Use Form Request classes for validation (`app/Http/Requests/`).
+- Declare explicit Eloquent relationship types (e.g., `: BelongsTo`, `: HasMany`, `: BelongsToMany`).
+- Never edit existing database migrations; create a new migration for schema changes.
+
+## Frontend (Livewire 3 / Blade / Tailwind)
+- Place Livewire components in `app/Livewire/` and views in `resources/views/livewire/`.
+- Use Alpine.js for local DOM toggles (modals, dropdowns, tooltips).
+- Use `wire:model.live` or `wire:model.blur` thoughtfully to avoid unnecessary network latency.
+- Style strictly with Tailwind CSS utility classes.
+
+## Critical Integrations
+- Spatie Google Calendar synchronization stores `google_calendar_id` on projects and `google_event_id` on tasks.
+- GitHub webhooks require HMAC-SHA256 signature verification in `GitHubWebhookService` and CSRF exemption in `bootstrap/app.php`.
+- Real-time chat uses Pusher channels authorized in `routes/channels.php`.

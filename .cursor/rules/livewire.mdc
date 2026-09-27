@@ -1,0 +1,21 @@
+---
+description: Standards and guidelines for Livewire 3, Blade, Tailwind CSS, and Alpine.js
+globs: app/Livewire/**/*.php, resources/views/**/*.blade.php
+alwaysApply: false
+---
+
+# Livewire 3 & Frontend Guidelines
+
+## Component Structure
+- Livewire class components live under `app/Livewire/` and blade views under `resources/views/livewire/`.
+- Use PHP 8.4 typed properties and `#[Validate]` attributes for component validation.
+
+## Performance & State
+- Default to deferred or blurred binding (`wire:model.blur`) for standard text inputs unless instant reactive filtering is explicitly required (`wire:model.live`).
+- Use Alpine.js (`x-data`, `x-show`, `x-cloak`, `x-transition`) for client-side interactions like dropdowns, modals, and tabs to minimize network roundtrips.
+- Keep component payload light: pass IDs or lightweight DTOs/collections rather than deeply nested hydrated models when possible.
+
+## Styling & Layout
+- Use Tailwind CSS utility classes exclusively. Avoid raw CSS or inline style tags.
+- Ensure all interactive elements have accessible labels and distinct IDs.
+- For chat or dynamic lists, ensure keying (`wire:key`) is applied to looped items.
