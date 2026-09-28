@@ -192,13 +192,6 @@
                     @endforelse
                 </div>
             </div>
-                    @empty
-                        <div class="col-span-2">
-                            <p class="text-slate-400 text-sm mb-0">No recommendations at the moment.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
  
             <!-- RIGHT COLUMN: Sidebar (4 cols) -->
             <div class="lg:col-span-4">
