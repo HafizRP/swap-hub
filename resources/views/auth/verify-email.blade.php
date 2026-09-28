@@ -1,110 +1,58 @@
 @extends('layouts.auth')
 
-@section('title', 'Verify Email')
+@section('title', 'Verifikasi Email')
 
 @section('content')
-    <div class="auth-container">
-        <!-- Left Side - Hero -->
-        <div class="auth-hero">
-            <div class="auth-hero-content">
-                <div class="logo">
-                    <img src="{{ asset('icon-dark.png') }}" alt="Swap Hub" style="width: 40px; height: 40px;"
-                        class="object-fit-contain">
-                    <span>Swap Hub</span>
-                </div>
-
-                <h1 class="hero-title">Check your email!</h1>
-                <p class="hero-description">
-                    We've sent a verification link to your email address. Click the link to verify your account and get
-                    started.
-                </p>
-
-                <div class="hero-stats">
-                    <div class="hero-avatars">
-                        <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=3b82f6&color=fff" alt="User"
-                            class="hero-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Sarah+Smith&background=1e40af&color=fff" alt="User"
-                            class="hero-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Mike+Chen&background=3b82f6&color=fff" alt="User"
-                            class="hero-avatar">
-                    </div>
-                    <span class="hero-stat-text">Join 10,000+ students</span>
-                </div>
+<div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden p-6 sm:p-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+                <i class="bi bi-envelope-check-fill text-3xl"></i>
             </div>
+            <h1 class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+                Cek Email Anda
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                Terima kasih telah bergabung! Silakan klik tautan verifikasi yang baru saja kami kirimkan ke email Anda untuk mengaktifkan akun.
+            </p>
         </div>
 
-        <!-- Right Side - Content -->
-        <div class="auth-form-container">
-            <div class="auth-form-wrapper">
-                <div class="form-header">
-                    <div
-                        style="width: 80px; height: 80px; background: linear-gradient(135deg, #0f59bc 0%, #1e40af 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                        <i class="bi bi-envelope-check" style="font-size: 2.5rem; color: white;"></i>
-                    </div>
-                    <h2 class="form-title" style="text-align: center;">Verify Your Email</h2>
-                    <p class="form-subtitle" style="text-align: center;">
-                        Thanks for signing up! Before getting started, could you verify your email address by clicking on
-                        the link we just emailed to you?
-                    </p>
-                </div>
-
-                @if (session('status') == 'verification-link-sent')
-                    <div
-                        style="background: #d1fae5; border-left: 4px solid #10b981; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                        <div style="display: flex; gap: 0.75rem; align-items: start;">
-                            <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.25rem; flex-shrink: 0;"></i>
-                            <div>
-                                <h4 style="font-size: 0.9375rem; font-weight: 600; color: #065f46; margin: 0 0 0.25rem 0;">
-                                    Email Sent!
-                                </h4>
-                                <p style="font-size: 0.875rem; color: #065f46; margin: 0; line-height: 1.5;">
-                                    A new verification link has been sent to your email address.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Resend Verification Email -->
-                <form method="POST" action="{{ route('verification.send') }}">
-                    @csrf
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-envelope-fill" style="margin-right: 0.5rem;"></i>
-                        Resend Verification Email
-                    </button>
-                </form>
-
-                <!-- Additional Info -->
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
-                    <div
-                        style="background: #eff6ff; border-left: 4px solid #0f59bc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                        <div style="display: flex; gap: 0.75rem;">
-                            <i class="bi bi-info-circle" style="color: #0f59bc; font-size: 1.25rem; flex-shrink: 0;"></i>
-                            <div>
-                                <h4 style="font-size: 0.9375rem; font-weight: 600; color: #1e40af; margin: 0 0 0.25rem 0;">
-                                    Didn't receive the email?
-                                </h4>
-                                <ul
-                                    style="margin: 0; padding-left: 1.25rem; font-size: 0.875rem; color: #1e40af; line-height: 1.8;">
-                                    <li>Check your spam or junk folder</li>
-                                    <li>Make sure you entered the correct email</li>
-                                    <li>Click the button above to resend</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Logout -->
-                    <form method="POST" action="{{ route('logout') }}" style="text-align: center;">
-                        @csrf
-                        <button type="submit"
-                            style="background: none; border: none; color: #0f59bc; font-size: 0.9375rem; font-weight: 600; cursor: pointer; text-decoration: none; padding: 0;">
-                            <i class="bi bi-box-arrow-right" style="margin-right: 0.375rem;"></i>
-                            Log out
-                        </button>
-                    </form>
-                </div>
+        @if (session('status') == 'verification-link-sent')
+            <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <i class="bi bi-check-circle-fill shrink-0"></i>
+                <span>Tautan verifikasi baru telah berhasil dikirim ke alamat email Anda.</span>
             </div>
+        @endif
+
+        <!-- Action Buttons -->
+        <div class="space-y-3">
+            <form method="POST" action="{{ route('verification.send') }}">
+                @csrf
+                <button type="submit" 
+                    class="w-full py-3 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/25 transition-all duration-150 active:scale-[0.98] flex items-center justify-center gap-2 border-0 cursor-pointer">
+                    <i class="bi bi-send-fill text-xs"></i>
+                    <span>Kirim Ulang Email Verifikasi</span>
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('logout') }}" class="text-center">
+                @csrf
+                <button type="submit" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors cursor-pointer bg-transparent">
+                    <i class="bi bi-box-arrow-right mr-1.5"></i>
+                    Keluar / Ganti Akun
+                </button>
+            </form>
         </div>
+
+        <!-- Help Info -->
+        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
+            <p class="text-xs text-slate-400 dark:text-slate-500 mb-0">
+                Tidak menemukan email? Cek folder spam atau promosi di inbox Anda.
+            </p>
+        </div>
+
     </div>
+</div>
 @endsection

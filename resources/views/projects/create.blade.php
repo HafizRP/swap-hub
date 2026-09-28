@@ -1,20 +1,30 @@
-@section('title', 'Create Project')
+@section('title', 'Buat Proyek Baru')
 <x-app-layout>
     <div class="container mx-auto py-6">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">Create a New Project</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-xs mb-0">Fill in the details below to start collaborating.</p>
+                <div class="mb-2">
+                    <a href="{{ route('projects.index') }}" 
+                       class="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 no-underline inline-flex items-center gap-1.5 transition-colors">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Kembali ke Jelajah Proyek</span>
+                    </a>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-1">
+                    Buat Proyek Baru
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-0">
+                    Lengkapi detail proyek kolaborasi untuk mulai mengundang talenta rekan mahasiswa.
+                </p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('projects.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-bold text-xs no-underline">Cancel</a>
-                <div class="flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 pl-3">
-                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}" 
-                         class="rounded-circle" width="32" height="32">
-                    <div class="hidden md:block text-right" style="line-height: 1.1;">
-                        <p class="mb-0 font-bold text-xs text-slate-800 dark:text-slate-100">{{ auth()->user()->name }}</p>
-                        <span class="text-slate-400 dark:text-slate-500 text-[10px]">{{ auth()->user()->role->name ?? 'Student' }}</span>
+                <div class="flex items-center gap-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 rounded-2xl shadow-sm">
+                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=6366f1&color=fff' }}" 
+                         class="w-8 h-8 rounded-xl object-cover" alt="{{ auth()->user()->name }}">
+                    <div class="text-left leading-tight">
+                        <p class="mb-0 font-bold text-xs text-slate-900 dark:text-slate-100">{{ auth()->user()->name }}</p>
+                        <span class="text-slate-400 dark:text-slate-500 text-[10px]">{{ auth()->user()->role->name ?? 'Mahasiswa' }}</span>
                     </div>
                 </div>
             </div>
@@ -22,136 +32,149 @@
  
         <div class="flex justify-center">
             <div class="w-full max-w-3xl">
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-card border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
                     <div class="p-6 md:p-8">
                         <form method="POST" action="{{ route('projects.store') }}" id="createProjectForm">
                             @csrf
                             
                             <!-- PROJECT BASICS -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 text-[11px] tracking-wider">Project Basics</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold">1</span>
+                                <h2 class="font-extrabold text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100 mb-0">Informasi Dasar</h2>
+                            </div>
  
                             <!-- Project Name -->
                             <div class="mb-5">
-                                <label for="title" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Project Name <span class="text-red-500">*</span></label>
+                                <label for="title" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">
+                                    Judul Proyek <span class="text-red-500">*</span>
+                                </label>
                                 <input type="text" id="title" name="title" value="{{ old('title') }}" required autofocus
-                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-                                    placeholder="e.g., AI-Powered Study Assistant">
+                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                                    placeholder="Contoh: AI-Powered Study Assistant Mahasiswa">
                                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
                             </div>
  
                             <!-- Category -->
                             <div class="mb-5">
-                                <label for="category" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Category <span class="text-red-500">*</span></label>
-                                <select id="category" name="category" required class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                    <option value="Development" {{ old('category') == 'Development' ? 'selected' : '' }}>Development</option>
-                                    <option value="Design" {{ old('category') == 'Design' ? 'selected' : '' }}>Design</option>
-                                    <option value="Marketing" {{ old('category') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
+                                <label for="category" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">
+                                    Kategori Proyek <span class="text-red-500">*</span>
+                                </label>
+                                <select id="category" name="category" required 
+                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
+                                    <option value="Development" {{ old('category') == 'Development' ? 'selected' : '' }}>Development (Web / Mobile / AI)</option>
+                                    <option value="Design" {{ old('category') == 'Design' ? 'selected' : '' }}>Design (UI/UX, Branding)</option>
+                                    <option value="Marketing" {{ old('category') == 'Marketing' ? 'selected' : '' }}>Marketing & Growth</option>
+                                    <option value="Research" {{ old('category') == 'Research' ? 'selected' : '' }}>Academic & Scientific Research</option>
                                 </select>
                             </div>
  
                             <!-- Description -->
-                            <div class="mb-5 relative">
-                                <label for="description" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Description <span class="text-red-500">*</span></label>
-                                <textarea id="description" name="description" rows="6" required
-                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-                                    placeholder="Describe the problem you are solving, the tech stack, and what you hope to achieve...">{{ old('description') }}</textarea>
-                                <div class="text-right mt-1 text-slate-400 dark:text-slate-500 text-[10px]">0 / 500 characters</div>
+                            <div class="mb-6 relative">
+                                <label for="description" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">
+                                    Deskripsi & Roadmap Proyek <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="description" name="description" rows="5" required
+                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                                    placeholder="Jelaskan masalah yang ingin diselesaikan, stack teknologi yang digunakan, serta kriteria rekan tim yang dicari...">{{ old('description') }}</textarea>
                                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
                             </div>
  
                             <!-- TEAM & SCOPE -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 mt-8 text-[11px] tracking-wider">Team & Scope</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
+                            <div class="flex items-center gap-2 mb-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/60">
+                                <span class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold">2</span>
+                                <h2 class="font-extrabold text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100 mb-0">Kebutuhan Tim & Jadwal</h2>
+                            </div>
  
                             <!-- Skills Needed -->
                             <div class="mb-5">
-                                <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Skills Needed</label>
-                                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 flex items-center flex-wrap gap-2">
-                                    <div id="skillsContainer" class="flex flex-wrap gap-2">
-                                        <!-- Tags will appear here -->
-                                        <span class="bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 rounded-full px-2.5 py-1 text-xs flex items-center gap-1 skill-tag">
-                                            React <span class="cursor-pointer ms-1 flex items-center" onclick="this.parentElement.remove()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span>
+                                <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Keahlian yang Dibutuhkan</label>
+                                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 flex items-center flex-wrap gap-2 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-600 transition-all">
+                                    <div id="skillsContainer" class="flex flex-wrap gap-1.5">
+                                        <span class="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5 skill-tag">
+                                            Laravel <span class="cursor-pointer text-indigo-400 hover:text-indigo-600" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></span>
                                         </span>
                                     </div>
-                                    <input type="text" id="skillInput" class="bg-transparent border-0 text-sm flex-1 p-1 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400" placeholder="Type a skill & press Enter..." style="min-width: 150px;">
+                                    <input type="text" id="skillInput" class="bg-transparent border-0 text-xs flex-1 p-1 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400" placeholder="Ketik skill & tekan Enter..." style="min-width: 160px;">
                                 </div>
                                 <input type="hidden" name="skills_hidden" id="skillsHidden">
                             </div>
  
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                                 <!-- Team Size -->
-                                <div class="col-span-1">
-                                    <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Team Size</label>
-                                    <select id="teamSize" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                        <option value="3-4 Members">3-4 Members</option>
-                                        <option value="5-10 Members">5-10 Members</option>
-                                        <option value="10+ Members">10+ Members</option>
+                                <div>
+                                    <label for="teamSize" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Target Ukuran Tim</label>
+                                    <select id="teamSize" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
+                                        <option value="2-3 Members">2-3 Anggota (Kecil & Gesit)</option>
+                                        <option value="4-6 Members" selected>4-6 Anggota (Ideal)</option>
+                                        <option value="7+ Members">7+ Anggota (Proyek Besar)</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Estimated Timeline -->
-                                <div class="col-span-1">
-                                    <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Estimated Timeline</label>
-                                    <select id="timeline" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                        <option value="1">1 Month</option>
-                                        <option value="3">3 Months</option>
-                                        <option value="6">6 Months</option>
-                                        <option value="12">1 Year</option>
+                                <div>
+                                    <label for="timeline" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Estimasi Durasi Pengerjaan</label>
+                                    <select id="timeline" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
+                                        <option value="1">1 Bulan (Sprint Singkat)</option>
+                                        <option value="3" selected>3 Bulan (Satu Semester)</option>
+                                        <option value="6">6 Bulan (Skripsi / Capstone)</option>
+                                        <option value="12">1 Tahun (Jangka Panjang)</option>
                                     </select>
-                                    <!-- Hidden End Date Input -->
                                     <input type="hidden" name="end_date" id="end_date">
                                 </div>
                             </div>
  
-                            <!-- VISIBILITY -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 mt-8 text-[11px] tracking-wider">Visibility</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
+                            <!-- VISIBILITY & INTEGRATIONS -->
+                            <div class="flex items-center gap-2 mb-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/60">
+                                <span class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold">3</span>
+                                <h2 class="font-extrabold text-sm uppercase tracking-wider text-slate-900 dark:text-slate-100 mb-0">Visibilitas & Integrasi</h2>
+                            </div>
  
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ visibility: 'public' }">
-                                <div class="col-span-1">
-                                    <label class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all"
-                                           :class="visibility === 'public' ? 'border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30'">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6" x-data="{ visibility: 'public' }">
+                                <div>
+                                    <label class="flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all"
+                                           :class="visibility === 'public' ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-950/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-700/20'">
                                         <input type="radio" class="hidden" name="visibility" value="public" checked @click="visibility = 'public'">
-                                        <div class="bg-indigo-500/10 rounded-full p-2.5 text-indigo-650 dark:text-indigo-400">
-                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                            <i class="bi bi-globe2 text-base"></i>
                                         </div>
                                         <div>
-                                            <h6 class="font-bold mb-1 text-sm text-slate-800 dark:text-slate-100">Public Project</h6>
-                                            <p class="mb-0 text-slate-400 dark:text-slate-500 text-[11px] leading-snug">Visible to all students on Swap Hub. Best for finding new teammates.</p>
+                                            <h4 class="font-bold text-xs text-slate-800 dark:text-slate-100 mb-0.5">Proyek Publik</h4>
+                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-0 leading-relaxed">Terbuka untuk dilamar oleh semua mahasiswa terdaftar.</p>
                                         </div>
                                     </label>
                                 </div>
-                                <div class="col-span-1">
-                                    <label class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all"
-                                           :class="visibility === 'invite' ? 'border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30'">
+                                <div>
+                                    <label class="flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all"
+                                           :class="visibility === 'invite' ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-950/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-700/20'">
                                         <input type="radio" class="hidden" name="visibility" value="invite" @click="visibility = 'invite'">
-                                        <div class="bg-slate-500/10 rounded-full p-2.5 text-slate-500 dark:text-slate-400">
-                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                        <div class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
+                                            <i class="bi bi-lock text-base"></i>
                                         </div>
                                         <div>
-                                            <h6 class="font-bold mb-1 text-sm text-slate-800 dark:text-slate-100">Invite Only</h6>
-                                            <p class="mb-0 text-slate-400 dark:text-slate-500 text-[11px] leading-snug">Only people you invite can see and join this project.</p>
+                                            <h4 class="font-bold text-xs text-slate-800 dark:text-slate-100 mb-0.5">Hanya Undangan</h4>
+                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-0 leading-relaxed">Hanya anggota yang diundang langsung yang dapat bergabung.</p>
                                         </div>
                                     </label>
                                 </div>
                             </div>
  
-                            <!-- GitHub Integration -->
-                            <div class="mt-6" x-data="{ gitOpen: false }">
-                                <button @click="gitOpen = !gitOpen" type="button" class="text-slate-500 hover:text-slate-750 dark:text-slate-450 dark:hover:text-slate-200 text-xs font-bold flex items-center gap-2 border-0 bg-transparent outline-none">
-                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                                    GitHub Integration Settings
+                            <!-- GitHub Integration Collapsible -->
+                            <div class="mb-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/20 border border-slate-200/80 dark:border-slate-700" x-data="{ gitOpen: false }">
+                                <button @click="gitOpen = !gitOpen" type="button" class="w-full text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-between border-0 bg-transparent outline-none cursor-pointer p-0">
+                                    <span class="flex items-center gap-2">
+                                        <i class="bi bi-github text-base"></i>
+                                        <span>Hubungkan Repositori GitHub (Opsional)</span>
+                                    </span>
                                     <i class="bi" :class="gitOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                                 </button>
-                                <div x-show="gitOpen" class="mt-4" style="display: none;" x-transition>
-                                     <!-- Repo Selector -->
-                                    <label for="github_repo_url" class="block font-bold text-slate-700 dark:text-slate-355 text-xs mb-2">Link Repository</label>
+                                
+                                <div x-show="gitOpen" class="mt-4 pt-4 border-t border-slate-200/60 dark:border-slate-700/60" style="display: none;" x-transition>
                                     @if(count($repositories) > 0)
+                                        <label for="github_repo_url" class="block font-bold text-slate-700 dark:text-slate-300 text-xs mb-2">Pilih Repositori</label>
                                         <select id="github_repo_url" name="github_repo_url"
                                             onchange="document.getElementById('github_repo_name').value = this.options[this.selectedIndex].text"
-                                            class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
-                                            <option value="">Select a repository (Optional)</option>
+                                            class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
+                                            <option value="">Pilih repositori (Opsional)</option>
                                             @foreach($repositories as $repo)
                                                 <option value="{{ $repo['html_url'] }}">{{ $repo['full_name'] }}</option>
                                             @endforeach
@@ -159,28 +182,34 @@
                                         <input type="hidden" id="github_repo_name" name="github_repo_name" value="{{ old('github_repo_name') }}">
                                         
                                         @if(auth()->user()->github_token)
-                                        <div class="flex items-center gap-2 mt-3">
-                                            <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="setup_webhook" name="setup_webhook" value="1" checked>
-                                            <label class="text-xs text-slate-600 dark:text-slate-400" for="setup_webhook">
-                                                Auto-setup Webhook (Recommended)
-                                            </label>
-                                        </div>
+                                            <div class="flex items-center gap-2 mt-3">
+                                                <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-800" 
+                                                    type="checkbox" id="setup_webhook" name="setup_webhook" value="1" checked>
+                                                <label class="text-xs text-slate-600 dark:text-slate-400" for="setup_webhook">
+                                                    Pasang webhook otomatis untuk pelacakan commit & reputasi (Direkomendasikan)
+                                                </label>
+                                            </div>
                                         @endif
                                     @else
-                                        <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-3 text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                                            No repositories found. <a href="{{ route('auth.github') }}" class="font-bold underline text-indigo-650">Link GitHub Account</a>
+                                        <div class="p-3 rounded-xl bg-white dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                            <span>Belum ada repositori yang terhubung.</span>
+                                            <a href="{{ route('auth.github') }}" class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline no-underline">
+                                                Tautkan Akun GitHub
+                                            </a>
                                         </div>
                                     @endif
                                 </div>
                             </div>
  
-                            <div class="border-t border-slate-200 dark:border-slate-700 my-8"></div>
- 
-                            <div class="flex justify-between items-center">
-                                <a href="#" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm font-bold no-underline">Save as Draft</a>
-                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-lg text-sm flex items-center gap-2 transition-colors border-0">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                    Create Project
+                            <!-- Actions -->
+                            <div class="pt-6 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                                <a href="{{ route('projects.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs font-bold no-underline transition-colors">
+                                    Batal
+                                </a>
+                                <button type="submit" 
+                                    class="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/25 transition-all duration-150 active:scale-[0.98] flex items-center gap-2 border-0 cursor-pointer">
+                                    <span>Publikasikan Proyek</span>
+                                    <i class="bi bi-arrow-right text-xs"></i>
                                 </button>
                             </div>
                         </form>
@@ -190,14 +219,13 @@
         </div>
     </div>
  
-    <!-- Scripts for Visual Inputs and Data Processing -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 1. Skill Input Logic
             const skillInput = document.getElementById('skillInput');
             const skillsContainer = document.getElementById('skillsContainer');
             
-            skillInput.addEventListener('keydown', function(e) {
+            skillInput?.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     const val = this.value.trim();
@@ -210,8 +238,8 @@
  
             function addSkillTag(text) {
                 const tag = document.createElement('span');
-                tag.className = 'bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 rounded-full px-2.5 py-1 text-xs flex items-center gap-1 skill-tag';
-                tag.innerHTML = `${text} <span class="cursor-pointer ms-1 flex items-center" onclick="this.parentElement.remove()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span>`;
+                tag.className = 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5 skill-tag';
+                tag.innerHTML = `${text} <span class="cursor-pointer text-indigo-400 hover:text-indigo-600" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></span>`;
                 skillsContainer.appendChild(tag);
             }
  
@@ -220,28 +248,30 @@
             const endDateInput = document.getElementById('end_date');
             
             function updateEndDate() {
+                if (!timelineSelect || !endDateInput) return;
                 const months = parseInt(timelineSelect.value);
                 const date = new Date();
                 date.setMonth(date.getMonth() + months);
                 const dateString = date.toISOString().split('T')[0];
                 endDateInput.value = dateString;
             }
-            timelineSelect.addEventListener('change', updateEndDate);
-            updateEndDate(); // Init
+            timelineSelect?.addEventListener('change', updateEndDate);
+            updateEndDate();
  
             // 3. Form Submission (Append Data to Description)
             const form = document.getElementById('createProjectForm');
-            form.addEventListener('submit', function(e) {
+            form?.addEventListener('submit', function(e) {
                 const skills = Array.from(skillsContainer.querySelectorAll('.skill-tag')).map(el => el.innerText.trim());
-                const teamSize = document.getElementById('teamSize').value;
-                const visibility = document.querySelector('input[name="visibility"]:checked').value;
+                const teamSize = document.getElementById('teamSize')?.value;
+                const visibilityEl = document.querySelector('input[name="visibility"]:checked');
+                const visibility = visibilityEl ? visibilityEl.value : 'public';
                 const visibilityLabel = visibility === 'public' ? 'Public' : 'Invite Only';
  
                 const descInput = document.getElementById('description');
-                let appendText = `\n\n---\n**Project Details:**`;
-                if (skills.length) appendText += `\n- **Skills Needed:** ${skills.join(', ')}`;
-                appendText += `\n- **Team Size:** ${teamSize}`;
-                appendText += `\n- **Visibility:** ${visibilityLabel}`;
+                let appendText = `\n\n---\n**Detail Tambahan:**`;
+                if (skills.length) appendText += `\n- **Keahlian Dibutuhkan:** ${skills.join(', ')}`;
+                if (teamSize) appendText += `\n- **Ukuran Tim:** ${teamSize}`;
+                appendText += `\n- **Visibilitas:** ${visibilityLabel}`;
                 
                 descInput.value += appendText;
             });

@@ -1,11 +1,11 @@
 <section>
     <header class="mb-6">
-        <h4 class="text-xl font-black text-slate-800 dark:text-slate-100">
-            {{ __('Account Intelligence') }}
-        </h4>
- 
-        <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">
-            {{ __("Manage your academic identity and contact credentials.") }}
+        <h3 class="text-lg font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="bi bi-person-badge text-indigo-600 dark:text-indigo-400"></i>
+            <span>Informasi Profil & Akademik</span>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Kelola identitas mahasiswa, program studi, dan informasi kontak Anda.
         </p>
     </header>
  
@@ -13,110 +13,124 @@
         @csrf
     </form>
  
-    <form method="post" action="{{ route('profile.update') }}" class="mt-4">
+    <form method="post" action="{{ route('profile.update') }}" class="space-y-4">
         @csrf
         @method('patch')
  
-        <div class="mb-5">
-            <label for="name" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('Full Name') }}</label>
+        <!-- Full Name -->
+        <div>
+            <label for="name" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">
+                Nama Lengkap <span class="text-red-500">*</span>
+            </label>
             <input id="name" name="name" type="text"
-                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
+                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
                 value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-input-error class="mt-1.5" :messages="$errors->get('name')" />
         </div>
  
-        <div class="mb-5">
-            <label for="email" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('Academic Email') }}</label>
+        <!-- Email -->
+        <div>
+            <label for="email" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">
+                Alamat Email <span class="text-red-500">*</span>
+            </label>
             <input id="email" name="email" type="email"
-                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
+                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
                 value="{{ old('email', $user->email) }}" required autocomplete="username">
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <x-input-error class="mt-1.5" :messages="$errors->get('email')" />
  
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
-                <div class="mt-3 p-4 border border-amber-500/25 bg-amber-500/10 rounded-xl">
-                    <p class="text-xs text-amber-700 dark:text-amber-400 font-bold mb-2">
-                        {{ __('Your email address is unverified.') }}
+                <div class="mt-3 p-3.5 border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 rounded-xl">
+                    <p class="text-xs text-amber-700 dark:text-amber-300 font-semibold mb-2">
+                        Alamat email Anda belum diverifikasi.
                     </p>
                     <button form="send-verification"
-                        class="text-[10px] text-amber-600 dark:text-amber-450 hover:underline uppercase tracking-wider font-black bg-transparent border-0 p-0">
-                        {{ __('Resend Verification') }}
+                        class="text-xs text-amber-800 dark:text-amber-200 hover:underline font-bold bg-transparent border-0 p-0 cursor-pointer">
+                        Kirim Ulang Email Verifikasi
                     </button>
  
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-[10px] text-emerald-600 dark:text-emerald-450 font-bold uppercase tracking-wider">
-                            {{ __('A new link has been dispatched.') }}
+                        <p class="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                            Tautan verifikasi baru telah dikirim ke email Anda.
                         </p>
                     @endif
                 </div>
             @endif
         </div>
  
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div class="col-span-1">
-                <label for="university" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('University') }}</label>
+        <!-- University & Major -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="university" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Universitas / Kampus</label>
                 <input id="university" name="university" type="text"
-                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
-                    value="{{ old('university', $user->university) }}">
-                <x-input-error class="mt-2" :messages="$errors->get('university')" />
+                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                    value="{{ old('university', $user->university) }}" placeholder="Contoh: Universitas Indonesia">
+                <x-input-error class="mt-1.5" :messages="$errors->get('university')" />
             </div>
  
-            <div class="col-span-1">
-                <label for="major" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('Course of Study') }}</label>
+            <div>
+                <label for="major" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Program Studi / Jurusan</label>
                 <input id="major" name="major" type="text"
-                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
-                    value="{{ old('major', $user->major) }}">
-                <x-input-error class="mt-2" :messages="$errors->get('major')" />
+                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                    value="{{ old('major', $user->major) }}" placeholder="Contoh: Teknik Informatika">
+                <x-input-error class="mt-1.5" :messages="$errors->get('major')" />
             </div>
         </div>
  
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div class="col-span-1">
-                <label for="graduation_year" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('Graduation Year') }}</label>
+        <!-- Graduation Year & Phone -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="graduation_year" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Tahun Kelulusan</label>
                 <input id="graduation_year" name="graduation_year" type="number"
-                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
-                    value="{{ old('graduation_year', $user->graduation_year) }}" min="2000" max="2100">
-                <x-input-error class="mt-2" :messages="$errors->get('graduation_year')" />
+                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                    value="{{ old('graduation_year', $user->graduation_year) }}" min="2000" max="2100" placeholder="2026">
+                <x-input-error class="mt-1.5" :messages="$errors->get('graduation_year')" />
             </div>
  
-            <div class="col-span-1">
-                <label for="phone" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('Pulse Line (Phone)') }}</label>
+            <div>
+                <label for="phone" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Nomor Telepon / WA</label>
                 <input id="phone" name="phone" type="text"
-                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
-                    value="{{ old('phone', $user->phone) }}">
-                <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                    value="{{ old('phone', $user->phone) }}" placeholder="+62 812-xxxx-xxxx">
+                <x-input-error class="mt-1.5" :messages="$errors->get('phone')" />
             </div>
         </div>
  
-        <div class="mb-5">
-            <label for="github_username" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('GitHub Handle') }}</label>
-            <div class="flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-600">
-                <span class="inline-flex items-center px-3 bg-slate-100 dark:bg-slate-700 border-r border-slate-200 dark:border-slate-600 text-slate-400 text-sm">github.com/</span>
+        <!-- GitHub Handle -->
+        <div>
+            <label for="github_username" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Username GitHub</label>
+            <div class="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-600 transition-all">
+                <span class="inline-flex items-center px-3.5 bg-slate-100 dark:bg-slate-700/80 text-slate-400 dark:text-slate-400 text-xs font-mono">github.com/</span>
                 <input id="github_username" name="github_username" type="text"
-                    class="flex-1 w-full bg-slate-50 dark:bg-slate-700/50 border-0 px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
-                    value="{{ old('github_username', $user->github_username) }}" placeholder="Octocat">
+                    class="flex-1 w-full bg-slate-50 dark:bg-slate-700/50 border-0 px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none"
+                    value="{{ old('github_username', $user->github_username) }}" placeholder="octocat">
             </div>
-            <x-input-error class="mt-2" :messages="$errors->get('github_username')" />
+            <x-input-error class="mt-1.5" :messages="$errors->get('github_username')" />
         </div>
  
-        <div class="mb-6">
-            <label for="bio" class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">{{ __('The Pivot (Bio)') }}</label>
+        <!-- Bio -->
+        <div>
+            <label for="bio" class="block font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2">Biografi Singkat</label>
             <textarea id="bio" name="bio"
-                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
-                rows="4">{{ old('bio', $user->bio) }}</textarea>
-            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+                class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                rows="3" placeholder="Ceritakan latar belakang, ketertarikan teknologi, atau tujuan kolaborasi Anda...">{{ old('bio', $user->bio) }}</textarea>
+            <x-input-error class="mt-1.5" :messages="$errors->get('bio')" />
         </div>
  
-        <div class="flex items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-755 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-full text-xs shadow-lg transition-colors border-0">
-                {{ __('Update Credentials') }}
+        <!-- Actions -->
+        <div class="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-sm transition-all duration-150 active:scale-[0.98] border-0 cursor-pointer">
+                Simpan Perubahan
             </button>
  
             @if (session('status') === 'profile-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                    class="text-[10px] text-emerald-600 dark:text-emerald-450 font-black uppercase tracking-wider mb-0">
-                    {{ __('Identity Synchronized.') }}
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2500)"
+                    class="text-xs text-emerald-600 dark:text-emerald-400 font-bold mb-0">
+                    <i class="bi bi-check-circle-fill mr-1"></i>
+                    Profil berhasil diperbarui.
                 </p>
             @endif
         </div>
+    </form>
+</section>
     </form>
 </section>
