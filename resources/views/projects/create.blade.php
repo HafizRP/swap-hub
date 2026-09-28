@@ -1,250 +1,172 @@
-@section('title', 'Create Project')
+@section('title', 'Buat Proyek Baru')
 <x-app-layout>
-    <div class="container mx-auto py-6">
+    <div class="max-w-4xl mx-auto space-y-6">
+
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">Create a New Project</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-xs mb-0">Fill in the details below to start collaborating.</p>
+                <a href="{{ route('projects.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-brand-600 mb-1">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Katalog
+                </a>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Inisiasi Proyek Baru
+                </h1>
             </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('projects.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-bold text-xs no-underline">Cancel</a>
-                <div class="flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 pl-3">
-                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}" 
-                         class="rounded-circle" width="32" height="32">
-                    <div class="hidden md:block text-right" style="line-height: 1.1;">
-                        <p class="mb-0 font-bold text-xs text-slate-800 dark:text-slate-100">{{ auth()->user()->name }}</p>
-                        <span class="text-slate-400 dark:text-slate-500 text-[10px]">{{ auth()->user()->role->name ?? 'Student' }}</span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300">
+                Squad Builder
+            </span>
+        </div>
+
+        <div class="p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+            <form method="POST" action="{{ route('projects.store') }}" class="space-y-6" id="createProjectForm">
+                @csrf
+
+                <!-- Section: Informasi Utama -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                        1. Informasi Utama Proyek
+                    </h3>
+
+                    <div>
+                        <label for="title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            Judul Proyek <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="title" name="title" value="{{ old('title') }}" required autofocus
+                               placeholder="Contoh: EduMatch - AI Study Partner Platform"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <x-input-error :messages="$errors->get('title')" class="mt-1" />
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                Kategori <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="category" name="category" required
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="Development" {{ old('category') == 'Development' ? 'selected' : '' }}>Development</option>
+                                <option value="Design" {{ old('category') == 'Design' ? 'selected' : '' }}>Design</option>
+                                <option value="Marketing" {{ old('category') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
+                                <option value="Research" {{ old('category') == 'Research' ? 'selected' : '' }}>Research</option>
+                                <option value="Mobile" {{ old('category') == 'Mobile' ? 'selected' : '' }}>Mobile</option>
+                                <option value="AI & Data" {{ old('category') == 'AI & Data' ? 'selected' : '' }}>AI & Data</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="timeline" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                Estimasi Durasi
+                            </label>
+                            <select id="timeline"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="1">1 Bulan</option>
+                                <option value="3" selected>3 Bulan</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">1 Tahun</option>
+                            </select>
+                            <input type="hidden" name="end_date" id="end_date">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            Deskripsi & Ruang Lingkup <span class="text-rose-500">*</span>
+                        </label>
+                        <textarea id="description" name="description" rows="5" required
+                                  placeholder="Jelaskan tujuan proyek, masalah yang ingin diselesaikan, stack teknologi, dan peran yang dicari..."
+                                  class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none leading-relaxed">{{ old('description') }}</textarea>
+                        <x-input-error :messages="$errors->get('description')" class="mt-1" />
                     </div>
                 </div>
-            </div>
-        </div>
- 
-        <div class="flex justify-center">
-            <div class="w-full max-w-3xl">
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="p-6 md:p-8">
-                        <form method="POST" action="{{ route('projects.store') }}" id="createProjectForm">
-                            @csrf
-                            
-                            <!-- PROJECT BASICS -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 text-[11px] tracking-wider">Project Basics</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
- 
-                            <!-- Project Name -->
-                            <div class="mb-5">
-                                <label for="title" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Project Name <span class="text-red-500">*</span></label>
-                                <input type="text" id="title" name="title" value="{{ old('title') }}" required autofocus
-                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-                                    placeholder="e.g., AI-Powered Study Assistant">
-                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
+
+                <!-- Section: Skill & Tim -->
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                        2. Kebutuhan Keahlian (Skills)
+                    </h3>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            Tag Skill yang Dibutuhkan
+                        </label>
+                        <div class="p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-wrap items-center gap-2">
+                            <div id="skillsContainer" class="flex flex-wrap gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 flex items-center gap-1.5">
+                                    Laravel
+                                    <button type="button" class="text-brand-400 hover:text-brand-600" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 flex items-center gap-1.5">
+                                    Tailwind
+                                    <button type="button" class="text-brand-400 hover:text-brand-600" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>
+                                </span>
                             </div>
- 
-                            <!-- Category -->
-                            <div class="mb-5">
-                                <label for="category" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Category <span class="text-red-500">*</span></label>
-                                <select id="category" name="category" required class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                    <option value="Development" {{ old('category') == 'Development' ? 'selected' : '' }}>Development</option>
-                                    <option value="Design" {{ old('category') == 'Design' ? 'selected' : '' }}>Design</option>
-                                    <option value="Marketing" {{ old('category') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
-                                </select>
-                            </div>
- 
-                            <!-- Description -->
-                            <div class="mb-5 relative">
-                                <label for="description" class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Description <span class="text-red-500">*</span></label>
-                                <textarea id="description" name="description" rows="6" required
-                                    class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
-                                    placeholder="Describe the problem you are solving, the tech stack, and what you hope to achieve...">{{ old('description') }}</textarea>
-                                <div class="text-right mt-1 text-slate-400 dark:text-slate-500 text-[10px]">0 / 500 characters</div>
-                                <x-input-error :messages="$errors->get('description')" class="mt-2" />
-                            </div>
- 
-                            <!-- TEAM & SCOPE -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 mt-8 text-[11px] tracking-wider">Team & Scope</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
- 
-                            <!-- Skills Needed -->
-                            <div class="mb-5">
-                                <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Skills Needed</label>
-                                <div class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 flex items-center flex-wrap gap-2">
-                                    <div id="skillsContainer" class="flex flex-wrap gap-2">
-                                        <!-- Tags will appear here -->
-                                        <span class="bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 rounded-full px-2.5 py-1 text-xs flex items-center gap-1 skill-tag">
-                                            React <span class="cursor-pointer ms-1 flex items-center" onclick="this.parentElement.remove()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span>
-                                        </span>
-                                    </div>
-                                    <input type="text" id="skillInput" class="bg-transparent border-0 text-sm flex-1 p-1 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400" placeholder="Type a skill & press Enter..." style="min-width: 150px;">
-                                </div>
-                                <input type="hidden" name="skills_hidden" id="skillsHidden">
-                            </div>
- 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                                <!-- Team Size -->
-                                <div class="col-span-1">
-                                    <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Team Size</label>
-                                    <select id="teamSize" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                        <option value="3-4 Members">3-4 Members</option>
-                                        <option value="5-10 Members">5-10 Members</option>
-                                        <option value="10+ Members">10+ Members</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Estimated Timeline -->
-                                <div class="col-span-1">
-                                    <label class="block font-bold text-slate-700 dark:text-slate-355 text-sm mb-2">Estimated Timeline</label>
-                                    <select id="timeline" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors">
-                                        <option value="1">1 Month</option>
-                                        <option value="3">3 Months</option>
-                                        <option value="6">6 Months</option>
-                                        <option value="12">1 Year</option>
-                                    </select>
-                                    <!-- Hidden End Date Input -->
-                                    <input type="hidden" name="end_date" id="end_date">
-                                </div>
-                            </div>
- 
-                            <!-- VISIBILITY -->
-                            <h6 class="font-bold uppercase text-slate-450 dark:text-slate-500 mb-3 mt-8 text-[11px] tracking-wider">Visibility</h6>
-                            <div class="border-t border-slate-200 dark:border-slate-700 mb-6"></div>
- 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ visibility: 'public' }">
-                                <div class="col-span-1">
-                                    <label class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all"
-                                           :class="visibility === 'public' ? 'border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30'">
-                                        <input type="radio" class="hidden" name="visibility" value="public" checked @click="visibility = 'public'">
-                                        <div class="bg-indigo-500/10 rounded-full p-2.5 text-indigo-650 dark:text-indigo-400">
-                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-bold mb-1 text-sm text-slate-800 dark:text-slate-100">Public Project</h6>
-                                            <p class="mb-0 text-slate-400 dark:text-slate-500 text-[11px] leading-snug">Visible to all students on Swap Hub. Best for finding new teammates.</p>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="col-span-1">
-                                    <label class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all"
-                                           :class="visibility === 'invite' ? 'border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30'">
-                                        <input type="radio" class="hidden" name="visibility" value="invite" @click="visibility = 'invite'">
-                                        <div class="bg-slate-500/10 rounded-full p-2.5 text-slate-500 dark:text-slate-400">
-                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-bold mb-1 text-sm text-slate-800 dark:text-slate-100">Invite Only</h6>
-                                            <p class="mb-0 text-slate-400 dark:text-slate-500 text-[11px] leading-snug">Only people you invite can see and join this project.</p>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
- 
-                            <!-- GitHub Integration -->
-                            <div class="mt-6" x-data="{ gitOpen: false }">
-                                <button @click="gitOpen = !gitOpen" type="button" class="text-slate-500 hover:text-slate-750 dark:text-slate-450 dark:hover:text-slate-200 text-xs font-bold flex items-center gap-2 border-0 bg-transparent outline-none">
-                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                                    GitHub Integration Settings
-                                    <i class="bi" :class="gitOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                                </button>
-                                <div x-show="gitOpen" class="mt-4" style="display: none;" x-transition>
-                                     <!-- Repo Selector -->
-                                    <label for="github_repo_url" class="block font-bold text-slate-700 dark:text-slate-355 text-xs mb-2">Link Repository</label>
-                                    @if(count($repositories) > 0)
-                                        <select id="github_repo_url" name="github_repo_url"
-                                            onchange="document.getElementById('github_repo_name').value = this.options[this.selectedIndex].text"
-                                            class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
-                                            <option value="">Select a repository (Optional)</option>
-                                            @foreach($repositories as $repo)
-                                                <option value="{{ $repo['html_url'] }}">{{ $repo['full_name'] }}</option>
-                                            @endforeach
-                                        </select>
-                                        <input type="hidden" id="github_repo_name" name="github_repo_name" value="{{ old('github_repo_name') }}">
-                                        
-                                        @if(auth()->user()->github_token)
-                                        <div class="flex items-center gap-2 mt-3">
-                                            <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="setup_webhook" name="setup_webhook" value="1" checked>
-                                            <label class="text-xs text-slate-600 dark:text-slate-400" for="setup_webhook">
-                                                Auto-setup Webhook (Recommended)
-                                            </label>
-                                        </div>
-                                        @endif
-                                    @else
-                                        <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-3 text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                                            No repositories found. <a href="{{ route('auth.github') }}" class="font-bold underline text-indigo-650">Link GitHub Account</a>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
- 
-                            <div class="border-t border-slate-200 dark:border-slate-700 my-8"></div>
- 
-                            <div class="flex justify-between items-center">
-                                <a href="#" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm font-bold no-underline">Save as Draft</a>
-                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-lg text-sm flex items-center gap-2 transition-colors border-0">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                    Create Project
-                                </button>
-                            </div>
-                        </form>
+                            <input type="text" id="skillInput"
+                                   placeholder="Ketik nama skill lalu tekan Enter..."
+                                   class="bg-transparent border-0 text-xs flex-1 p-1 outline-none text-slate-900 dark:text-white placeholder-slate-400 min-w-[180px]">
+                        </div>
+                        <input type="hidden" name="skills_hidden" id="skillsHidden" value="Laravel,Tailwind">
                     </div>
                 </div>
-            </div>
+
+                <!-- Submit Button -->
+                <div class="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+                    <a href="{{ route('projects.index') }}"
+                       class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition-all flex items-center gap-2">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        <span>Publikasikan Proyek</span>
+                    </button>
+                </div>
+            </form>
         </div>
+
     </div>
- 
-    <!-- Scripts for Visual Inputs and Data Processing -->
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Skill Input Logic
+        document.addEventListener('DOMContentLoaded', () => {
             const skillInput = document.getElementById('skillInput');
             const skillsContainer = document.getElementById('skillsContainer');
-            
-            skillInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const val = this.value.trim();
-                    if (val) {
-                        addSkillTag(val);
-                        this.value = '';
-                    }
-                }
-            });
- 
-            function addSkillTag(text) {
-                const tag = document.createElement('span');
-                tag.className = 'bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 rounded-full px-2.5 py-1 text-xs flex items-center gap-1 skill-tag';
-                tag.innerHTML = `${text} <span class="cursor-pointer ms-1 flex items-center" onclick="this.parentElement.remove()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span>`;
-                skillsContainer.appendChild(tag);
+            const skillsHidden = document.getElementById('skillsHidden');
+
+            function updateSkillsHidden() {
+                const tags = Array.from(skillsContainer.querySelectorAll('span')).map(s => s.innerText.trim());
+                if (skillsHidden) skillsHidden.value = tags.join(',');
             }
- 
-            // 2. Timeline Logic (Set End Date)
+
+            if (skillInput) {
+                skillInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = skillInput.value.trim();
+                        if (val) {
+                            const pill = document.createElement('span');
+                            pill.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 flex items-center gap-1.5';
+                            pill.innerHTML = `${val} <button type="button" class="text-brand-400 hover:text-brand-600" onclick="this.parentElement.remove();"><i class="bi bi-x"></i></button>`;
+                            skillsContainer.appendChild(pill);
+                            skillInput.value = '';
+                            updateSkillsHidden();
+                        }
+                    }
+                });
+            }
+
+            // Timeline auto calculate
             const timelineSelect = document.getElementById('timeline');
             const endDateInput = document.getElementById('end_date');
-            
-            function updateEndDate() {
-                const months = parseInt(timelineSelect.value);
+            function calcEndDate() {
+                if (!timelineSelect || !endDateInput) return;
+                const months = parseInt(timelineSelect.value, 10);
                 const date = new Date();
                 date.setMonth(date.getMonth() + months);
-                const dateString = date.toISOString().split('T')[0];
-                endDateInput.value = dateString;
+                endDateInput.value = date.toISOString().split('T')[0];
             }
-            timelineSelect.addEventListener('change', updateEndDate);
-            updateEndDate(); // Init
- 
-            // 3. Form Submission (Append Data to Description)
-            const form = document.getElementById('createProjectForm');
-            form.addEventListener('submit', function(e) {
-                const skills = Array.from(skillsContainer.querySelectorAll('.skill-tag')).map(el => el.innerText.trim());
-                const teamSize = document.getElementById('teamSize').value;
-                const visibility = document.querySelector('input[name="visibility"]:checked').value;
-                const visibilityLabel = visibility === 'public' ? 'Public' : 'Invite Only';
- 
-                const descInput = document.getElementById('description');
-                let appendText = `\n\n---\n**Project Details:**`;
-                if (skills.length) appendText += `\n- **Skills Needed:** ${skills.join(', ')}`;
-                appendText += `\n- **Team Size:** ${teamSize}`;
-                appendText += `\n- **Visibility:** ${visibilityLabel}`;
-                
-                descInput.value += appendText;
-            });
+            if (timelineSelect) {
+                timelineSelect.addEventListener('change', calcEndDate);
+                calcEndDate();
+            }
         });
     </script>
 </x-app-layout>

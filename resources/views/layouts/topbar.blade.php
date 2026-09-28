@@ -1,76 +1,97 @@
-<nav class="flex items-center bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 py-2 sticky top-0 px-4 h-[74px] z-35">
-    <div class="container-fluid flex items-center justify-between w-full p-0">
-        <!-- Mobile Toggle -->
-        <button @click="toggleSidebar()" class="p-2 text-slate-500 dark:text-slate-400 mr-3 md:hidden hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full">
-            <i class="bi bi-list text-2xl"></i>
-        </button>
- 
-        <!-- Search -->
-        <form action="{{ route('projects.index') }}" method="GET" class="hidden md:block flex-1 mr-4 max-w-[400px]">
-            <div class="flex items-center bg-slate-100 dark:bg-slate-700/50 rounded-full border border-transparent focus-within:border-indigo-500 overflow-hidden">
-                <span class="bg-transparent border-0 text-slate-400 pl-4 pr-2 flex items-center justify-content-center">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" name="search" class="bg-transparent border-0 w-full outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 py-2 px-1 text-sm"
-                    placeholder="Search for projects..." value="{{ request('search') }}">
-            </div>
-        </form>
- 
-        <!-- Right Side Controls -->
-        <div class="ml-auto flex items-center gap-2">
-            <button @click="toggleTheme()" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full transition-colors duration-200">
-                <i class="bi text-lg" :class="darkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
+<nav class="sticky top-0 z-20 flex items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 h-16 transition-colors">
+    <div class="flex items-center justify-between w-full gap-4">
+        <!-- Left: Mobile Toggle & Page Search -->
+        <div class="flex items-center gap-3 flex-1 max-w-lg">
+            <!-- Mobile Toggle -->
+            <button @click="toggleSidebar()"
+                    class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 md:hidden rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <i class="bi bi-list text-2xl"></i>
             </button>
- 
-            <a class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full transition-colors duration-200 relative" href="#">
-                <i class="bi bi-bell-fill text-lg"></i>
-                <span class="absolute top-1.5 right-1.5 p-1 bg-red-500 border border-white rounded-full"></span>
-            </a>
- 
-            <a class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full transition-colors duration-200 mr-2" href="{{ route('chat') }}">
-                <i class="bi bi-chat-left-text-fill text-lg"></i>
-            </a>
- 
-            <div class="border-l border-slate-200 dark:border-slate-700 pl-3 ml-2 flex items-center gap-3">
-                <div class="text-right hidden md:block" style="line-height: 1.2;">
-                    <span class="block font-bold text-slate-800 dark:text-slate-100 text-sm">{{ auth()->user()->name }}</span>
-                    <span class="block text-slate-400 dark:text-slate-500 text-xs">{{ auth()->user()->major ?? 'Computer Science' }}</span>
+
+            <!-- Search Form -->
+            <form action="{{ route('projects.index') }}" method="GET" class="w-full hidden sm:block">
+                <div class="relative flex items-center">
+                    <i class="bi bi-search absolute left-3.5 text-slate-400 text-xs"></i>
+                    <input type="text" name="search"
+                           class="w-full bg-slate-100 dark:bg-slate-800/80 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+                           placeholder="Cari judul proyek, topik, atau skill..."
+                           value="{{ request('search') }}">
                 </div>
- 
-                <!-- Profile Dropdown Menu (Alpine.js) -->
-                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                    <a href="#" @click.prevent="open = !open" class="block">
-                        <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
-                            width="40" height="40" class="rounded-circle border-2 border-white dark:border-slate-700 shadow-sm object-cover">
-                    </a>
-                    
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="transform opacity-0 scale-95"
-                         x-transition:enter-end="transform opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="transform opacity-100 scale-100"
-                         x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" 
-                         style="display: none; z-index: 50;">
-                        <h6 class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/50 mb-1">Manage Account</h6>
-                        <a class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-                           href="{{ route('profile.show', auth()->id()) }}">
-                            <i class="bi bi-person"></i> Profile
-                        </a>
-                        <a class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-                           href="{{ route('profile.edit') }}">
-                            <i class="bi bi-gear"></i> Settings
-                        </a>
-                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20">
-                                <i class="bi bi-box-arrow-right"></i> Sign out
-                            </button>
-                        </form>
+            </form>
+        </div>
+
+        <!-- Right: Actions & User Menu -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Theme Toggle -->
+            <button @click="toggleTheme()"
+                    class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    title="Toggle Theme">
+                <i class="bi text-base" :class="darkMode ? 'bi-sun-fill text-amber-400' : 'bi-moon-stars-fill'"></i>
+            </button>
+
+            <!-- Workspace Chat Shortcut -->
+            <a href="{{ route('chat') }}"
+               class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
+               title="Workspace Chat">
+                <i class="bi bi-chat-dots text-base"></i>
+            </a>
+
+            <!-- Divider -->
+            <div class="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1"></div>
+
+            <!-- Profile Dropdown -->
+            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                <button @click="open = !open"
+                        class="flex items-center gap-2.5 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=6366f1&color=fff' }}"
+                         class="w-8 h-8 rounded-lg object-cover ring-2 ring-brand-500/20 shadow-sm"
+                         alt="{{ auth()->user()->name }}">
+                    <div class="text-left hidden lg:block pr-1">
+                        <p class="text-xs font-bold text-slate-900 dark:text-white leading-tight mb-0 truncate max-w-[120px]">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-0 truncate max-w-[120px]">{{ auth()->user()->major ?? 'Mahasiswa' }}</p>
                     </div>
+                    <i class="bi bi-chevron-down text-[10px] text-slate-400 hidden lg:block"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div x-show="open"
+                     x-cloak
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="absolute right-0 mt-2 w-52 rounded-2xl shadow-xl py-1.5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 z-50">
+                    
+                    <div class="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800">
+                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                        <p class="text-[11px] text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                    </div>
+
+                    <div class="py-1">
+                        <a href="{{ route('profile.show', auth()->id()) }}"
+                           class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
+                            <i class="bi bi-person-badge text-slate-400 text-sm"></i>
+                            <span>Profil & Portofolio</span>
+                        </a>
+                        <a href="{{ route('profile.edit') }}"
+                           class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
+                            <i class="bi bi-gear text-slate-400 text-sm"></i>
+                            <span>Pengaturan Akun</span>
+                        </a>
+                    </div>
+
+                    <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
+                            <i class="bi bi-box-arrow-right text-sm"></i>
+                            <span>Keluar Akun</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

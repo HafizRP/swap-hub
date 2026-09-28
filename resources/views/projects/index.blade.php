@@ -1,160 +1,161 @@
-@section('title', 'Browse Projects')
+@section('title', 'Eksplorasi Proyek')
 <x-app-layout>
-    <div class="container mx-auto py-6" x-data="{ showFilters: false }">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Sidebar Filters -->
-            <div class="lg:col-span-3">
-                <!-- Mobile Filter Toggle -->
-                <button @click="showFilters = !showFilters" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm lg:hidden mb-4 flex items-center justify-center gap-2">
-                    <i class="bi bi-funnel-fill"></i> Filters & Search
+    <div class="space-y-6" x-data="{ showFilters: false }">
+
+        <!-- Top Header & Search Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Eksplorasi Proyek Mahasiswa
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Temukan proyek menarik, ajukan diri bergabung, dan bangun portofolio bersama tim.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button @click="showFilters = !showFilters"
+                        class="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold shadow-sm">
+                    <i class="bi bi-funnel"></i>
+                    <span>Filter & Kategori</span>
                 </button>
- 
+                <a href="{{ route('projects.create') }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold shadow-md shadow-brand-500/20 transition-all">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Buat Proyek</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+
+            <!-- Sidebar Filters (3 cols) -->
+            <div class="lg:col-span-3">
                 <div class="lg:block" :class="showFilters ? 'block' : 'hidden'">
-                    <div class="flex flex-col gap-4 sticky top-[100px] z-10">
-                        <div>
-                            <h5 class="font-bold text-slate-800 dark:text-slate-100 mb-3 hidden lg:block">Filter By</h5>
-                            
-                            <form action="{{ route('projects.index') }}" method="GET">
-                                <!-- Search -->
-                                <div class="relative mb-4">
-                                    <span class="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                        </svg>
-                                    </span>
-                                    <input type="text" name="search" value="{{ request('search') }}" 
-                                        class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full pl-10 pr-4 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500" 
-                                        placeholder="Search keywords...">
-                                </div>
- 
-                                <!-- Filters Panel -->
-                                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden" x-data="{ openCat: true, openStatus: true }">
-                                    
-                                    <!-- Project Type (Category) -->
-                                    <div>
-                                        <button @click="openCat = !openCat" type="button" class="w-full flex justify-between items-center font-bold text-slate-800 dark:text-slate-100 p-4 text-sm bg-transparent border-0 outline-none text-left">
-                                            <span>Project Type</span>
-                                            <i class="bi" :class="openCat ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                                        </button>
-                                        <div x-show="openCat" class="px-4 pb-4 pt-0">
-                                            @foreach(['Development', 'Design', 'Marketing', 'Research'] as $cat)
-                                                <label class="flex items-center gap-2 my-2 cursor-pointer text-slate-600 dark:text-slate-400 text-sm">
-                                                    <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" type="radio" name="category" value="{{ $cat }}" id="cat-{{ $cat }}" 
-                                                        {{ request('category') == $cat ? 'checked' : '' }} onchange="this.form.submit()">
-                                                    <span>{{ $cat }}</span>
-                                                </label>
-                                            @endforeach
-                                            <label class="flex items-center gap-2 my-2 cursor-pointer text-slate-600 dark:text-slate-400 text-sm">
-                                                <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" type="radio" name="category" value="" id="cat-all" 
-                                                    {{ !request('category') ? 'checked' : '' }} onchange="this.form.submit()">
-                                                <span>All Types</span>
-                                            </label>
-                                        </div>
-                                    </div>
- 
-                                    <div class="border-t border-slate-100 dark:border-slate-700/50"></div>
- 
-                                    <!-- Status -->
-                                    <div>
-                                        <button @click="openStatus = !openStatus" type="button" class="w-full flex justify-between items-center font-bold text-slate-800 dark:text-slate-100 p-4 text-sm bg-transparent border-0 outline-none text-left">
-                                            <span>Status</span>
-                                            <i class="bi" :class="openStatus ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                                        </button>
-                                        <div x-show="openStatus" class="px-4 pb-4 pt-0">
-                                            <div class="flex justify-between items-center">
-                                                <span class="text-slate-650 dark:text-slate-400 text-sm">Open for application</span>
-                                                <input class="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" type="checkbox" checked disabled>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                    <form action="{{ route('projects.index') }}" method="GET" class="space-y-4 sticky top-24">
+                        <!-- Search Box -->
+                        <div class="relative">
+                            <i class="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                   placeholder="Kata kunci proyek..."
+                                   class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm">
                         </div>
-                    </div>
+
+                        <!-- Categories Panel -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                Kategori Proyek
+                            </h3>
+
+                            <div class="space-y-2">
+                                <label class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                    <span class="flex items-center gap-2">
+                                        <input type="radio" name="category" value="" onchange="this.form.submit()"
+                                               {{ !request('category') ? 'checked' : '' }}
+                                               class="text-brand-600 focus:ring-brand-500 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                        <span>Semua Kategori</span>
+                                    </span>
+                                </label>
+
+                                @foreach(['Development', 'Design', 'Marketing', 'Research', 'Mobile', 'AI & Data'] as $cat)
+                                    <label class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                        <span class="flex items-center gap-2">
+                                            <input type="radio" name="category" value="{{ $cat }}" onchange="this.form.submit()"
+                                                   {{ request('category') == $cat ? 'checked' : '' }}
+                                                   class="text-brand-600 focus:ring-brand-500 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                            <span>{{ $cat }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
- 
-            <!-- Main Content -->
-            <div class="lg:col-span-9">
-                <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-3">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">Explore Student Projects</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-0">Find the perfect team for your next big idea.</p>
-                    </div>
-                    <span class="text-slate-450 dark:text-slate-500 text-xs font-semibold">Showing {{ $projects->count() }} projects</span>
+
+            <!-- Main Projects Grid (9 cols) -->
+            <div class="lg:col-span-9 space-y-6">
+                <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+                    <span>Menampilkan <strong>{{ $projects->count() }}</strong> proyek ditemukan</span>
                 </div>
- 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                     @forelse($projects as $project)
-                        <div class="col-span-1">
-                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full hover-lift transition-all">
-                                <div class="p-5 flex flex-col h-full">
-                                    <!-- Header -->
-                                    <div class="flex justify-between items-start mb-3 gap-2">
-                                        <h5 class="font-bold text-base mb-0 text-slate-800 dark:text-slate-100 truncate flex-1" title="{{ $project->title }}">
-                                            {{ $project->title }}
-                                        </h5>
-                                        @php
-                                            $statusBadge = match ($project->status) {
-                                                'active' => ['text' => 'text-emerald-600 dark:text-emerald-400', 'bg' => 'bg-emerald-500/10', 'label' => 'Open'],
-                                                'planning' => ['text' => 'text-indigo-600 dark:text-indigo-400', 'bg' => 'bg-indigo-500/10', 'label' => 'Planning'],
-                                                default => ['text' => 'text-slate-650 dark:text-slate-400', 'bg' => 'bg-slate-500/10', 'label' => ucfirst($project->status)],
-                                            };
-                                        @endphp
-                                        <span class="rounded-full px-2.5 py-0.5 text-[10px] font-semibold shrink-0 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }}">
-                                            {{ $statusBadge['label'] }}
-                                        </span>
-                                    </div>
- 
-                                    <!-- Description -->
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 flex-grow line-clamp-3" style="min-height: 4.5em;">
-                                        {{ Str::limit($project->description, 120) }}
-                                    </p>
- 
-                                    <!-- Tags -->
-                                    <div class="flex flex-wrap gap-2 mb-4">
-                                        <span class="bg-slate-100 dark:bg-slate-700/50 text-slate-655 dark:text-slate-350 rounded text-[10px] px-2 py-0.5 border border-slate-200 dark:border-slate-600">
-                                            {{ $project->category ?? 'General' }}
-                                        </span>
-                                        @if($project->start_date)
-                                            <span class="bg-slate-100 dark:bg-slate-700/50 text-slate-655 dark:text-slate-350 rounded text-[10px] px-2 py-0.5 border border-slate-200 dark:border-slate-600">
-                                                {{ $project->start_date->format('M Y') }}
-                                            </span>
-                                        @endif
-                                    </div>
- 
-                                    <!-- Footer -->
-                                    <div class="flex justify-between items-center mt-auto pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <img src="{{ $project->owner->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($project->owner->name) . '&background=random' }}" 
-                                                 class="rounded-circle object-cover" width="24" height="24" alt="Author">
-                                            <span class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate" style="max-width: 80px;">{{ $project->owner->name }}</span>
-                                        </div>
-                                        <a href="{{ route('projects.show', $project) }}" class="text-indigo-650 hover:text-indigo-700 text-xs font-bold no-underline">
-                                            Details
-                                        </a>
-                                    </div>
+                        @php
+                            $statusConfig = match ($project->status) {
+                                'active' => ['text' => 'text-emerald-600 dark:text-emerald-400', 'bg' => 'bg-emerald-500/10', 'label' => 'Terbuka'],
+                                'planning' => ['text' => 'text-brand-600 dark:text-brand-400', 'bg' => 'bg-brand-500/10', 'label' => 'Planning'],
+                                default => ['text' => 'text-slate-600 dark:text-slate-400', 'bg' => 'bg-slate-500/10', 'label' => ucfirst($project->status)],
+                            };
+                        @endphp
+
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover-card flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <!-- Top Status Strip -->
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }}">
+                                        {{ $statusConfig['label'] }}
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                        {{ $project->category ?? 'General' }}
+                                    </span>
                                 </div>
+
+                                <!-- Title -->
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white truncate" title="{{ $project->title }}">
+                                    {{ $project->title }}
+                                </h3>
+
+                                <!-- Description -->
+                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                                    {{ $project->description }}
+                                </p>
+                            </div>
+
+                            <!-- Bottom Meta & Action -->
+                            <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <img src="{{ $project->owner->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($project->owner->name) . '&background=6366f1&color=fff' }}"
+                                         class="w-6 h-6 rounded-md object-cover shrink-0"
+                                         alt="{{ $project->owner->name }}">
+                                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[90px]">
+                                        {{ $project->owner->name }}
+                                    </span>
+                                </div>
+
+                                <a href="{{ route('projects.show', $project) }}"
+                                   class="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/40 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 text-xs font-bold transition-colors">
+                                    Detail <i class="bi bi-chevron-right text-[10px]"></i>
+                                </a>
                             </div>
                         </div>
                     @empty
-                        <div class="col-span-3 py-10 text-center">
-                            <div class="mb-4">
-                                <svg class="text-slate-400 dark:text-slate-600 mx-auto opacity-50" width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
+                        <div class="col-span-full py-16 text-center space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 p-8">
+                            <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto text-2xl">
+                                <i class="bi bi-search"></i>
                             </div>
-                            <h5 class="font-bold text-slate-500 dark:text-slate-400 mb-3">No projects found</h5>
-                            <a href="{{ route('projects.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full text-xs shadow transition-colors">Create Project</a>
+                            <div class="space-y-1">
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Tidak ada proyek ditemukan</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                                    Coba ubah kata kunci pencarian atau pilih kategori proyek yang lain.
+                                </p>
+                            </div>
+                            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-sm">
+                                <i class="bi bi-plus-lg"></i>
+                                <span>Buat Proyek Baru</span>
+                            </a>
                         </div>
                     @endforelse
                 </div>
- 
+
                 <!-- Pagination -->
-                <div class="flex justify-center mt-8">
-                    {{ $projects->withQueryString()->links('pagination::tailwind') }}
-                </div>
+                @if($projects->hasPages())
+                    <div class="pt-4 flex justify-center">
+                        {{ $projects->withQueryString()->links() }}
+                    </div>
+                @endif
             </div>
+
         </div>
+
     </div>
 </x-app-layout>

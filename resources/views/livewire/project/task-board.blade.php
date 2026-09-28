@@ -1,273 +1,283 @@
 <div class="h-full flex flex-col relative" x-data="{ openDropdownId: null }">
     
-    <div class="flex justify-between items-center mb-6 px-3 pt-2">
-        <h5 class="mb-0 font-bold flex items-center gap-2 text-slate-800 dark:text-slate-100 text-base">
-            <i class="bi bi-kanban text-indigo-600 dark:text-indigo-400"></i> Board
-        </h5>
+    <!-- Top Bar Controls -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+            <h2 class="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                Papan Tugas Proyek
+            </h2>
+        </div>
         
         <div class="flex items-center gap-3">
-            <!-- View Toggle Segmented Control -->
-            <div class="bg-slate-100 dark:bg-slate-700/50 p-1 rounded-lg inline-flex border border-slate-200 dark:border-slate-700 shadow-sm">
+            <!-- View Toggle Switch -->
+            <div class="p-1 rounded-xl bg-slate-100 dark:bg-slate-800 inline-flex border border-slate-200/80 dark:border-slate-700/80">
                 <button wire:click="$set('viewType', 'board')" 
-                    class="px-4 py-1.5 rounded-md text-xs transition-all duration-150 flex items-center gap-2 border-0 outline-none {{ $viewType === 'board' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-650 dark:text-indigo-455 font-bold' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400' }}">
-                    <i class="bi bi-grid-fill"></i> <span>Board</span>
+                        type="button"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 {{ $viewType === 'board' ? 'bg-white dark:bg-slate-700 shadow-sm text-brand-600 dark:text-brand-400' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400' }}">
+                    <i class="bi bi-kanban"></i> <span>Board</span>
                 </button>
                 <button wire:click="$set('viewType', 'list')" 
-                    class="px-4 py-1.5 rounded-md text-xs transition-all duration-150 flex items-center gap-2 border-0 outline-none {{ $viewType === 'list' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-655 dark:text-indigo-455 font-bold' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400' }}">
-                    <i class="bi bi-list-ul"></i> <span>List</span>
+                        type="button"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 {{ $viewType === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-brand-600 dark:text-brand-400' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400' }}">
+                    <i class="bi bi-list-task"></i> <span>List</span>
                 </button>
             </div>
- 
-            <button wire:click="$set('showCreateModal', true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-4 rounded-full text-xs transition-colors flex items-center gap-2 shadow border-0">
-                <i class="bi bi-plus-lg"></i> <span>New Task</span>
+
+            <button wire:click="$set('showCreateModal', true)" 
+                    type="button"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition-all">
+                <i class="bi bi-plus-lg"></i>
+                <span>Tambah Tugas</span>
             </button>
         </div>
     </div>
- 
-    <div class="flex-grow overflow-hidden px-2 pb-2" style="min-height: 0;">
-        @php
-            $statuses = [
-                'todo' => ['label' => 'To Do', 'color' => 'bg-slate-500', 'text' => 'text-slate-600 dark:text-slate-400', 'badgeBg' => 'bg-slate-500/10'],
-                'in_progress' => ['label' => 'In Progress', 'color' => 'bg-indigo-600', 'text' => 'text-indigo-600 dark:text-indigo-400', 'badgeBg' => 'bg-indigo-500/10'],
-                'review' => ['label' => 'Review', 'color' => 'bg-amber-500', 'text' => 'text-amber-600 dark:text-amber-400', 'badgeBg' => 'bg-amber-500/10'],
-                'done' => ['label' => 'Done', 'color' => 'bg-emerald-500', 'text' => 'text-emerald-600 dark:text-emerald-400', 'badgeBg' => 'bg-emerald-500/10']
-            ];
-        @endphp
- 
-        @if($viewType === 'board')
-            <div class="flex gap-4 h-full flex-nowrap overflow-x-auto pb-4 custom-scrollbar" style="scroll-behavior: smooth;">
-                @foreach($statuses as $key => $status)
-                    <div class="shrink-0 h-full w-[300px] md:w-[320px]">
-                        <div class="bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-4 h-full flex flex-col border border-slate-200 dark:border-slate-700/60 shadow-sm">
-                            <div class="flex justify-between items-center mb-4 px-1 shrink-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="inline-block rounded-full w-2.5 h-2.5 {{ $status['color'] }}"></span>
-                                    <h6 class="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-100 mb-0">{{ $status['label'] }}</h6>
-                                </div>
-                                <span class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-350 text-[10px] font-bold rounded-full px-2.5 py-0.5 border border-slate-200 dark:border-slate-700 shadow-sm">{{ $tasks->get($key)?->count() ?? 0 }}</span>
-                            </div>
-        
-                            <div class="flex flex-col gap-3 flex-grow overflow-y-auto custom-scrollbar pr-1" style="min-height: 0;">
-                                @forelse($tasks->get($key) ?? [] as $task)
-                                    @php
-                                        $priorityStyles = $task->priority === 'high' 
-                                            ? ['border' => 'border-l-red-500', 'badge' => 'bg-red-500/10 text-red-600 dark:text-red-400'] 
-                                            : ($task->priority === 'medium' ? ['border' => 'border-l-amber-500', 'badge' => 'bg-amber-500/10 text-amber-600 dark:text-amber-450'] : ['border' => 'border-l-sky-500', 'badge' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400']);
-                                    @endphp
-                                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/80 hover-lift transition-all border-l-4 {{ $priorityStyles['border'] }}">
-                                        <div class="p-4">
-                                            <div class="flex justify-between items-start mb-2.5">
-                                                <span class="rounded-full text-[10px] font-bold {{ $priorityStyles['badge'] }} px-2 py-0.5 uppercase">
-                                                    {{ $task->priority }}
-                                                </span>
-                                                
-                                                <!-- Dropdown menu (Alpine.js) -->
-                                                <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
-                                                    <button @click.stop="dropdownOpen = !dropdownOpen" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-transparent border-0 p-0 outline-none cursor-pointer">
-                                                        <i class="bi bi-three-dots-vertical"></i>
-                                                    </button>
-                                                    <div x-show="dropdownOpen" 
-                                                         x-transition
-                                                         class="absolute right-0 mt-1 w-44 rounded-lg shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 z-[1050]" 
-                                                         style="display: none;">
-                                                        <h6 class="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/50 mb-1">Move To</h6>
-                                                        @foreach($statuses as $sKey => $sVal)
-                                                            @if($sKey !== $key)
-                                                                <button class="w-full text-left px-4 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 border-0 bg-transparent" 
-                                                                        wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">
-                                                                    {{ $sVal['label'] }}
-                                                                </button>
-                                                            @endif
-                                                        @endforeach
-                                                        <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
-                                                        <button class="w-full text-left px-4 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 border-0 bg-transparent" 
-                                                                wire:click="deleteTask({{ $task->id }})" wire:confirm="Are you sure you want to delete this task?">
-                                                            Delete
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-        
-                                            <h6 class="font-bold text-sm text-slate-800 dark:text-slate-100 mb-1 truncate" title="{{ $task->title }}">{{ $task->title }}</h6>
-                                            @if($task->description)
-                                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 truncate">{{ $task->description }}</p>
-                                            @else
-                                                <div class="mb-3"></div>
-                                            @endif
-        
-                                            <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700/50">
-                                                <div class="flex items-center gap-2" title="Assignee: {{ $task->assignee->name ?? 'Unassigned' }}">
-                                                    @if($task->assignee)
-                                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&background=random" class="rounded-circle" width="24" height="24">
-                                                    @else
-                                                        <div class="rounded-circle bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs" style="width: 24px; height: 24px;">
-                                                            <i class="bi bi-person"></i>
-                                                        </div>
-                                                    @endif
-                                                    @if($task->due_date)
-                                                        <span class="text-[10px] font-medium {{ $task->due_date->isPast() ? 'text-red-500 font-bold' : 'text-slate-400 dark:text-slate-500' }} ml-1">
-                                                            <i class="bi bi-calendar"></i> {{ $task->due_date->format('M d') }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <!-- Empty state -->
-                                @endforelse
-                            </div>
+
+    @php
+        $statuses = [
+            'todo' => ['label' => 'To Do', 'color' => 'bg-slate-400', 'badge' => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'],
+            'in_progress' => ['label' => 'In Progress', 'color' => 'bg-blue-500', 'badge' => 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300'],
+            'review' => ['label' => 'Review', 'color' => 'bg-amber-500', 'badge' => 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'],
+            'done' => ['label' => 'Done', 'color' => 'bg-emerald-500', 'badge' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300']
+        ];
+    @endphp
+
+    @if($viewType === 'board')
+        <!-- Kanban Grid View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto pb-4 custom-scrollbar">
+            @foreach($statuses as $key => $status)
+                <div class="rounded-2xl bg-slate-50/80 dark:bg-slate-900/50 p-4 border border-slate-200/80 dark:border-slate-800 flex flex-col min-h-[480px]">
+                    <!-- Column Header -->
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200/60 dark:border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full {{ $status['color'] }}"></span>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                                {{ $status['label'] }}
+                            </h3>
                         </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                            {{ $tasks->get($key)?->count() ?? 0 }}
+                        </span>
                     </div>
-                @endforeach
-            </div>
-        @else
-            <!-- List View -->
-            <div class="bg-white dark:bg-slate-800 border border-slate-205 border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden h-full flex flex-col">
-                <div class="overflow-auto custom-scrollbar flex-grow">
-                    <table class="w-full text-left border-collapse align-middle text-nowrap">
-                        <thead class="bg-slate-50 dark:bg-slate-700/30 sticky top-0 z-1 border-b border-slate-200 dark:border-slate-700">
-                            <tr>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0" style="width: 40%">Task</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Status</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Priority</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Assignee</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Due Date</th>
-                                <th class="px-6 py-3.5 text-right text-xs font-bold text-slate-500 dark:text-slate-450 uppercase border-0">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                            @php $allTasks = $tasks->flatten(); @endphp
-                            @forelse($allTasks as $task)
-                                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-750/30 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="font-bold text-sm text-slate-850 dark:text-slate-100">{{ $task->title }}</div>
-                                        @if($task->description)
-                                            <div class="text-xs text-slate-450 dark:text-slate-400 truncate max-w-[300px] mt-0.5">{{ $task->description }}</div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="relative" x-data="{ openListDropdown: false }" @click.outside="openListDropdown = false">
-                                             <button @click.stop="openListDropdown = !openListDropdown" class="rounded-full px-3 py-1 text-xs font-semibold border-0 {{ $statuses[$task->status]['badgeBg'] }} {{ $statuses[$task->status]['text'] }} flex items-center gap-1.5">
-                                                {{ $statuses[$task->status]['label'] ?? ucfirst($task->status) }} <i class="bi bi-chevron-down text-[10px]"></i>
-                                             </button>
-                                             <div x-show="openListDropdown" 
-                                                  x-transition
-                                                  class="absolute left-0 mt-1 w-40 rounded-lg shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-205 dark:border-slate-700 z-[1050]" 
-                                                  style="display: none;">
-                                                @foreach($statuses as $sKey => $sVal)
-                                                    <button class="w-full text-left px-4 py-1.5 text-xs text-slate-750 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 border-0 bg-transparent" 
+
+                    <!-- Tasks List -->
+                    <div class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                        @forelse($tasks->get($key) ?? [] as $task)
+                            @php
+                                $priorityStyle = match($task->priority) {
+                                    'high' => 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200/60',
+                                    'medium' => 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200/60',
+                                    default => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200/60',
+                                };
+                            @endphp
+                            <div class="p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all space-y-2.5 group">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase border {{ $priorityStyle }}">
+                                        {{ $task->priority }}
+                                    </span>
+
+                                    <!-- Dropdown Action -->
+                                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                        <button @click.stop="open = !open" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <div x-show="open" x-cloak x-transition
+                                             class="absolute right-0 mt-1 w-40 rounded-xl shadow-lg py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 z-50 text-xs">
+                                            <div class="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Pindahkan Status</div>
+                                            @foreach($statuses as $sKey => $sVal)
+                                                @if($sKey !== $key)
+                                                    <button type="button"
+                                                            class="w-full text-left px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60"
                                                             wire:click="updateStatus({{ $task->id }}, '{{ $sKey }}')">
                                                         {{ $sVal['label'] }}
                                                     </button>
-                                                @endforeach
-                                             </div>
+                                                @endif
+                                            @endforeach
+                                            <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                                            <button type="button"
+                                                    class="w-full text-left px-3 py-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                                                    wire:click="deleteTask({{ $task->id }})" wire:confirm="Hapus tugas ini?">
+                                                Hapus Tugas
+                                            </button>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        @php
-                                            $priorityBadge = $task->priority === 'high' 
-                                                ? 'bg-red-500/10 text-red-600' 
-                                                : ($task->priority === 'medium' ? 'bg-amber-500/10 text-amber-650' : 'bg-sky-500/10 text-sky-600');
-                                        @endphp
-                                        <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase {{ $priorityBadge }}">
-                                            {{ $task->priority }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                                        {{ $task->title }}
+                                    </h4>
+                                    @if($task->description)
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
+                                            {{ $task->description }}
+                                        </p>
+                                    @endif
+                                </div>
+
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60 text-[11px]">
+                                    <div class="flex items-center gap-1.5">
                                         @if($task->assignee)
-                                            <div class="flex items-center gap-2">
-                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&background=random" class="rounded-circle shrink-0" width="24" height="24">
-                                                <span class="text-xs text-slate-800 dark:text-slate-200">{{ $task->assignee->name }}</span>
-                                            </div>
-                                        @else
-                                            <span class="text-xs text-slate-400 dark:text-slate-500 italic">Unassigned</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        @if($task->due_date)
-                                            <span class="text-xs {{ $task->due_date->isPast() ? 'text-red-505 text-red-500 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
-                                                {{ $task->due_date->format('M d, Y') }}
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($task->assignee->name) }}&size=40&background=6366f1&color=fff" 
+                                                 alt="{{ $task->assignee->name }}"
+                                                 class="w-5 h-5 rounded-full object-cover"
+                                                 title="Ditugaskan: {{ $task->assignee->name }}">
+                                            <span class="text-slate-600 dark:text-slate-400 font-semibold truncate max-w-[80px]">
+                                                {{ $task->assignee->name }}
                                             </span>
                                         @else
-                                            <span class="text-xs text-slate-400">-</span>
+                                            <span class="text-slate-400 italic">Unassigned</span>
                                         @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button class="text-slate-400 hover:text-red-500 bg-transparent border-0 p-0 transition-colors cursor-pointer" wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?">
-                                            <i class="bi bi-trash text-base"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-10 opacity-50">
-                                        <i class="bi bi-clipboard text-4xl mb-2 block text-slate-400"></i>
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-0">No tasks found</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-    </div>
- 
-    <!-- Create Task Modal Overlay -->
-    @if($showCreateModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm" x-transition>
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
-                <div class="p-5 flex justify-between items-center border-b border-slate-100 dark:border-slate-700/50">
-                    <h5 class="font-bold text-slate-850 dark:text-slate-100 text-base">Create New Task</h5>
-                    <button wire:click="$set('showCreateModal', false)" class="text-slate-400 hover:text-slate-655 dark:hover:text-slate-300 bg-transparent border-0 p-0 outline-none">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </div>
-                <div class="p-5">
-                    <form wire:submit.prevent="createTask">
-                        <div class="mb-4">
-                            <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Task Title</label>
-                            <input type="text" wire:model="title" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-450 focus:outline-none focus:border-indigo-500" placeholder="What needs to be done?">
-                            @error('title') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Description</label>
-                            <textarea wire:model="description" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-405 focus:outline-none focus:border-indigo-500" rows="3" placeholder="Add details..."></textarea>
-                        </div>
- 
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="col-span-1">
-                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Assign To</label>
-                                <select wire:model="assigned_to" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-2.5 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
-                                    <option value="">Unassigned</option>
-                                    @foreach($members as $member)
-                                        <option value="{{ $member->id }}">{{ $member->name }}</option>
-                                    @endforeach
-                                </select>
+                                    </div>
+
+                                    @if($task->due_date)
+                                        <span class="font-bold {{ $task->due_date->isPast() ? 'text-rose-500' : 'text-slate-400' }} flex items-center gap-1">
+                                            <i class="bi bi-clock"></i>
+                                            {{ $task->due_date->format('d M') }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="col-span-1">
-                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Priority</label>
-                                <select wire:model="priority" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-2.5 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                </select>
+                        @empty
+                            <div class="h-32 flex flex-col items-center justify-center text-slate-400 text-xs">
+                                <i class="bi bi-inbox text-xl mb-1"></i>
+                                <span>Tidak ada tugas</span>
                             </div>
-                            <div class="col-span-2">
-                                <label class="block font-bold text-slate-500 dark:text-slate-400 text-xs mb-2 uppercase">Due Date</label>
-                                <input type="date" wire:model="due_date" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-850 dark:text-slate-100 focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
- 
-                        <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                            <button type="button" wire:click="$set('showCreateModal', false)" class="bg-slate-105 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-250 font-bold py-2 px-5 rounded-full text-xs transition-colors border-0">Cancel</button>
-                            <button type="submit" class="bg-indigo-650 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-full text-xs transition-colors border-0 shadow">Create Task</button>
-                        </div>
-                    </form>
+                        @endforelse
+                    </div>
                 </div>
+            @endforeach
+        </div>
+    @else
+        <!-- List View -->
+        <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 uppercase font-extrabold text-[10px] bg-slate-50/50 dark:bg-slate-800/50">
+                            <th class="py-3 px-4">Tugas</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4">Prioritas</th>
+                            <th class="py-3 px-4">Ditugaskan</th>
+                            <th class="py-3 px-4">Tenggat</th>
+                            <th class="py-3 px-4 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        @php $allTasks = $tasks->flatten(); @endphp
+                        @forelse($allTasks as $task)
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">
+                                    <span>{{ $task->title }}</span>
+                                    @if($task->description)
+                                        <p class="text-[11px] font-normal text-slate-400 truncate max-w-sm">{{ $task->description }}</p>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $statuses[$task->status]['badge'] ?? 'bg-slate-100 text-slate-700' }}">
+                                        {{ $statuses[$task->status]['label'] ?? ucfirst($task->status) }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase border">
+                                        {{ $task->priority }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                                    {{ $task->assignee->name ?? '-' }}
+                                </td>
+                                <td class="py-3 px-4 {{ $task->due_date && $task->due_date->isPast() ? 'text-rose-500 font-bold' : 'text-slate-500' }}">
+                                    {{ $task->due_date ? $task->due_date->format('d M Y') : '-' }}
+                                </td>
+                                <td class="py-3 px-4 text-right">
+                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Hapus tugas ini?" class="text-slate-400 hover:text-rose-500">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-8 text-center text-slate-400">Belum ada tugas dalam proyek ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     @endif
+
+    <!-- Create Task Modal -->
+    @if($showCreateModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-transition>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden p-6 space-y-4">
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-black text-slate-900 dark:text-white text-base">
+                        Tambah Tugas Baru
+                    </h3>
+                    <button wire:click="$set('showCreateModal', false)" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <form wire:submit.prevent="createTask" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                            Judul Tugas <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" wire:model="title" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none"
+                               placeholder="Apa yang perlu diselesaikan?">
+                        @error('title') <span class="text-rose-500 text-[10px] mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi</label>
+                        <textarea wire:model="description" rows="3"
+                                  class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none"
+                                  placeholder="Rincian detail tugas..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tugaskan Ke</label>
+                            <select wire:model="assigned_to"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="">Belum Ditugaskan</option>
+                                @foreach($members as $member)
+                                    <option value="{{ $member->id }}">{{ $member->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Prioritas</label>
+                            <select wire:model="priority"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="low">Rendah</option>
+                                <option value="medium">Sedang</option>
+                                <option value="high">Tinggi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tenggat Waktu</label>
+                        <input type="date" wire:model="due_date"
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" wire:click="$set('showCreateModal', false)"
+                                class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition-all">
+                            Buat Tugas
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
 </div>
