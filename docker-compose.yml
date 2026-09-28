@@ -11,6 +11,7 @@ services:
       - "${APP_PORT:-5541}:80"
     working_dir: /var/www
     volumes:
+      - .:/var/www
       - storage-data:/var/www/storage
     depends_on:
       db:
