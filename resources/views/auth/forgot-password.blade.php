@@ -1,94 +1,42 @@
-@extends('layouts.auth')
-
-@section('title', 'Forgot Password')
-
-@section('content')
-    <div class="auth-container">
-        <!-- Left Side - Hero -->
-        <div class="auth-hero">
-            <div class="auth-hero-content">
-                <div class="logo">
-                    <img src="{{ asset('icon-dark.png') }}" alt="Swap Hub" style="width: 40px; height: 40px;"
-                        class="object-fit-contain">
-                    <span>Swap Hub</span>
-                </div>
-
-                <h1 class="hero-title">Forgot your password?</h1>
-                <p class="hero-description">
-                    No worries! Just enter your email address and we'll send you a link to reset your password.
-                </p>
-
-                <div class="hero-stats">
-                    <div class="hero-avatars">
-                        <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=3b82f6&color=fff" alt="User"
-                            class="hero-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Sarah+Smith&background=1e40af&color=fff" alt="User"
-                            class="hero-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Mike+Chen&background=3b82f6&color=fff" alt="User"
-                            class="hero-avatar">
-                    </div>
-                    <span class="hero-stat-text">Join 10,000+ students</span>
-                </div>
-            </div>
+<x-guest-layout>
+    <div class="mb-4 text-center">
+        <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 mx-auto flex items-center justify-center text-xl mb-3">
+            <i class="bi bi-key-fill"></i>
         </div>
-
-        <!-- Right Side - Form -->
-        <div class="auth-form-container">
-            <div class="auth-form-wrapper">
-                <div class="form-header">
-                    <h2 class="form-title">Reset Password</h2>
-                    <p class="form-subtitle">
-                        Enter your email address and we'll send you instructions to reset your password.
-                    </p>
-                </div>
-
-                <!-- Password Reset Form -->
-                <form method="POST" action="{{ route('password.email') }}">
-                    @csrf
-
-                    <!-- Email Address -->
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                            class="form-input" placeholder="name@university.edu">
-                        @error('email')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn-primary">
-                        Send Reset Link
-                    </button>
-
-                    <!-- Back to Login -->
-                    <div class="form-footer">
-                        <a href="{{ route('login') }}"
-                            style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                            <i class="bi bi-arrow-left"></i>
-                            Back to login
-                        </a>
-                    </div>
-                </form>
-
-                <!-- Additional Help -->
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
-                    <div style="background: #eff6ff; border-left: 4px solid #0f59bc; padding: 1rem; border-radius: 8px;">
-                        <div style="display: flex; gap: 0.75rem;">
-                            <i class="bi bi-info-circle" style="color: #0f59bc; font-size: 1.25rem; flex-shrink: 0;"></i>
-                            <div>
-                                <h4 style="font-size: 0.9375rem; font-weight: 600; color: #1e40af; margin: 0 0 0.25rem 0;">
-                                    Need help?
-                                </h4>
-                                <p style="font-size: 0.875rem; color: #1e40af; margin: 0; line-height: 1.5;">
-                                    If you don't receive an email within a few minutes, check your spam folder or contact
-                                    support.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Lupa Kata Sandi?</h2>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            Masukkan email terdaftar Anda. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.
+        </p>
     </div>
-@endsection
+
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
+        @csrf
+
+        <!-- Email Address -->
+        <div>
+            <label for="email" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Mahasiswa</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                   placeholder="nama@university.ac.id"
+                   class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all">
+            @error('email')
+                <p class="mt-1 text-xs text-rose-500 font-medium">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <button type="submit"
+                class="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2">
+            <span>Kirim Link Reset Sandi</span>
+            <i class="bi bi-envelope-fill text-xs"></i>
+        </button>
+
+        <div class="text-center pt-2">
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400 transition-colors">
+                <i class="bi bi-arrow-left"></i>
+                <span>Kembali ke halaman Masuk</span>
+            </a>
+        </div>
+    </form>
+</x-guest-layout>
