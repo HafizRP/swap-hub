@@ -30,12 +30,15 @@ class SystemHealth extends Component
         $pusherError = null;
 
         // Determine host and port from config
-        $broadcastingDriver = config('broadcasting.default', 'pusher');
+        $broadcastingDriver = config('broadcasting.default', 'reverb');
         $host = config("broadcasting.connections.{$broadcastingDriver}.options.host")
-            ?? config('broadcasting.connections.pusher.options.host')
-            ?: '127.0.0.1';
+            ?? config('broadcasting.connections.reverb.options.host')
+            ?? '127.0.0.1';
+        if ($host === '0.0.0.0') {
+            $host = '127.0.0.1';
+        }
         $port = (int) (config("broadcasting.connections.{$broadcastingDriver}.options.port")
-            ?? config('broadcasting.connections.pusher.options.port', 443));
+            ?? config('broadcasting.connections.reverb.options.port', 8080));
 
         try {
             // Attempt to open a socket connection to the Reverb/Pusher server
