@@ -2,7 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    /* Tabular figures for stats and numbers */
+    .tabular-nums, .num-metric {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Modern headline balancing */
+    h1, h2, h3, .text-balance {
+        text-wrap: balance;
+    }
+
+    p, .text-pretty {
+        text-wrap: pretty;
+    }
+}
+
 [x-cloak] { display: none !important; }
+
+/* Micro-interaction & Tactile Buttons */
+button:active:not(:disabled),
+a.btn-interactive:active {
+    transform: scale(0.98);
+    transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism & Refined Surfaces */
+.glass-surface {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-surface {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Subtle ambient background pattern */
+.bg-subtle-grid {
+    background-size: 32px 32px;
+    background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+}
+
+.dark .bg-subtle-grid {
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
 
 /* Sidebar: hidden on mobile, visible as flex column on desktop */
 .sidebar-desktop {

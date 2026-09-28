@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 
 <head>
     <meta charset="utf-8">
@@ -8,137 +8,84 @@
 
     <title>@hasSection('title') @yield('title') - @endif{{ config('app.name', 'Swap Hub') }}</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:wght@200..800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --dark-bg: #0a0b1e;
-            --card-bg: rgba(255, 255, 255, 0.03);
-        }
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--dark-bg);
-            color: #e2e8f0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-        }
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        .orbital-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
-        }
-
-        .guest-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2rem;
-            width: 100%;
-            max-width: 450px;
-            padding: 3rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+    <!-- Dark Mode Init: prevent theme flashing -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme');
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (theme === 'dark' || (!theme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-radius: 100px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
-        }
-
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
-            border-radius: 1rem;
-            padding: 0.8rem 1.2rem;
-        }
-
-        .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.08) !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
-        }
-
-        .logo-container {
-            margin-bottom: 2.5rem;
-            text-align: center;
-        }
-
-        .fw-black {
-            font-weight: 900 !important;
-        }
-    </style>
+        })();
+    </script>
 </head>
 
-<body class="antialiased">
-    <div class="orbital-bg"></div>
+<body class="antialiased font-sans bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-center items-center p-4 relative selection:bg-indigo-500 selection:text-white"
+    x-data="{
+        darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
+        toggleTheme() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    }">
 
-    <div class="container d-flex justify-content-center">
-        <div class="guest-card">
-            <div class="logo-container">
-                <a href="/" class="text-decoration-none">
-                    <div class="d-inline-flex align-items-center gap-2">
-                        <div class="bg-primary bg-opacity-25 p-2 rounded-4"
-                            style="border: 1px solid rgba(99, 102, 241, 0.3);">
-                            <svg style="width: 40px;" class="text-primary" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <h2 class="h4 fw-black text-white mt-3 mb-0">Swap Hub</h2>
-                </a>
-            </div>
-            @yield('content')
-        </div>
+    <!-- Ambient background glows -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-600/10 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Floating Theme Switcher & Home Link -->
+    <div class="fixed top-5 right-5 z-50 flex items-center gap-2">
+        <a href="/" class="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm flex items-center gap-1.5 text-xs font-semibold px-3.5 no-underline" title="Back to Home">
+            <i class="bi bi-house"></i>
+            <span class="hidden sm:inline">Home</span>
+        </a>
+        <button type="button" @click="toggleTheme()" class="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm" aria-label="Toggle theme">
+            <i class="bi" :class="darkMode ? 'bi-sun-fill text-amber-400' : 'bi-moon-stars-fill text-indigo-500'"></i>
+        </button>
+    </div>
+
+    <div class="w-full max-w-md my-auto">
+        <!-- Brand Header -->
+        <div class="text-center mb-6">
+            <a href="/" class="inline-flex items-center gap-2.5 no-underline group">
+                <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+                    <img src="{{ asset('icon.png') }}" alt="Swap Hub" class="w-7 h-7 object-contain">
+                </div>
+                <span class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Swap Hub</span>
+            </a>
+        </div>
+
+        <!-- Card Container -->
+        <div class="bg-white dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 dark:shadow-black/40">
+            @if(isset($slot) && !empty((string)$slot))
+                {{ $slot }}
+            @else
+                @yield('content')
+            @endif
+        </div>
+    </div>
 </body>
 
 </html>

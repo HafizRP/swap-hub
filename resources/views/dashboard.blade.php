@@ -9,13 +9,13 @@
                 <!-- 1. Header & Welcome -->
                 <div class="flex flex-col md:flex-row justify-between md:items-end mb-6 gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-1">Selamat Datang, {{ explode(' ', $user->name)[0] }} 👋</h2>
+                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mb-1">Selamat Datang, {{ explode(' ', $user->name)[0] }} 👋</h2>
                         <p class="text-slate-500 dark:text-slate-400 text-sm mb-0">Here is what's happening with your projects today.</p>
                     </div>
                     <div>
                         <a href="{{ route('projects.create') }}"
-                            class="bg-indigo-605 bg-indigo-600 hover:bg-indigo-750 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-full transition-colors duration-200 shadow-sm flex items-center gap-2 text-sm w-fit">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-150 active:scale-[0.98] shadow-sm flex items-center gap-2 text-sm w-fit no-underline">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
                             </svg>
@@ -28,10 +28,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <!-- Reputation -->
                     <div class="col-span-1">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full hover-lift transition-all">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-700/60 h-full hover-lift transition-all">
                             <div class="p-4 flex items-center gap-3.5">
-                                <div class="bg-yellow-500/10 rounded-full p-3 flex items-center justify-content-center text-yellow-600 dark:text-yellow-400 w-14 h-14 shrink-0">
-                                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="bg-amber-500/10 rounded-xl p-3 flex items-center justify-center text-amber-600 dark:text-amber-400 w-12 h-12 shrink-0">
+                                    <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20">
                                         <path
                                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                         </path>
@@ -39,8 +39,8 @@
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-slate-400 dark:text-slate-500 uppercase font-bold text-[10px] tracking-wider mb-0">Total Reputation</p>
-                                    <h4 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-0">{{ number_format($user->reputation_points) }}</h4>
-                                    <span class="text-emerald-500 text-xs font-bold">Elite Member</span>
+                                    <h4 class="text-2xl font-black text-slate-900 dark:text-slate-100 tabular-nums tracking-tight mb-0">{{ number_format($user->reputation_points) }}</h4>
+                                    <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold">Elite Member</span>
                                 </div>
                             </div>
                         </div>
@@ -48,17 +48,17 @@
  
                     <!-- Completed -->
                     <div class="col-span-1">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full hover-lift transition-all">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-700/60 h-full hover-lift transition-all">
                             <div class="p-4 flex items-center gap-3.5">
-                                <div class="bg-indigo-500/10 rounded-full p-3 flex items-center justify-content-center text-indigo-600 dark:text-indigo-400 w-14 h-14 shrink-0">
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-indigo-500/10 rounded-xl p-3 flex items-center justify-center text-indigo-600 dark:text-indigo-400 w-12 h-12 shrink-0">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-slate-400 dark:text-slate-500 uppercase font-bold text-[10px] tracking-wider mb-0">Projects Done</p>
-                                    <h4 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-0">{{ $completedProjectsCount }}</h4>
+                                    <h4 class="text-2xl font-black text-slate-900 dark:text-slate-100 tabular-nums tracking-tight mb-0">{{ $completedProjectsCount }}</h4>
                                     <span class="text-slate-500 dark:text-slate-400 text-xs">Completed</span>
                                 </div>
                             </div>
@@ -67,10 +67,10 @@
  
                     <!-- Invites -->
                     <div class="col-span-1">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full hover-lift transition-all">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-700/60 h-full hover-lift transition-all">
                             <div class="p-4 flex items-center gap-3.5">
-                                <div class="bg-sky-500/10 rounded-full p-3 flex items-center justify-content-center text-sky-600 dark:text-sky-400 w-14 h-14 shrink-0">
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-sky-500/10 rounded-xl p-3 flex items-center justify-center text-sky-600 dark:text-sky-400 w-12 h-12 shrink-0">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                                         </path>
@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-slate-400 dark:text-slate-500 uppercase font-bold text-[10px] tracking-wider mb-0">Invites</p>
-                                    <h4 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-0">{{ $collaborationInvitesCount }}</h4>
+                                    <h4 class="text-2xl font-black text-slate-900 dark:text-slate-100 tabular-nums tracking-tight mb-0">{{ $collaborationInvitesCount }}</h4>
                                     <span class="text-slate-500 dark:text-slate-400 text-xs">New Requests</span>
                                 </div>
                             </div>
@@ -89,17 +89,17 @@
                 <!-- 3. Active Projects -->
                 <div class="flex justify-between items-center mb-3">
                     <h5 class="font-bold text-lg text-slate-800 dark:text-slate-100 mb-0">Active Projects</h5>
-                    <a href="{{ route('projects.index') }}" class="text-indigo-600 dark:text-indigo-400 text-sm font-bold no-underline">View All</a>
+                    <a href="{{ route('projects.index') }}" class="text-indigo-600 dark:text-indigo-400 text-sm font-bold no-underline hover:underline">View All</a>
                 </div>
  
                 <div class="flex flex-col gap-3 mb-8">
                     @forelse($activeProjects as $project)
                         <div class="w-full">
-                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 hover-lift transition-all">
+                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-700/60 p-4 hover-lift transition-all">
                                 <div class="flex items-center gap-3.5">
                                     <!-- Icon / Letter -->
-                                    <div class="rounded-lg bg-indigo-500/10 p-3 flex items-center justify-content-center w-12 h-12 shrink-0">
-                                        <span class="font-black text-lg text-indigo-600 dark:text-indigo-450">{{ substr($project->title, 0, 1) }}</span>
+                                    <div class="rounded-xl bg-indigo-500/10 p-3 flex items-center justify-center w-12 h-12 shrink-0">
+                                        <span class="font-black text-lg text-indigo-600 dark:text-indigo-400">{{ substr($project->title, 0, 1) }}</span>
                                     </div>
  
                                     <!-- Details -->
@@ -115,7 +115,7 @@
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <span class="text-slate-500 dark:text-slate-400 text-xs">Role: {{ ucfirst($project->pivot?->role ?? 'Member') }}</span>
-                                            <a href="{{ route('projects.show', $project) }}" class="text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center no-underline">
+                                            <a href="{{ route('projects.show', $project) }}" class="text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center no-underline hover:translate-x-0.5 transition-transform">
                                                 Details 
                                                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="ml-1">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -144,12 +144,12 @@
                 <div class="flex justify-between items-center mb-3">
                     <h5 class="font-bold text-lg text-slate-800 dark:text-slate-100 mb-0">Project Recommendations</h5>
                     <div class="flex gap-2">
-                        <button class="w-8 h-8 rounded-full border border-slate-250 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
+                        <button class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors active:scale-95">
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                             </svg>
                         </button>
-                        <button class="w-8 h-8 rounded-full border border-slate-250 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
+                        <button class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors active:scale-95">
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
@@ -160,10 +160,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @forelse($recommendedProjects as $project)
                         <div class="col-span-1">
-                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 h-full flex flex-col relative">
-                                <span class="bg-slate-500/10 text-slate-650 dark:text-slate-400 absolute top-4 right-4 rounded-full text-[10px] px-2.5 py-1 font-medium">{{ $project->category }}</span>
+                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-700/60 p-5 h-full flex flex-col relative hover-lift transition-all">
+                                <span class="bg-slate-500/10 text-slate-600 dark:text-slate-400 absolute top-4 right-4 rounded-full text-[10px] px-2.5 py-1 font-medium">{{ $project->category }}</span>
                                 <div class="mb-3.5">
-                                    <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg p-2 inline-flex w-fit">
+                                    <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl p-2.5 inline-flex w-fit">
                                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
@@ -181,10 +181,17 @@
                                         <span class="bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-350 text-xs px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600">API</span>
                                     </div>
                                     <a href="{{ route('projects.show', $project) }}"
-                                        class="block text-center w-full bg-indigo-600 hover:bg-indigo-750 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full text-xs transition-colors duration-150 no-underline">View Details</a>
+                                        class="block text-center w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition-all duration-150 active:scale-[0.98] no-underline">View Details</a>
                                 </div>
                             </div>
                         </div>
+                    @empty
+                        <div class="col-span-2">
+                            <p class="text-slate-400 text-sm mb-0">No recommendations at the moment.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
                     @empty
                         <div class="col-span-2">
                             <p class="text-slate-400 text-sm mb-0">No recommendations at the moment.</p>
