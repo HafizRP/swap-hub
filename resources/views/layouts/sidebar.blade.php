@@ -45,17 +45,17 @@
 
         @foreach([
             ['route' => 'dashboard',     'icon' => 'bi-grid-fill',       'label' => 'Dashboard'],
-            ['route' => 'projects.index','icon' => 'bi-search',           'label' => 'Cari Proyek'],
-            ['route' => 'profile.show',  'icon' => 'bi-person-fill',      'label' => 'Profil Saya', 'params' => auth()->id()],
-            ['route' => 'chat',          'icon' => 'bi-chat-dots-fill',   'label' => 'Workspace'],
+            ['route' => 'projects.index','icon' => 'bi-compass-fill',    'label' => 'Cari Proyek'],
+            ['route' => 'profile.show',  'icon' => 'bi-person-badge-fill','label' => 'Profil Saya', 'params' => auth()->id()],
+            ['route' => 'chat',          'icon' => 'bi-chat-dots-fill',   'label' => 'Workspace & Chat'],
         ] as $item)
             @php
                 $isActive = request()->routeIs($item['route'] . '*');
                 $url = route($item['route'], $item['params'] ?? []);
             @endphp
             <a href="{{ $url }}"
-               class="flex items-center py-2.5 rounded-lg transition-colors no-underline text-sm font-medium shrink-0 {{ $isActive ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
-               :class="sidebarExpanded ? 'gap-3 px-3' : 'justify-center px-0'"
+               class="flex items-center py-2.5 rounded-xl transition-all duration-150 no-underline text-sm font-semibold shrink-0 {{ $isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
+               :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
                :title="sidebarExpanded ? '' : '{{ $item['label'] }}'">
                 <i class="bi {{ $item['icon'] }} text-base shrink-0"></i>
                 <span class="whitespace-nowrap overflow-hidden transition-all duration-200"
@@ -69,8 +69,8 @@
 
         @php $settingsActive = request()->routeIs('profile.edit'); @endphp
         <a href="{{ route('profile.edit') }}"
-           class="flex items-center py-2.5 rounded-lg transition-colors no-underline text-sm font-medium shrink-0 {{ $settingsActive ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
-           :class="sidebarExpanded ? 'gap-3 px-3' : 'justify-center px-0'"
+           class="flex items-center py-2.5 rounded-xl transition-all duration-150 no-underline text-sm font-semibold shrink-0 {{ $settingsActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
+           :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
            :title="sidebarExpanded ? '' : 'Pengaturan'">
             <i class="bi bi-gear-fill text-base shrink-0"></i>
             <span class="whitespace-nowrap overflow-hidden transition-all duration-200"
@@ -81,6 +81,10 @@
 
         @if(auth()->user()->isAdmin())
             <div class="border-t border-slate-200 dark:border-slate-700 my-2 mx-1 shrink-0"></div>
+            <div class="px-3.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap overflow-hidden"
+                 :style="sidebarExpanded ? 'opacity:1;max-width:180px' : 'opacity:0;max-width:0'">
+                Admin Panel
+            </div>
             @foreach([
                 ['route' => 'admin.dashboard',      'icon' => 'bi-speedometer2',   'label' => 'Admin Dashboard'],
                 ['route' => 'admin.users.index',    'icon' => 'bi-people-fill',    'label' => 'User Management'],
@@ -89,10 +93,10 @@
             ] as $aItem)
                 @php $aActive = request()->routeIs($aItem['route'] . '*'); @endphp
                 <a href="{{ route($aItem['route']) }}"
-                   class="flex items-center py-2.5 rounded-lg transition-colors no-underline text-sm font-medium shrink-0 {{ $aActive ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
-                   :class="sidebarExpanded ? 'gap-3 px-3' : 'justify-center px-0'"
+                   class="flex items-center py-2 rounded-xl transition-all duration-150 no-underline text-xs font-semibold shrink-0 {{ $aActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
+                   :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
                    :title="sidebarExpanded ? '' : '{{ $aItem['label'] }}'">
-                    <i class="bi {{ $aItem['icon'] }} text-base shrink-0"></i>
+                    <i class="bi {{ $aItem['icon'] }} text-sm shrink-0"></i>
                     <span class="whitespace-nowrap overflow-hidden transition-all duration-200"
                           :style="sidebarExpanded ? 'opacity:1;max-width:180px' : 'opacity:0;max-width:0'">
                         {{ $aItem['label'] }}

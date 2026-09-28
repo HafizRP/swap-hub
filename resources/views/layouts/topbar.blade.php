@@ -6,13 +6,14 @@
         </button>
  
         <!-- Search -->
-        <form action="{{ route('projects.index') }}" method="GET" class="hidden md:block flex-1 mr-4 max-w-[400px]">
-            <div class="flex items-center bg-slate-100 dark:bg-slate-700/50 rounded-full border border-transparent focus-within:border-indigo-500 overflow-hidden">
-                <span class="bg-transparent border-0 text-slate-400 pl-4 pr-2 flex items-center justify-content-center">
-                    <i class="bi bi-search"></i>
+        <form action="{{ route('projects.index') }}" method="GET" class="hidden md:block flex-1 mr-4 max-w-[420px]">
+            <div class="flex items-center bg-slate-100/90 dark:bg-slate-700/50 rounded-xl border border-transparent focus-within:border-indigo-500 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all overflow-hidden">
+                <span class="bg-transparent border-0 text-slate-400 pl-3.5 pr-2 flex items-center justify-center">
+                    <i class="bi bi-search text-xs"></i>
                 </span>
-                <input type="text" name="search" class="bg-transparent border-0 w-full outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 py-2 px-1 text-sm"
-                    placeholder="Search for projects..." value="{{ request('search') }}">
+                <input type="text" name="search" class="bg-transparent border-0 w-full outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 py-2 px-1 text-xs font-medium"
+                    placeholder="Cari proyek, skill, atau anggota..." value="{{ request('search') }}">
+                <kbd class="hidden sm:inline-block text-[10px] font-semibold bg-white dark:bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 mr-2.5 shadow-2xs">⌘K</kbd>
             </div>
         </form>
  
