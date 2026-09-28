@@ -61,6 +61,12 @@ if [ "$1" = "php-fpm" ]; then
     echo "✨ Application setup complete!"
 fi
 
+# Start Reverb server in background when running php-fpm
+if [ "$1" = "php-fpm" ]; then
+    echo "🔊 Starting Reverb WebSocket server..."
+    php artisan reverb:start --host=0.0.0.0 --port=8080 &
+fi
+
 # Start Nginx in background when running php-fpm
 if [ "$1" = "php-fpm" ]; then
     echo "🌐 Starting Nginx webserver..."
