@@ -1,90 +1,76 @@
-<div class="h-full p-4 overflow-auto custom-scrollbar">
-    <div class="flex justify-between items-center mb-6">
-        <h5 class="font-bold text-slate-800 dark:text-slate-100 mb-0 text-base">
-            <i class="bi bi-github mr-2"></i>Repository Activity
-        </h5>
+<div class="space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+            <i class="bi bi-github text-base text-slate-900 dark:text-white"></i>
+            <h3 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                Aktivitas Repository GitHub
+            </h3>
+        </div>
         @if($project->github_repo_url)
-            <a href="{{ $project->github_repo_url }}" target="_blank" class="border border-slate-250 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-bold py-1.5 px-4 rounded-full text-xs transition-colors no-underline">
-                View on GitHub
+            <a href="{{ $project->github_repo_url }}" target="_blank"
+               class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 hover:text-brand-700">
+                <span>Buka di GitHub</span>
+                <i class="bi bi-box-arrow-up-right text-[10px]"></i>
             </a>
         @endif
     </div>
- 
+
     @if($activities->count() > 0)
-        <div class="relative pl-5 border-l border-slate-200 dark:border-slate-700 ml-3">
+        <div class="relative pl-6 border-l-2 border-slate-200 dark:border-slate-800 space-y-6 ml-2 my-4">
             @foreach($activities as $activity)
-                <div class="mb-5 relative">
-                    <!-- Dot -->
-                    <div class="absolute left-0 top-0 translate-middle-x bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shrink-0 shadow-sm"
-                        style="left: -21px; width: 32px; height: 32px; border: 4px solid var(--bs-body-bg) !important;">
+                <div class="relative group">
+                    <!-- Timeline Marker -->
+                    <div class="absolute -left-[33px] top-1.5 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-brand-500 flex items-center justify-center shadow-sm">
                         @if($activity->type === 'push')
-                            <i class="bi bi-code-square text-indigo-600 dark:text-indigo-400 text-xs"></i>
+                            <i class="bi bi-code-slash text-[10px] text-brand-600"></i>
                         @elseif($activity->type === 'pull_request')
-                            <i class="bi bi-git text-amber-500 text-xs"></i>
-                        @elseif($activity->type === 'issues')
-                            <i class="bi bi-record-circle text-red-500 text-xs"></i>
+                            <i class="bi bi-git text-[10px] text-emerald-600"></i>
                         @else
-                            <i class="bi bi-activity text-slate-400 text-xs"></i>
+                            <i class="bi bi-activity text-[10px] text-amber-500"></i>
                         @endif
                     </div>
- 
-                    <div class="bg-slate-50 dark:bg-slate-700/40 border border-slate-205 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm ml-4">
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2 gap-2">
-                                <div>
-                                    <span class="inline-block bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider mb-1">
-                                        {{ str_replace('_', ' ', strtoupper($activity->type)) }}
-                                    </span>
-                                    @php
-                                        $payload = is_string($activity->payload) ? json_decode($activity->payload, true) : $activity->payload;
-                                        $actor = $payload['sender']['login'] ?? 'Unknown';
-                                        $message = '';
- 
-                                        if ($activity->type === 'push') {
-                                            $count = count($payload['commits'] ?? []);
-                                            $message = "pushed $count commits";
-                                        } elseif ($activity->type === 'pull_request') {
-                                            $action = $payload['action'] ?? 'opened';
-                                            $message = "$action pull request";
-                                        }
-                                    @endphp
-                                    <h6 class="font-bold text-sm text-slate-800 dark:text-slate-100 mb-0">{{ $actor }} {{ $message }}</h6>
-                                </div>
-                                <small class="text-slate-400 dark:text-slate-500 text-[10px] shrink-0">
-                                    {{ \Carbon\Carbon::parse($activity->created_at)->diffForHumans() }}
-                                </small>
-                            </div>
- 
-                            @if($activity->type === 'push' && isset($payload['commits']))
-                                <ul class="list-none mb-0 mt-3 bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                                    @foreach(array_slice($payload['commits'], 0, 3) as $commit)
-                                        <li class="flex items-start gap-2 mb-2 last:mb-0">
-                                            <i class="bi bi-git text-slate-400 text-xs mt-0.5"></i>
-                                            <div class="text-xs w-full min-w-0">
-                                                <a href="{{ $commit['url'] ?? '#' }}" target="_blank"
-                                                    class="text-slate-500 dark:text-slate-450 hover:text-indigo-650 no-underline block truncate">
-                                                    {{ $commit['message'] }}
-                                                </a>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                    @if(count($payload['commits']) > 3)
-                                        <li class="text-center text-xs text-slate-400 dark:text-slate-500 italic mt-2 border-t border-slate-100 dark:border-slate-700/50 pt-2">
-                                            +{{ count($payload['commits']) - 3 }} more commits
-                                        </li>
-                                    @endif
-                                </ul>
-                            @endif
+
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+                        <div class="flex items-center justify-between">
+                            @php
+                                $payload = is_string($activity->payload) ? json_decode($activity->payload, true) : $activity->payload;
+                                $actor = $payload['sender']['login'] ?? 'GitHub Member';
+                                $count = count($payload['commits'] ?? []);
+                            @endphp
+                            <span class="text-xs font-bold text-slate-900 dark:text-white">
+                                <span class="text-brand-600 dark:text-brand-400 font-black">{{ $actor }}</span>
+                                @if($activity->type === 'push')
+                                    mendorong {{ $count }} commit
+                                @elseif($activity->type === 'pull_request')
+                                    membuat Pull Request
+                                @else
+                                    {{ $activity->type }}
+                                @endif
+                            </span>
+                            <span class="text-[10px] font-semibold text-slate-400">
+                                {{ \Carbon\Carbon::parse($activity->created_at)->diffForHumans() }}
+                            </span>
                         </div>
+
+                        @if($activity->type === 'push' && isset($payload['commits']))
+                            <div class="space-y-1.5 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                                @foreach(array_slice($payload['commits'], 0, 3) as $commit)
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <i class="bi bi-git text-slate-400 text-[10px]"></i>
+                                        <span class="text-slate-600 dark:text-slate-300 font-medium truncate">{{ $commit['message'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
         </div>
     @else
-        <div class="text-center py-10 opacity-50">
-            <i class="bi bi-github text-5xl mb-3 block"></i>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-bold mb-1">No activity recorded yet.</p>
-            <small class="text-slate-400 dark:text-slate-650 text-xs">Connect your repository and push code to see updates here.</small>
+        <div class="py-12 text-center text-slate-400 space-y-2">
+            <i class="bi bi-github text-3xl"></i>
+            <p class="text-xs font-bold">Belum ada riwayat aktivitas GitHub.</p>
+            <p class="text-[11px]">Hubungkan repositori dan kirim commit untuk melihat feed aktivitas real-time.</p>
         </div>
     @endif
 </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 
 <head>
     <meta charset="utf-8">
@@ -12,27 +12,13 @@
     <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
 
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .hover-lift { transition: transform 0.2s, box-shadow 0.2s; }
-        .hover-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06) !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     @livewireStyles
 
@@ -48,7 +34,7 @@
     </script>
 </head>
 
-<body class="antialiased font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900"
+<body class="h-full antialiased font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 selection:bg-brand-500 selection:text-white transition-colors duration-200"
     x-data="{
         sidebarExpanded: localStorage.getItem('sidebarExpanded') === null ? true : localStorage.getItem('sidebarExpanded') === 'true',
         sidebarOpenMobile: false,
@@ -80,13 +66,12 @@
     @resize.window="if(window.innerWidth >= 768) sidebarOpenMobile = false">
 
     <!-- ===================== MOBILE SIDEBAR DRAWER ===================== -->
-    <!-- Rendered on top of everything, only visible on mobile when open -->
     <div x-show="sidebarOpenMobile"
          x-cloak
-         class="fixed inset-0 z-[9999] md:hidden flex">
+         class="fixed inset-0 z-50 md:hidden flex">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"
              @click="sidebarOpenMobile = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
@@ -97,7 +82,7 @@
         </div>
 
         <!-- Drawer -->
-        <div class="relative w-[280px] h-full bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-y-auto overflow-x-hidden shadow-xl"
+        <div class="relative w-[280px] h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col overflow-y-auto overflow-x-hidden shadow-2xl z-10"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="-translate-x-full"
              x-transition:enter-end="translate-x-0"
@@ -106,24 +91,24 @@
              x-transition:leave-end="-translate-x-full">
 
             <!-- Logo & Close -->
-            <div class="flex items-center justify-between p-4 mb-2">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 no-underline text-slate-800 dark:text-slate-100">
-                    <img src="{{ asset('icon.png') }}" alt="Swap Hub" class="w-8 h-8 rounded shrink-0">
-                    <span class="text-lg font-bold">Swap Hub</span>
+            <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
+                    <img src="{{ asset('icon.png') }}" alt="Swap Hub" class="w-8 h-8 rounded-lg">
+                    <span class="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">Swap<span class="text-brand-500">Hub</span></span>
                 </a>
                 <button @click="sidebarOpenMobile = false"
-                        class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border-0 bg-transparent rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
-                    <i class="bi bi-x-lg text-lg"></i>
+                        class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="bi bi-x-lg text-base"></i>
                 </button>
             </div>
 
             <!-- User Info -->
-            <div class="px-3 mb-4">
-                <div class="flex items-center gap-3 p-2.5 bg-slate-100 dark:bg-slate-700/50 rounded-xl">
-                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=random' }}"
-                         class="rounded-full shrink-0 w-10 h-10 object-cover">
+            <div class="p-3">
+                <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=6366f1&color=fff' }}"
+                         class="rounded-lg shrink-0 w-9 h-9 object-cover">
                     <div class="min-w-0">
-                        <p class="font-bold mb-0 text-slate-800 dark:text-slate-100 text-sm truncate">{{ auth()->user()->name }}</p>
+                        <p class="font-bold mb-0 text-slate-900 dark:text-white text-xs truncate">{{ auth()->user()->name }}</p>
                         <p class="text-slate-500 dark:text-slate-400 text-[11px] truncate mb-0">{{ auth()->user()->university ?? 'Student' }}</p>
                     </div>
                 </div>
@@ -132,10 +117,10 @@
             <!-- Nav Items -->
             <ul class="flex flex-col flex-1 px-3 gap-1 mb-4">
                 @foreach([
-                    ['route' => 'dashboard', 'icon' => 'bi-grid-fill', 'label' => 'Dashboard'],
-                    ['route' => 'projects.index', 'icon' => 'bi-search', 'label' => 'Cari Proyek'],
-                    ['route' => 'profile.show', 'icon' => 'bi-person-fill', 'label' => 'Profil Saya', 'params' => auth()->id()],
-                    ['route' => 'chat', 'icon' => 'bi-chat-dots-fill', 'label' => 'Workspace'],
+                    ['route' => 'dashboard',      'icon' => 'bi-grid-fill',       'label' => 'Dashboard'],
+                    ['route' => 'projects.index', 'icon' => 'bi-compass-fill',    'label' => 'Cari Proyek'],
+                    ['route' => 'profile.show',   'icon' => 'bi-person-badge-fill','label' => 'Profil & Portofolio', 'params' => auth()->id()],
+                    ['route' => 'chat',           'icon' => 'bi-chat-dots-fill',   'label' => 'Workspace & Chat'],
                 ] as $mItem)
                     @php
                         $mActive = request()->routeIs($mItem['route'] . '*');
@@ -143,34 +128,34 @@
                     @endphp
                     <li>
                         <a href="{{ $mUrl }}" @click="sidebarOpenMobile = false"
-                           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ $mActive ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-xs font-semibold {{ $mActive ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                             <i class="bi {{ $mItem['icon'] }} text-base shrink-0"></i>
                             <span>{{ $mItem['label'] }}</span>
                         </a>
                     </li>
                 @endforeach
 
-                <li><div class="border-t border-slate-200 dark:border-slate-700 my-2"></div></li>
+                <li><div class="border-t border-slate-100 dark:border-slate-800 my-2"></div></li>
 
                 <li>
                     <a href="{{ route('profile.edit') }}" @click="sidebarOpenMobile = false"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ request()->routeIs('profile.edit') ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-xs font-semibold {{ request()->routeIs('profile.edit') ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                         <i class="bi bi-gear-fill text-base shrink-0"></i>
-                        <span>Pengaturan</span>
+                        <span>Pengaturan Akun</span>
                     </a>
                 </li>
 
                 @if(auth()->user()->isAdmin())
-                    <li><div class="border-t border-slate-200 dark:border-slate-700 my-2"></div></li>
+                    <li><div class="border-t border-slate-100 dark:border-slate-800 my-2"></div></li>
                     @foreach([
-                        ['route' => 'admin.dashboard', 'icon' => 'bi-speedometer2', 'label' => 'Admin Dashboard'],
-                        ['route' => 'admin.users.index', 'icon' => 'bi-people-fill', 'label' => 'User Management'],
-                        ['route' => 'admin.projects.index', 'icon' => 'bi-folder-fill', 'label' => 'Project Management'],
-                        ['route' => 'admin.health.index', 'icon' => 'bi-heart-pulse-fill', 'label' => 'System Health'],
+                        ['route' => 'admin.dashboard',      'icon' => 'bi-speedometer2',    'label' => 'Admin Overview'],
+                        ['route' => 'admin.users.index',    'icon' => 'bi-people-fill',     'label' => 'Kelola User'],
+                        ['route' => 'admin.projects.index', 'icon' => 'bi-folder-fill',     'label' => 'Kelola Proyek'],
+                        ['route' => 'admin.health.index',   'icon' => 'bi-heart-pulse-fill', 'label' => 'System Health'],
                     ] as $aItem)
                         <li>
                             <a href="{{ route($aItem['route']) }}" @click="sidebarOpenMobile = false"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ request()->routeIs($aItem['route'] . '*') ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-xs font-semibold {{ request()->routeIs($aItem['route'] . '*') ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                                 <i class="bi {{ $aItem['icon'] }} text-base shrink-0"></i>
                                 <span>{{ $aItem['label'] }}</span>
                             </a>
@@ -179,24 +164,23 @@
                 @endif
             </ul>
 
-            <div class="px-4 py-3 text-center border-t border-slate-200 dark:border-slate-700">
-                <small class="text-slate-400 dark:text-slate-500 text-[10px]">&copy; 2024 Swap Hub</small>
+            <div class="p-4 text-center border-t border-slate-100 dark:border-slate-800">
+                <span class="text-slate-400 dark:text-slate-500 text-[11px]">&copy; {{ date('Y') }} Swap Hub</span>
             </div>
         </div>
     </div>
 
     <!-- ===================== MAIN APP SHELL ===================== -->
     <div class="flex h-screen overflow-hidden">
-
-        <!-- Desktop Sidebar — sticky, part of flex flow, hidden on mobile -->
+        <!-- Desktop Sidebar -->
         @include('layouts.sidebar')
 
         <!-- Right Column: Topbar + Page Content -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
             @include('layouts.topbar')
 
-            <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 custom-scrollbar bg-slate-50 dark:bg-slate-900">
-                <div class="mx-auto max-w-[1400px]">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-950 transition-colors">
+                <div class="mx-auto max-w-7xl">
                     {{ $slot }}
                 </div>
             </main>
@@ -218,51 +202,5 @@
             }
         });
     </script>
-
-    <!-- Auth Notification Script -->
-    @auth
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                if ('Notification' in window && Notification.permission === 'default') {
-                    Notification.requestPermission();
-                }
-
-                const userId = {{ auth()->id() }};
-                window.currentConversationId = null;
-
-                const initEcho = () => {
-                    if (window.Echo) {
-                        window.Echo.private(`App.Models.User.${userId}`)
-                            .listen('.message.sent', (e) => {
-                                if (window.Livewire) window.Livewire.dispatch('refresh-conversation-list');
-                                if (e.user_id == userId) return;
-                                if (window.currentConversationId && window.currentConversationId == e.conversation_id) return;
-
-                                if ('Notification' in window && Notification.permission === 'granted') {
-                                    const title = (e.conversation_type === 'project' && e.conversation_name)
-                                        ? e.conversation_name : (e.user_name || 'New Message');
-
-                                    let bodyText = e.content || '';
-                                    bodyText = bodyText.replace(/(\*\*|__)(.*?)\1/g, '$2');
-                                    bodyText = bodyText.replace(/(`)(.*?)\1/g, '$2');
-                                    bodyText = bodyText.replace(/^\s*-\s/gm, '• ');
-
-                                    const body = bodyText.substring(0, 100) + (bodyText.length > 100 ? '...' : '');
-
-                                    try {
-                                        const n = new Notification(title, { body, icon: e.user_avatar });
-                                        n.onclick = function () { window.focus(); window.location.href = `/chat/${e.conversation_id}`; }
-                                    } catch (err) {}
-                                }
-                            });
-                    } else {
-                        setTimeout(initEcho, 1000);
-                    }
-                };
-                initEcho();
-            });
-        </script>
-    @endauth
 </body>
-
 </html>
