@@ -13,6 +13,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 RUN apk add --no-cache \
     bash \
     curl \
+    git \
     nginx \
     ca-certificates \
     tzdata \
@@ -60,6 +61,7 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_PROCESS_TIMEOUT=1800
 
 # Install Node.js and NPM for frontend development
 RUN apk add --no-cache nodejs npm
@@ -69,7 +71,7 @@ COPY composer.json composer.lock ./
 COPY package.json package-lock.json* ./
 
 # Install all dependencies (including dev)
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
+RUN composer install --no-interaction --prefer-source --optimize-autoloader --no-scripts \
     && npm install
 
 # Copy application source code
@@ -99,11 +101,13 @@ FROM composer:2 AS backend-builder
 
 WORKDIR /app
 
+ENV COMPOSER_PROCESS_TIMEOUT=1800
+
 # Leverage layer caching for PHP dependencies
 COPY composer.json composer.lock ./
 
 # Install production dependencies without autoloader to maximize cache usage
-RUN composer install --no-dev --no-interaction --prefer-dist --no-autoloader --no-scripts --ignore-platform-reqs
+RUN composer install --no-dev --no-interaction --prefer-source --no-autoloader --no-scripts --ignore-platform-reqs
 
 # Copy application code and generate optimized autoloader for production
 COPY . .

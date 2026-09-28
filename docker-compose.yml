@@ -42,6 +42,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-root}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      BROADCAST_CONNECTION: ${BROADCAST_CONNECTION:-reverb}
+      REVERB_APP_ID: ${REVERB_APP_ID:-554101}
+      REVERB_APP_KEY: ${REVERB_APP_KEY:-swaphubreverbkey}
+      REVERB_APP_SECRET: ${REVERB_APP_SECRET:-swaphubreverbsecret}
+      REVERB_HOST: ${REVERB_HOST:-127.0.0.1}
+      REVERB_PORT: ${REVERB_PORT:-8080}
+      REVERB_SCHEME: ${REVERB_SCHEME:-http}
 
   db:
     image: mariadb:10.11
