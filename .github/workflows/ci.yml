@@ -18,10 +18,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   code-quality:
     name: Code Quality (Pint Linter)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -52,7 +55,7 @@ jobs:
 
   frontend:
     name: Frontend Build (Vite & Tailwind)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -60,7 +63,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install NPM Dependencies
@@ -71,7 +74,7 @@ jobs:
 
   test-suite:
     name: Backend Tests (PHPUnit)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       redis:
         image: redis:alpine
@@ -111,7 +114,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install NPM & Build Assets
@@ -139,7 +142,7 @@ jobs:
 
   docker-build:
     name: Docker Container Build Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [code-quality, frontend, test-suite]
     steps:
       - name: Checkout Code
@@ -149,7 +152,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Development Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           target: development
@@ -159,7 +162,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build Production Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           target: production
