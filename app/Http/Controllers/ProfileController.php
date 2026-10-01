@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddSkillRequest;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Skill;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +66,7 @@ class ProfileController extends Controller
     /**
      * Display the specified user's profile.
      */
-    public function show(\App\Models\User $user): View
+    public function show(User $user): View
     {
         $user->load(['skills', 'ownedProjects', 'projects']);
 
@@ -71,12 +76,9 @@ class ProfileController extends Controller
     /**
      * Add a skill to the user's profile.
      */
-    public function addSkill(Request $request): RedirectResponse
+    public function addSkill(AddSkillRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'skill_id' => ['required', 'exists:skills,id'],
-            'proficiency_level' => ['required', 'in:beginner,intermediate,advanced,expert'],
-        ]);
+        $validated = $request->validated();
 
         $request->user()->skills()->syncWithoutDetaching([
             $validated['skill_id'] => ['proficiency_level' => $validated['proficiency_level']],
@@ -88,7 +90,7 @@ class ProfileController extends Controller
     /**
      * Remove a skill from the user's profile.
      */
-    public function removeSkill(\App\Models\Skill $skill): RedirectResponse
+    public function removeSkill(Skill $skill): RedirectResponse
     {
         auth()->user()->skills()->detach($skill->id);
 

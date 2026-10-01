@@ -44,10 +44,11 @@
          style="scrollbar-width:none;">
 
         @foreach([
-            ['route' => 'dashboard',     'icon' => 'bi-grid-fill',       'label' => 'Dashboard'],
-            ['route' => 'projects.index','icon' => 'bi-compass-fill',    'label' => 'Cari Proyek'],
-            ['route' => 'profile.show',  'icon' => 'bi-person-badge-fill','label' => 'Profil Saya', 'params' => auth()->id()],
-            ['route' => 'chat',          'icon' => 'bi-chat-dots-fill',   'label' => 'Workspace & Chat'],
+            ['route' => 'dashboard',        'icon' => 'bi-grid-fill',         'label' => 'Dashboard'],
+            ['route' => 'projects.index',   'icon' => 'bi-compass-fill',      'label' => 'Cari Proyek'],
+            ['route' => 'skills.swap.index','icon' => 'bi-arrow-left-right',  'label' => 'Skill Swap'],
+            ['route' => 'profile.show',     'icon' => 'bi-person-badge-fill', 'label' => 'Profil Saya', 'params' => auth()->id()],
+            ['route' => 'chat',             'icon' => 'bi-chat-dots-fill',     'label' => 'Workspace & Chat'],
         ] as $item)
             @php
                 $isActive = request()->routeIs($item['route'] . '*');

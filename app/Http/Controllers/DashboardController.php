@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Message;
+use App\Models\Project;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $user = auth()->user();
 
@@ -27,7 +32,7 @@ class DashboardController extends Controller
         // We fetch the latest 5 messages from conversations the user is part of, excluding their own.
         $conversationIds = $user->conversations()->pluck('conversations.id');
 
-        $notifications = \App\Models\Message::whereIn('conversation_id', $conversationIds)
+        $notifications = Message::whereIn('conversation_id', $conversationIds)
             ->whereNull('user_id')
             ->latest()
             ->take(5)
@@ -37,7 +42,7 @@ class DashboardController extends Controller
                     'id' => $message->id,
                     'created_at' => $message->created_at,
                     'data' => [
-                        'message' => \Illuminate\Support\Str::limit($message->content, 60),
+                        'message' => Str::limit($message->content, 60),
                         'avatar' => null,
                         'link' => route('chat', ['conversation' => $message->conversation_id]),
                     ],
@@ -47,7 +52,7 @@ class DashboardController extends Controller
         // 4. Recommended (Simple: Not my projects)
         // Ensure we don't pick projects user is already in
         $myProjectIds = $user->projects->pluck('id');
-        $recommendedProjects = \App\Models\Project::with(['owner', 'members'])
+        $recommendedProjects = Project::with(['owner', 'members'])
             ->whereNotIn('id', $myProjectIds)
             ->where('status', '!=', 'completed')
             ->inRandomOrder()
