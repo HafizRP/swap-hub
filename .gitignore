@@ -29,3 +29,14 @@ Thumbs.db
 # Docker database data mounts
 /*/dbdata
 .goals
+
+# Multi-Agent Runtime & Communication Bus
+bus/
+.worktrees/
+state/logs/*
+!state/logs/.gitkeep
+state/.status.lock
+state/.status.lock.d
+artifacts/*
+!artifacts/.gitkeep
+
