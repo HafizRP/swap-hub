@@ -9,10 +9,11 @@ mkdir -p /var/www/storage/logs \
          /var/www/bootstrap/cache
 
 touch /var/www/storage/logs/laravel.log
+touch /var/www/storage/logs/reverb.log
 
 # Ensure proper permissions for runtime directories
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
-chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+chmod -R 777 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
 # Run setup when launching the main service
 if [ "$1" = "php-fpm" ]; then
@@ -44,19 +45,36 @@ if [ "$1" = "php-fpm" ]; then
         php artisan storage:link || true
     fi
 
-    # Run database migrations
-    if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
-        echo "🗄️ Running database migrations and seeders..."
-        php artisan migrate --no-interaction || true
-        php artisan db:seed --no-interaction || true
-        echo "⚡ Clearing caches for development..."
-        php artisan optimize:clear || true
+    # Run database migrations if enabled
+    if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+        if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
+            echo "🗄️ Running database migrations..."
+            php artisan migrate --no-interaction || true
+            if [ "${RUN_SEEDERS:-false}" = "true" ]; then
+                echo "🌱 Running database seeders..."
+                php artisan db:seed --no-interaction || true
+            fi
+            echo "⚡ Clearing caches for development..."
+            php artisan optimize:clear || true
+        else
+            echo "🗄️ Running database migrations..."
+            php artisan migrate --force --no-interaction || true
+            echo "⚡ Optimizing application for production..."
+            php artisan optimize || true
+        fi
     else
-        echo "🗄️ Running database migrations..."
-        php artisan migrate --force --no-interaction || true
-        echo "⚡ Optimizing application for production..."
-        php artisan optimize || true
+        if [ "$APP_ENV" = "development" ] || [ "$APP_ENV" = "local" ]; then
+            echo "⚡ Clearing caches for development..."
+            php artisan optimize:clear || true
+        else
+            echo "⚡ Optimizing application for production..."
+            php artisan optimize || true
+        fi
     fi
+
+    # Ensure runtime permissions are preserved after artisan operations
+    chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
     echo "✨ Application setup complete!"
 fi
@@ -66,7 +84,11 @@ if [ "$1" = "php-fpm" ]; then
     echo "🔊 Starting Reverb WebSocket server supervisor..."
     (
         while true; do
-            php artisan reverb:start --host=0.0.0.0 --port=8080 >> /var/www/storage/logs/reverb.log 2>&1
+            if command -v su-exec > /dev/null 2>&1; then
+                su-exec www-data php artisan reverb:start --host=0.0.0.0 --port=8080 >> /var/www/storage/logs/reverb.log 2>&1
+            else
+                php artisan reverb:start --host=0.0.0.0 --port=8080 >> /var/www/storage/logs/reverb.log 2>&1
+            fi
             sleep 2
         done
     ) &

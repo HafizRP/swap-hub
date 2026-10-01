@@ -45,9 +45,11 @@ if (-not (Test-Path "public\storage")) {
 Write-Host "⚡ Clearing caches..." -ForegroundColor Cyan
 php artisan optimize:clear
 
-# Run database migrations
-Write-Host "🗄️ Running database migrations..." -ForegroundColor Cyan
-php artisan migrate --force --no-interaction
+# Run database migrations if configured
+if ($env:RUN_MIGRATIONS -ne "false") {
+    Write-Host "🗄️ Running database migrations..." -ForegroundColor Cyan
+    php artisan migrate --force --no-interaction
+}
 
 Write-Host "✨ Application setup complete! Starting IIS Web Server..." -ForegroundColor Green
 
