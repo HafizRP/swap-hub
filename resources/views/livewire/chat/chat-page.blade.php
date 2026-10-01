@@ -227,13 +227,13 @@
                         </div>
  
                     @elseif($activeTab === 'tasks' && $conversation->type === 'project' && $conversation->project)
-                        @livewire('project.task-board', ['project' => $conversation->project], key: 'tasks-' . $conversation->id)
- 
+                        @livewire('project.task-board', ['project' => $conversation->project], key('tasks-' . $conversation->id))
+
                     @elseif($activeTab === 'files' && $conversation->type === 'project' && $conversation->project)
-                        @livewire('project.file-browser', ['project' => $conversation->project], key: 'files-' . $conversation->id)
- 
+                        @livewire('project.file-browser', ['project' => $conversation->project], key('files-' . $conversation->id))
+
                     @elseif($activeTab === 'github' && $conversation->type === 'project' && $conversation->project)
-                        @livewire('project.github-feed', ['project' => $conversation->project], key: 'github-' . $conversation->id)
+                        @livewire('project.github-feed', ['project' => $conversation->project], key('github-' . $conversation->id))
                     @endif
  
                 @else
@@ -373,6 +373,6 @@
     @endif
  
     @if($conversation && $conversation->type === 'project' && $conversation->project)
-        @livewire('project.add-member', ['project' => $conversation->project], key: 'add-member-' . $conversation->id)
+        @livewire('project.add-member', ['project' => $conversation->project], key('add-member-' . $conversation->id))
     @endif
 </div>
