@@ -13,7 +13,7 @@ touch /var/www/storage/logs/reverb.log
 
 # Ensure proper permissions for runtime directories
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
-chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+chmod -R 777 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
 # Run setup when launching the main service
 if [ "$1" = "php-fpm" ]; then
