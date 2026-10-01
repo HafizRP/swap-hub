@@ -1,0 +1,18 @@
+# Swap Hub
+
+> Collaborative Skill Exchange & Project Workspace Platform for University Students.
+
+## Main Documentation & Reference Links
+- [Complete Architecture & Guide](llms.md): Detailed full-stack architecture, routes, database models, events, websockets, and API contracts.
+- [Project Readme](README.md): Quickstart, installation steps, and local environment commands.
+- [Contributing Guidelines](CONTRIBUTING.md): Code conventions, branch workflows, and PR requirements.
+- [Security Policy](SECURITY.md): Vulnerability disclosure and secure development rules.
+- [Docker Architecture](docs/docker.md): Containerization topology, multi-stage Alpine builds, and Nginx proxy configs.
+- [GitHub Integration Setup](docs/github-webhook-setup.md): OAuth setup and Webhook HMAC verification.
+
+## Core Stack Summary
+- Backend: Laravel 12 (PHP 8.4)
+- Frontend: Livewire 3 + Alpine.js + Tailwind CSS
+- Real-time: Laravel Reverb (WebSocket)
+- Storage & Cache: MariaDB 10.11 & Redis 7
+- Test Suite: PHPUnit / Feature Tests (SQLite in-memory)
