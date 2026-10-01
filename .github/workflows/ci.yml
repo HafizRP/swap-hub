@@ -7,9 +7,11 @@ on:
       - 'feature/**'
       - 'feat/**'
       - 'fix/**'
+      - 'ci/**'
   pull_request:
     branches:
       - main
+      - 'ci/**'
   workflow_dispatch:
 
 concurrency:
