@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Task;
+use Carbon\Carbon;
+use DateTime;
+use Google_Service_Calendar_Event;
+use Google_Service_Calendar_EventDateTime;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Spatie\GoogleCalendar\GoogleCalendarFactory;
 
 class CreateGoogleCalendarEvent implements ShouldQueue
@@ -44,11 +49,11 @@ class CreateGoogleCalendarEvent implements ShouldQueue
                 // Release back to queue and retry after 30 seconds
                 if ($this->attempts() < 3) {
                     $this->release(30);
-                    \Log::info("No Google Calendar ID yet for project [{$this->task->project->title}]. Retrying in 30s.");
+                    Log::info("No Google Calendar ID yet for project [{$this->task->project->title}]. Retrying in 30s.");
 
                     return;
                 }
-                \Log::warning("No Google Calendar ID set for project [{$this->task->project->title}] after retries. Skipping.");
+                Log::warning("No Google Calendar ID set for project [{$this->task->project->title}] after retries. Skipping.");
 
                 return;
             }
@@ -59,7 +64,7 @@ class CreateGoogleCalendarEvent implements ShouldQueue
             $service = new \Google_Service_Calendar($client);
 
             // Build event
-            $googleEvent = new \Google_Service_Calendar_Event;
+            $googleEvent = new Google_Service_Calendar_Event;
             $googleEvent->setSummary("[Swap Hub - {$this->task->project->title}] {$this->task->title}");
             $googleEvent->setDescription(
                 $this->task->description.
@@ -68,20 +73,20 @@ class CreateGoogleCalendarEvent implements ShouldQueue
 
             // Set date
             if ($this->task->due_date) {
-                $start = new \Google_Service_Calendar_EventDateTime;
-                $start->setDate(\Carbon\Carbon::parse($this->task->due_date)->format('Y-m-d'));
+                $start = new Google_Service_Calendar_EventDateTime;
+                $start->setDate(Carbon::parse($this->task->due_date)->format('Y-m-d'));
                 $start->setTimeZone(config('app.timezone', 'UTC'));
 
-                $end = new \Google_Service_Calendar_EventDateTime;
-                $end->setDate(\Carbon\Carbon::parse($this->task->due_date)->addDay()->format('Y-m-d'));
+                $end = new Google_Service_Calendar_EventDateTime;
+                $end->setDate(Carbon::parse($this->task->due_date)->addDay()->format('Y-m-d'));
                 $end->setTimeZone(config('app.timezone', 'UTC'));
             } else {
-                $start = new \Google_Service_Calendar_EventDateTime;
-                $start->setDateTime(\Carbon\Carbon::now()->format(\DateTime::RFC3339));
+                $start = new Google_Service_Calendar_EventDateTime;
+                $start->setDateTime(Carbon::now()->format(DateTime::RFC3339));
                 $start->setTimeZone(config('app.timezone', 'UTC'));
 
-                $end = new \Google_Service_Calendar_EventDateTime;
-                $end->setDateTime(\Carbon\Carbon::now()->addHour()->format(\DateTime::RFC3339));
+                $end = new Google_Service_Calendar_EventDateTime;
+                $end->setDateTime(Carbon::now()->addHour()->format(DateTime::RFC3339));
                 $end->setTimeZone(config('app.timezone', 'UTC'));
             }
 
@@ -99,11 +104,11 @@ class CreateGoogleCalendarEvent implements ShouldQueue
                 $this->task->update([
                     'google_event_id' => $createdEvent->getId(),
                 ]);
-                \Log::info("Google Calendar event created for task [{$this->task->title}]: {$createdEvent->getId()}");
+                Log::info("Google Calendar event created for task [{$this->task->title}]: {$createdEvent->getId()}");
             }
 
         } catch (\Exception $e) {
-            \Log::error('Failed to create Google Calendar Event: '.$e->getMessage());
+            Log::error('Failed to create Google Calendar Event: '.$e->getMessage());
         }
     }
 }

@@ -7,8 +7,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSkillSwapRequest;
 use App\Models\Skill;
 use App\Models\SkillSwapRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class SkillSwapController extends Controller
@@ -29,8 +31,8 @@ class SkillSwapController extends Controller
 
         if ($request->filter === 'my') {
             $query->where(function ($q) {
-                $q->where('requester_id', auth()->id())
-                    ->orWhere('provider_id', auth()->id());
+                $q->where('requester_id', Auth::id())
+                    ->orWhere('provider_id', Auth::id());
             });
         }
 
@@ -52,7 +54,9 @@ class SkillSwapController extends Controller
      */
     public function create(): View
     {
-        $userSkills = auth()->user()->skills;
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        $userSkills = $currentUser->skills;
         $allSkills = Skill::orderBy('name')->get();
 
         return view('skills.swap.create', compact('userSkills', 'allSkills'));
@@ -65,7 +69,9 @@ class SkillSwapController extends Controller
     {
         $validated = $request->validated();
 
-        $swap = auth()->user()->sentSkillSwaps()->create([
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        $currentUser->sentSkillSwaps()->create([
             'offered_skill_id' => $validated['offered_skill_id'],
             'requested_skill_id' => $validated['requested_skill_id'],
             'description' => $validated['description'],
@@ -81,7 +87,7 @@ class SkillSwapController extends Controller
      */
     public function accept(Request $request, SkillSwapRequest $skillSwap): RedirectResponse
     {
-        if ((int) $skillSwap->requester_id === (int) auth()->id()) {
+        if ((int) $skillSwap->requester_id === (int) Auth::id()) {
             return back()->with('error', 'You cannot accept your own skill swap request.');
         }
 
@@ -90,7 +96,7 @@ class SkillSwapController extends Controller
         }
 
         $skillSwap->update([
-            'provider_id' => auth()->id(),
+            'provider_id' => Auth::id(),
             'status' => 'accepted',
             'accepted_at' => now(),
         ]);
@@ -103,7 +109,7 @@ class SkillSwapController extends Controller
      */
     public function complete(Request $request, SkillSwapRequest $skillSwap): RedirectResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
         if ((int) $skillSwap->requester_id !== (int) $userId && (int) $skillSwap->provider_id !== (int) $userId) {
             abort(403, 'Unauthorized to complete this swap.');
         }
@@ -130,7 +136,7 @@ class SkillSwapController extends Controller
      */
     public function cancel(Request $request, SkillSwapRequest $skillSwap): RedirectResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
         if ((int) $skillSwap->requester_id !== (int) $userId && (int) $skillSwap->provider_id !== (int) $userId) {
             abort(403, 'Unauthorized to cancel this swap.');
         }

@@ -1,5 +1,5 @@
 # Default target environment (development or production)
-ARG TARGET_ENV=development
+ARG TARGET_ENV=production
 
 # ==============================================================================
 # Stage 1: Base PHP Alpine image with runtime extensions & minimal tools
@@ -13,24 +13,20 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 RUN apk add --no-cache \
     bash \
     curl \
-    git \
     nginx \
     ca-certificates \
     tzdata \
-    dos2unix \
+    su-exec \
     && install-php-extensions \
     pdo_mysql \
-    pdo_sqlite \
-    mbstring \
     exif \
     pcntl \
     bcmath \
     gd \
     zip \
     intl \
-    opcache \
     redis \
-    && rm -rf /tmp/* /var/cache/apk/*
+    && rm -rf /tmp/* /var/cache/apk/* /usr/local/bin/install-php-extensions
 
 # Configure Alpine Nginx
 COPY docker/nginx/conf.d/app.conf /etc/nginx/http.d/default.conf
@@ -39,7 +35,7 @@ WORKDIR /var/www
 
 # Copy Entrypoint and Expose ports
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80 9000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
@@ -63,16 +59,18 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=1800
 
-# Install Node.js and NPM for frontend development
-RUN apk add --no-cache nodejs npm
+# Install Node.js, NPM, and Git for development
+RUN apk add --no-cache nodejs npm git
 
 # Leverage layer caching: Copy dependency manifests first
 COPY composer.json composer.lock ./
 COPY package.json package-lock.json* ./
 
 # Install all dependencies (including dev)
-RUN composer install --no-interaction --prefer-source --optimize-autoloader --no-scripts \
-    && npm install
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+RUN --mount=type=cache,target=/root/.npm \
+    npm install && npm cache clean --force
 
 # Copy application source code
 COPY . .
@@ -87,7 +85,8 @@ WORKDIR /app
 
 # Leverage layer caching for Node dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci --prefer-offline --no-audit
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit
 
 # Copy application source and build frontend assets
 COPY . .
@@ -107,11 +106,14 @@ ENV COMPOSER_PROCESS_TIMEOUT=1800
 COPY composer.json composer.lock ./
 
 # Install production dependencies without autoloader to maximize cache usage
-RUN composer install --no-dev --no-interaction --prefer-source --no-autoloader --no-scripts --ignore-platform-reqs
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install --no-dev --no-interaction --prefer-dist --no-autoloader --no-scripts --ignore-platform-reqs
 
 # Copy application code and generate optimized autoloader for production
 COPY . .
-RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
+    && find vendor/ -type d \( -name ".git" -o -name "tests" -o -name "test" -o -name "docs" -o -name ".github" \) -exec rm -rf {} + 2>/dev/null || true \
+    && find vendor/ -type f \( -name "*.md" -o -name "CHANGELOG*" -o -name "CONTRIBUTING*" -o -name "UPGRADE*" -o -name "README*" \) -exec rm -f {} + 2>/dev/null || true
 
 
 # ==============================================================================
@@ -136,8 +138,9 @@ COPY --chown=www-data:www-data . .
 COPY --chown=www-data:www-data --from=backend-builder /app/vendor ./vendor
 COPY --chown=www-data:www-data --from=frontend-builder /app/public/build ./public/build
 
-# Set up storage and cache structure with proper permissions
+# Set up storage and cache structure with proper permissions & clean unnecessary files
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && rm -rf docker docs tests .dockerignore phpunit.xml \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 

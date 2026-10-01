@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\Project;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -13,7 +15,8 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
 
         // 1. Active Projects (Existing)
         $activeProjects = $user->projects()

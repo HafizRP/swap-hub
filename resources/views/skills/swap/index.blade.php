@@ -135,12 +135,15 @@
                                         </p>
                                     </div>
                                 </div>
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                    @if($requestItem->status === 'pending') bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300
-                                    @elseif($requestItem->status === 'accepted') bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300
-                                    @elseif($requestItem->status === 'completed') bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300
-                                    @else bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300
-                                    @endif">
+                                @php
+                                    $statusColor = match($requestItem->status) {
+                                        'pending' => 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300',
+                                        'accepted' => 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
+                                        'completed' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300',
+                                        default => 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
+                                    };
+                                @endphp
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusColor }}">
                                     {{ $requestItem->status }}
                                 </span>
                             </div>
