@@ -18,6 +18,7 @@ use App\Services\GitHubService;
 use App\Services\GitHubWebhookService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -44,7 +45,7 @@ class ProjectController extends Controller
 
         if ($request->filter === 'my') {
             $query->whereHas('members', function ($q) {
-                $q->where('user_id', auth()->id());
+                $q->where('user_id', Auth::id());
             });
         }
 
@@ -65,9 +66,9 @@ class ProjectController extends Controller
     public function create(): View
     {
         $repositories = [];
-        if (auth()->user()->github_token) {
+        if (Auth::user()?->github_token) {
             $githubService = new GitHubService;
-            $repositories = $githubService->getUserRepositories(auth()->user());
+            $repositories = $githubService->getUserRepositories(Auth::user());
         }
 
         return view('projects.create', compact('repositories'));
@@ -80,10 +81,12 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
 
-        $project = auth()->user()->ownedProjects()->create($validated);
+        /** @var User $user */
+        $user = Auth::user();
+        $project = $user->ownedProjects()->create($validated);
 
         // Add owner as member
-        $project->members()->attach(auth()->id(), [
+        $project->members()->attach(Auth::id(), [
             'role' => 'owner',
             'status' => 'active',
             'is_validated' => true,
@@ -93,8 +96,8 @@ class ProjectController extends Controller
         \App\Jobs\CreateProjectGoogleCalendar::dispatch($project);
 
         // Auto-setup GitHub webhook if requested and user has GitHub token
-        if ($request->boolean('setup_webhook') && ($validated['github_repo_url'] ?? null) && auth()->user()->github_token) {
-            $this->setupGitHubWebhook($project, auth()->user()->github_token);
+        if ($request->boolean('setup_webhook') && ($validated['github_repo_url'] ?? null) && $user->github_token) {
+            $this->setupGitHubWebhook($project, $user->github_token);
         }
 
         return redirect()->route('projects.show', $project)->with('status', 'project-created');
@@ -128,7 +131,7 @@ class ProjectController extends Controller
     public function workspace(Project $project): View
     {
         // Check if user is a member or owner
-        if ($project->owner_id !== auth()->id() && ! $project->members->contains(auth()->id())) {
+        if ($project->owner_id !== Auth::id() && ! $project->members->contains(Auth::id())) {
             abort(403, 'You are not a member of this project.');
         }
 
@@ -145,9 +148,9 @@ class ProjectController extends Controller
         $this->authorizeOwner($project);
 
         $repositories = [];
-        if (auth()->user()->github_token) {
+        if (Auth::user()?->github_token) {
             $githubService = new GitHubService;
-            $repositories = $githubService->getUserRepositories(auth()->user());
+            $repositories = $githubService->getUserRepositories(Auth::user());
         }
 
         return view('projects.edit', compact('project', 'repositories'));
@@ -183,7 +186,7 @@ class ProjectController extends Controller
      */
     public function addMember(AddProjectMemberRequest $request, Project $project): RedirectResponse
     {
-        $userId = $request->input('user_id', auth()->id());
+        $userId = $request->input('user_id', Auth::id());
 
         // Allow adding by email
         if ($request->has('email') && $request->filled('email')) {
@@ -196,7 +199,7 @@ class ProjectController extends Controller
         $role = $request->input('role', 'member');
 
         // Security: Non-owners can only add themselves
-        if (auth()->id() !== $project->owner_id && (int) $userId !== (int) auth()->id()) {
+        if (Auth::id() !== $project->owner_id && (int) $userId !== (int) Auth::id()) {
             abort(403, 'You can only join projects yourself.');
         }
 
@@ -231,8 +234,11 @@ class ProjectController extends Controller
      */
     public function apply(ApplyProjectRequest $request, Project $project): RedirectResponse
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+
         // 0. Check User Skills (Minimal 3)
-        if (auth()->user()->skills()->count() < 3) {
+        if ($currentUser->skills()->count() < 3) {
             return redirect()->route('profile.edit')
                 ->with('error', 'Please add at least 3 skills to your profile before joining a project.');
         }
@@ -241,7 +247,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         // 2. Check if already applied or member
-        $existingMember = $project->members()->where('user_id', auth()->id())->first();
+        $existingMember = $project->members()->where('user_id', Auth::id())->first();
 
         if ($existingMember) {
             $status = $existingMember->pivot->status;
@@ -257,7 +263,7 @@ class ProjectController extends Controller
         }
 
         // 3. Create Application (Pending Member)
-        $project->members()->attach(auth()->id(), [
+        $project->members()->attach(Auth::id(), [
             'role' => $validated['role'],
             'status' => 'pending',
             'message' => $validated['message'],
@@ -267,7 +273,7 @@ class ProjectController extends Controller
         // 4. Notify Owner
         if ($project->owner?->email) {
             Mail::to($project->owner->email)->send(
-                new NewApplicationReceived($project, auth()->user(), $validated['message'])
+                new NewApplicationReceived($project, $currentUser, $validated['message'])
             );
         }
 
@@ -369,7 +375,7 @@ class ProjectController extends Controller
 
     protected function authorizeOwner(Project $project): void
     {
-        if (auth()->id() !== $project->owner_id) {
+        if (Auth::id() !== $project->owner_id) {
             abort(403);
         }
     }

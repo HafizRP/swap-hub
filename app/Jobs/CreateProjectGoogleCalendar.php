@@ -8,6 +8,7 @@ use App\Models\Project;
 use Google_Service_Calendar_Calendar;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Spatie\GoogleCalendar\GoogleCalendarFactory;
 
 class CreateProjectGoogleCalendar implements ShouldQueue
@@ -59,13 +60,13 @@ class CreateProjectGoogleCalendar implements ShouldQueue
                 'google_calendar_id' => $calendarId,
             ]);
 
-            \Log::info("Google Calendar created for project [{$this->project->title}]: {$calendarId}");
+            Log::info("Google Calendar created for project [{$this->project->title}]: {$calendarId}");
 
             // Auto-share the calendar with the project owner
             $this->shareCalendarWithOwner($service, $calendarId);
 
         } catch (\Exception $e) {
-            \Log::error("Failed to create Google Calendar for project [{$this->project->title}]: ".$e->getMessage());
+            Log::error("Failed to create Google Calendar for project [{$this->project->title}]: ".$e->getMessage());
         }
     }
 
@@ -93,10 +94,10 @@ class CreateProjectGoogleCalendar implements ShouldQueue
 
             $service->acl->insert($calendarId, $rule);
 
-            \Log::info("Google Calendar [{$calendarId}] shared with owner [{$owner->email}]");
+            Log::info("Google Calendar [{$calendarId}] shared with owner [{$owner->email}]");
 
         } catch (\Exception $e) {
-            \Log::error('Failed to share Google Calendar with owner: '.$e->getMessage());
+            Log::error('Failed to share Google Calendar with owner: '.$e->getMessage());
         }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ValidateMemberRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class ValidateMemberRequest extends FormRequest
     {
         $project = $this->route('project');
 
-        return auth()->check() && $project && (int) $project->owner_id === (int) auth()->id();
+        return Auth::check() && $project && (int) $project->owner_id === (int) Auth::id();
     }
 
     /**
