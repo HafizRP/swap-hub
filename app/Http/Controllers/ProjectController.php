@@ -1,20 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddProjectMemberRequest;
+use App\Http\Requests\ApplyProjectRequest;
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
+use App\Http\Requests\ValidateMemberRequest;
 use App\Mail\MemberValidated;
+use App\Mail\NewApplicationReceived;
 use App\Mail\ProjectMemberAdded;
+use App\Models\Project;
+use App\Models\User;
+use App\Services\GitHubService;
+use App\Services\GitHubWebhookService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $query = \App\Models\Project::with(['owner', 'members'])
+        $query = Project::with(['owner', 'members'])
             ->where('status', '!=', 'archived');
 
         if ($request->has('category') && $request->category !== 'All') {
@@ -48,11 +62,11 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         $repositories = [];
         if (auth()->user()->github_token) {
-            $githubService = new \App\Services\GitHubService;
+            $githubService = new GitHubService;
             $repositories = $githubService->getUserRepositories(auth()->user());
         }
 
@@ -62,18 +76,9 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'github_repo_url' => ['nullable', 'url'],
-            'github_repo_name' => ['nullable', 'string'],
-            'category' => ['required', 'string', 'in:Development,Design,Marketing'],
-            'start_date' => ['nullable', 'date'],
-            'end_date' => ['nullable', 'date'],
-            'setup_webhook' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $project = auth()->user()->ownedProjects()->create($validated);
 
@@ -88,7 +93,7 @@ class ProjectController extends Controller
         \App\Jobs\CreateProjectGoogleCalendar::dispatch($project);
 
         // Auto-setup GitHub webhook if requested and user has GitHub token
-        if ($request->boolean('setup_webhook') && $validated['github_repo_url'] && auth()->user()->github_token) {
+        if ($request->boolean('setup_webhook') && ($validated['github_repo_url'] ?? null) && auth()->user()->github_token) {
             $this->setupGitHubWebhook($project, auth()->user()->github_token);
         }
 
@@ -98,7 +103,7 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(\App\Models\Project $project)
+    public function show(Project $project): View
     {
         $project->load(['owner', 'members', 'githubActivities']);
 
@@ -120,7 +125,7 @@ class ProjectController extends Controller
     /**
      * Display the workspace for the project.
      */
-    public function workspace(\App\Models\Project $project)
+    public function workspace(Project $project): View
     {
         // Check if user is a member or owner
         if ($project->owner_id !== auth()->id() && ! $project->members->contains(auth()->id())) {
@@ -135,13 +140,13 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(\App\Models\Project $project)
+    public function edit(Project $project): View
     {
         $this->authorizeOwner($project);
 
         $repositories = [];
         if (auth()->user()->github_token) {
-            $githubService = new \App\Services\GitHubService;
+            $githubService = new GitHubService;
             $repositories = $githubService->getUserRepositories(auth()->user());
         }
 
@@ -151,20 +156,11 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, \App\Models\Project $project)
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
         $this->authorizeOwner($project);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'status' => ['required', 'in:planning,active,completed,archived'],
-            'github_repo_url' => ['nullable', 'url'],
-            'github_repo_name' => ['nullable', 'string'],
-            'category' => ['required', 'string', 'in:Development,Design,Marketing'],
-            'start_date' => ['nullable', 'date'],
-            'end_date' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $project->update($validated);
 
@@ -174,7 +170,7 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(\App\Models\Project $project)
+    public function destroy(Project $project): RedirectResponse
     {
         $this->authorizeOwner($project);
         $project->delete();
@@ -185,14 +181,13 @@ class ProjectController extends Controller
     /**
      * Add a member to the project.
      */
-    public function addMember(Request $request, \App\Models\Project $project)
+    public function addMember(AddProjectMemberRequest $request, Project $project): RedirectResponse
     {
         $userId = $request->input('user_id', auth()->id());
 
         // Allow adding by email
-        if ($request->has('email')) {
-            $request->validate(['email' => 'required|email|exists:users,email']);
-            $userByEmail = \App\Models\User::where('email', $request->email)->first();
+        if ($request->has('email') && $request->filled('email')) {
+            $userByEmail = User::where('email', $request->email)->first();
             if ($userByEmail) {
                 $userId = $userByEmail->id;
             }
@@ -201,7 +196,7 @@ class ProjectController extends Controller
         $role = $request->input('role', 'member');
 
         // Security: Non-owners can only add themselves
-        if (auth()->id() !== $project->owner_id && $userId != auth()->id()) {
+        if (auth()->id() !== $project->owner_id && (int) $userId !== (int) auth()->id()) {
             abort(403, 'You can only join projects yourself.');
         }
 
@@ -216,14 +211,16 @@ class ProjectController extends Controller
         }
 
         // Add member to project's Google Calendar
-        $member = \App\Models\User::find($userId);
-        \App\Jobs\AddMemberToProjectCalendar::dispatch($project, $member, 'reader');
+        $member = User::find($userId);
+        if ($member) {
+            \App\Jobs\AddMemberToProjectCalendar::dispatch($project, $member, 'reader');
 
-        // Send email notification to project owner
-        if ($project->owner_id !== $userId) {
-            Mail::to($project->owner->email)->send(
-                new ProjectMemberAdded($project, $member, $project->owner)
-            );
+            // Send email notification to project owner
+            if ($project->owner_id !== $userId && $project->owner?->email) {
+                Mail::to($project->owner->email)->send(
+                    new ProjectMemberAdded($project, $member, $project->owner)
+                );
+            }
         }
 
         return back()->with('status', 'member-added');
@@ -232,7 +229,7 @@ class ProjectController extends Controller
     /**
      * Apply to join the project.
      */
-    public function apply(Request $request, \App\Models\Project $project)
+    public function apply(ApplyProjectRequest $request, Project $project): RedirectResponse
     {
         // 0. Check User Skills (Minimal 3)
         if (auth()->user()->skills()->count() < 3) {
@@ -241,10 +238,7 @@ class ProjectController extends Controller
         }
 
         // 1. Validate Message
-        $validated = $request->validate([
-            'message' => ['required', 'string', 'min:10', 'max:1000'],
-            'role' => ['required', 'in:member,contributor'],
-        ]);
+        $validated = $request->validated();
 
         // 2. Check if already applied or member
         $existingMember = $project->members()->where('user_id', auth()->id())->first();
@@ -270,8 +264,12 @@ class ProjectController extends Controller
             'joined_at' => now(),
         ]);
 
-        // 4. Notify Owner (Optional: You can add Mail here)
-        // Mail::to($project->owner->email)->send(new NewApplicationReceived($project, auth()->user()));
+        // 4. Notify Owner
+        if ($project->owner?->email) {
+            Mail::to($project->owner->email)->send(
+                new NewApplicationReceived($project, auth()->user(), $validated['message'])
+            );
+        }
 
         return back()->with('status', 'application-sent');
     }
@@ -279,7 +277,7 @@ class ProjectController extends Controller
     /**
      * Accept a member application.
      */
-    public function acceptApplication(Request $request, \App\Models\Project $project, \App\Models\User $user)
+    public function acceptApplication(Request $request, Project $project, User $user): RedirectResponse
     {
         $this->authorizeOwner($project);
 
@@ -303,16 +301,13 @@ class ProjectController extends Controller
         $calendarRole = ($memberPivot->role === 'contributor') ? 'reader' : 'writer';
         \App\Jobs\AddMemberToProjectCalendar::dispatch($project, $user, $calendarRole);
 
-        // Notify User
-        // Mail::to($user->email)->send(new ApplicationAccepted($project));
-
         return back()->with('status', 'application-accepted');
     }
 
     /**
      * Reject a member application.
      */
-    public function rejectApplication(Request $request, \App\Models\Project $project, \App\Models\User $user)
+    public function rejectApplication(Request $request, Project $project, User $user): RedirectResponse
     {
         $this->authorizeOwner($project);
 
@@ -325,16 +320,13 @@ class ProjectController extends Controller
         // Reject
         $memberPivot->update(['status' => 'rejected']);
 
-        // Notify User
-        // Mail::to($user->email)->send(new ApplicationRejected($project));
-
         return back()->with('status', 'application-rejected');
     }
 
     /**
      * Remove a member from the project.
      */
-    public function removeMember(\App\Models\Project $project, \App\Models\User $user)
+    public function removeMember(Project $project, User $user): RedirectResponse
     {
         $this->authorizeOwner($project);
         $project->members()->detach($user->id);
@@ -345,14 +337,11 @@ class ProjectController extends Controller
     /**
      * Validate a member's contribution.
      */
-    public function validateMember(Request $request, \App\Models\Project $project, \App\Models\User $user)
+    public function validateMember(ValidateMemberRequest $request, Project $project, User $user): RedirectResponse
     {
         $this->authorizeOwner($project);
 
-        $validated = $request->validate([
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $project->members()->updateExistingPivot($user->id, [
             'is_validated' => true,
@@ -378,7 +367,7 @@ class ProjectController extends Controller
         return back()->with('status', 'member-validated');
     }
 
-    protected function authorizeOwner(\App\Models\Project $project)
+    protected function authorizeOwner(Project $project): void
     {
         if (auth()->id() !== $project->owner_id) {
             abort(403);
@@ -386,36 +375,11 @@ class ProjectController extends Controller
     }
 
     /**
-     * Reconnect GitHub webhook manually.
-     */
-    public function reconnectWebhook(\App\Models\Project $project)
-    {
-        $this->authorizeOwner($project);
-
-        $user = auth()->user();
-        if (! $user->github_token) {
-            return back()->with('error', 'Please connect your GitHub account in Profile settings first.');
-        }
-
-        if (! $project->github_repo_url) {
-            return back()->with('error', 'Please add a GitHub Repository URL first.');
-        }
-
-        $this->setupGitHubWebhook($project, $user->github_token);
-
-        if ($project->fresh()->github_webhook_status === 'active') {
-            return back()->with('status', 'GitHub Webhook connected successfully!');
-        }
-
-        return back()->with('error', 'Failed to connect GitHub Webhook. properly.');
-    }
-
-    /**
      * Setup GitHub webhook for the project.
      */
-    protected function setupGitHubWebhook(\App\Models\Project $project, string $githubToken): void
+    protected function setupGitHubWebhook(Project $project, string $githubToken): void
     {
-        $webhookService = new \App\Services\GitHubWebhookService;
+        $webhookService = new GitHubWebhookService;
 
         // Webhook URL that GitHub will call
         $webhookUrl = url('/webhooks/github');

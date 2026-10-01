@@ -1,6 +1,6 @@
 @section('title', $project->title)
 <x-app-layout>
-    <div x-data="{ showInviteModal: false }" class="container mx-auto py-6">
+    <div x-data="{ showInviteModal: false, showValidateModal: false, validateUserId: null, validateUserName: '' }" class="container mx-auto py-6">
         
         <!-- Header -->
         <div class="mb-6">
@@ -221,20 +221,31 @@
                     <div class="p-5">
                         <div class="space-y-3">
                             @foreach($project->members as $member)
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3 min-w-0">
                                         <img src="{{ $member->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($member->name) . '&background=6366f1&color=fff' }}"
-                                            class="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700" alt="{{ $member->name }}">
-                                        <div>
-                                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs mb-0.5">{{ $member->name }}</h4>
+                                            class="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0" alt="{{ $member->name }}">
+                                        <div class="min-w-0">
+                                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs mb-0.5 truncate">{{ $member->name }}</h4>
                                             <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider">{{ $member->pivot->role ?? 'Member' }}</span>
                                         </div>
                                     </div>
-                                    @if($member->pivot->is_validated)
-                                        <span class="text-indigo-600 dark:text-indigo-400" title="Kontributor Terverifikasi">
-                                            <i class="bi bi-patch-check-fill text-lg"></i>
-                                        </span>
-                                    @endif
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        @if($member->pivot->is_validated)
+                                            <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-lg border border-amber-200/50">
+                                                <i class="bi bi-star-fill text-xs"></i>
+                                                <span>{{ $member->pivot->contribution_rating }}/5</span>
+                                            </span>
+                                            <span class="text-indigo-600 dark:text-indigo-400" title="Kontributor Terverifikasi">
+                                                <i class="bi bi-patch-check-fill text-lg"></i>
+                                            </span>
+                                        @elseif(auth()->id() == $project->owner_id && $member->id != auth()->id())
+                                            <button @click="validateUserId = {{ $member->id }}; validateUserName = '{{ addslashes($member->name) }}'; showValidateModal = true"
+                                                    class="px-2.5 py-1 text-[11px] font-bold text-indigo-600 hover:text-white bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-600 rounded-lg transition-colors border border-indigo-200/60 dark:border-indigo-800 cursor-pointer">
+                                                Nilai
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -323,8 +334,41 @@
             </div>
         </div>
 
-    </div>
-</x-app-layout>
+        <!-- Validate / Review Member Modal (Alpine.js) -->
+        <div x-show="showValidateModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-slate-900/60 backdrop-blur-sm p-4" style="display: none;" x-transition>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl max-w-md w-full shadow-2xl p-6" @click.outside="showValidateModal = false">
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700/50 mb-4">
+                    <h3 class="font-extrabold text-slate-900 dark:text-slate-100 text-base mb-0">
+                        Review Kontribusi: <span x-text="validateUserName"></span>
+                    </h3>
+                    <button @click="showValidateModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer">
+                        <i class="bi bi-x-lg text-sm"></i>
+                    </button>
+                </div>
+                <form :action="'/projects/{{ $project->id }}/validate/' + validateUserId" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="rating" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Rating Kontribusi (1-5)</label>
+                        <select name="rating" id="rating" required class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all">
+                            <option value="5">⭐⭐⭐⭐⭐ 5 - Sangat Luar Biasa (+50 Poin)</option>
+                            <option value="4">⭐⭐⭐⭐ 4 - Baik & Konsisten (+40 Poin)</option>
+                            <option value="3" selected>⭐⭐⭐ 3 - Cukup (+30 Poin)</option>
+                            <option value="2">⭐⭐ 2 - Kurang Aktif (+20 Poin)</option>
+                            <option value="1">⭐ 1 - Minimal (+10 Poin)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Catatan / Ulasan Kontribusi</label>
+                        <textarea name="notes" id="notes" rows="3" class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all" placeholder="Tuliskan apresiasi atau feedback konstruktif..."></textarea>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all duration-150 active:scale-[0.98] border-0 cursor-pointer shadow-sm">
+                            Simpan Review & Beri Poin
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     </div>
 </x-app-layout>

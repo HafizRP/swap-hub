@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = User::query();
 
@@ -44,19 +49,19 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function show(User $user)
+    public function show(User $user): View
     {
         $user->load(['skills', 'ownedProjects', 'projects']);
 
         return view('admin.users.show', compact('user'));
     }
 
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         return view('admin.users.edit', compact('user'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -84,7 +89,7 @@ class UserController extends Controller
             ->with('success', 'User updated successfully.');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
         // Prevent self-deletion
         if ($user->id === auth()->id()) {
@@ -97,7 +102,7 @@ class UserController extends Controller
             ->with('success', 'User deleted successfully.');
     }
 
-    public function toggleRole(Request $request, User $user)
+    public function toggleRole(Request $request, User $user): RedirectResponse
     {
         // Prevent self-demotion
         if ($user->id === auth()->id()) {
@@ -109,7 +114,7 @@ class UserController extends Controller
             'admin_password' => 'required|string',
         ]);
 
-        if (! \Illuminate\Support\Facades\Hash::check($request->admin_password, auth()->user()->password)) {
+        if (! Hash::check($request->admin_password, auth()->user()->password)) {
             return back()->withErrors(['admin_password' => 'Incorrect password provided.']);
         }
 

@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
 class ResumeController extends Controller
 {
-    public function download(User $user)
+    public function download(User $user): Response
     {
         $user->load(['skills', 'ownedProjects', 'projects', 'githubActivities']);
 
