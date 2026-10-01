@@ -1,4 +1,10 @@
 # 🔄 Swap Hub
+
+[![CI/CD Pipeline](https://github.com/HafizRP/swap-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/HafizRP/swap-hub/actions/workflows/ci.yml)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4-777BB4.svg?logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg?logo=laravel&logoColor=white)](https://laravel.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Swap Hub is a Laravel-based project collaboration and skill swapping platform designed for students. The platform helps students find matching team partners, manage tasks using an interactive Kanban board, and automatically synchronize project schedules via Google Calendar integration. With real-time chat, automatic activity logging through GitHub webhooks, and a peer-to-peer skill validation system, Swap Hub enables students to build verified professional portfolios during their college years.
 
 ## 📋 Table of Contents
@@ -26,12 +32,12 @@ Swap Hub is a Laravel-based project collaboration and skill swapping platform de
 ## 🛠 Tech Stack
 
 - **Backend:** Laravel 12 (PHP 8.4)
-- **Frontend:** Blade, Livewire 3, TailwindCSS, Alpine.js, Bootstrap 5 (welcome page)
-- **Database:** MariaDB / MySQL
+- **Frontend:** Blade, Livewire 3, TailwindCSS, Alpine.js
+- **Database:** MariaDB / MySQL (production/dev), SQLite (testing)
 - **Cache & Queue:** Redis
-- **Real-time Broadcast:** Pusher
+- **Real-time Broadcast:** Laravel Reverb (self-hosted WebSocket)
 - **Containerization:** Docker & Docker Compose
-- **CI/CD:** Jenkins
+- **CI/CD:** GitHub Actions & Jenkins
 - **Calendar API:** Spatie Google Calendar
 
 ## 🚀 Quick Start
