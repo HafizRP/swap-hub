@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = Project::with(['owner', 'members']);
 
@@ -45,19 +49,19 @@ class ProjectController extends Controller
         return view('admin.projects.index', compact('projects'));
     }
 
-    public function show(Project $project)
+    public function show(Project $project): View
     {
         $project->load(['owner', 'members', 'tasks', 'githubActivities']);
 
         return view('admin.projects.show', compact('project'));
     }
 
-    public function edit(Project $project)
+    public function edit(Project $project): View
     {
         return view('admin.projects.edit', compact('project'));
     }
 
-    public function update(Request $request, Project $project)
+    public function update(Request $request, Project $project): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -72,7 +76,7 @@ class ProjectController extends Controller
             ->with('success', 'Project updated successfully.');
     }
 
-    public function destroy(Project $project)
+    public function destroy(Project $project): RedirectResponse
     {
         $project->delete();
 
@@ -80,7 +84,7 @@ class ProjectController extends Controller
             ->with('success', 'Project deleted successfully.');
     }
 
-    public function archive(Project $project)
+    public function archive(Project $project): RedirectResponse
     {
         $project->update(['status' => 'archived']);
 

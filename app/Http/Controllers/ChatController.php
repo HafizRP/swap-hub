@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
+
+use App\Models\Conversation;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 
 class ChatController extends Controller
 {
     /**
      * Create or retrieve a direct conversation with another user.
      */
-    public function createDirectConversation(\App\Models\User $user)
+    public function createDirectConversation(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot chat with yourself.');
@@ -22,7 +28,7 @@ class ChatController extends Controller
             ->first();
 
         if (! $conversation) {
-            $conversation = \App\Models\Conversation::create([
+            $conversation = Conversation::create([
                 'type' => 'direct',
                 'name' => null, // Direct chats use participant names
             ]);
