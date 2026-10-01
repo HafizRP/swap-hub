@@ -20,12 +20,12 @@ RUN Invoke-WebRequest -Uri 'https://download.microsoft.com/download/1/2/8/128E2E
     Start-Process 'msiexec.exe' -ArgumentList '/i', 'C:\rewrite.msi', '/quiet', '/norestart' -NoNewWindow -Wait; `
     Remove-Item 'C:\rewrite.msi'
 
-# 4. Download and configure PHP 8.3 NTS x64
+# 4. Download and configure PHP 8.4 NTS x64
 RUN New-Item -ItemType Directory -Path 'C:\php' | Out-Null; `
     try { `
-        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/php-8.3.17-nts-Win32-vs16-x64.zip' -OutFile 'C:\php.zip'; `
+        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/php-8.4.4-nts-Win32-vs17-x64.zip' -OutFile 'C:\php.zip'; `
     } catch { `
-        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/archives/php-8.3.17-nts-Win32-vs16-x64.zip' -OutFile 'C:\php.zip'; `
+        Invoke-WebRequest -Uri 'https://windows.php.net/downloads/releases/archives/php-8.4.4-nts-Win32-vs17-x64.zip' -OutFile 'C:\php.zip'; `
     } `
     Expand-Archive -Path 'C:\php.zip' -DestinationPath 'C:\php'; `
     Remove-Item 'C:\php.zip'; `

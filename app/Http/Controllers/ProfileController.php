@@ -92,7 +92,9 @@ class ProfileController extends Controller
      */
     public function removeSkill(Skill $skill): RedirectResponse
     {
-        auth()->user()->skills()->detach($skill->id);
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        $currentUser->skills()->detach($skill->id);
 
         return back()->with('status', 'skill-removed');
     }

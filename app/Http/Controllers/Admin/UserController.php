@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
@@ -79,7 +80,7 @@ class UserController extends Controller
             'reputation_points' => $validated['reputation_points'] ?? $user->reputation_points,
         ];
 
-        if ($role && $user->id !== auth()->id()) {
+        if ($role && (int) $user->id !== (int) Auth::id()) {
             $updateData['role_id'] = $role->id;
         }
 
@@ -92,7 +93,7 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         // Prevent self-deletion
-        if ($user->id === auth()->id()) {
+        if ((int) $user->id === (int) Auth::id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
 
@@ -105,7 +106,7 @@ class UserController extends Controller
     public function toggleRole(Request $request, User $user): RedirectResponse
     {
         // Prevent self-demotion
-        if ($user->id === auth()->id()) {
+        if ((int) $user->id === (int) Auth::id()) {
             return back()->with('error', 'You cannot change your own role.');
         }
 
@@ -114,7 +115,10 @@ class UserController extends Controller
             'admin_password' => 'required|string',
         ]);
 
-        if (! Hash::check($request->admin_password, auth()->user()->password)) {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+
+        if (! Hash::check($request->admin_password, $currentUser->password)) {
             return back()->withErrors(['admin_password' => 'Incorrect password provided.']);
         }
 

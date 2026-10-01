@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
@@ -15,12 +16,15 @@ class ChatController extends Controller
      */
     public function createDirectConversation(User $user): RedirectResponse
     {
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return back()->with('error', 'You cannot chat with yourself.');
         }
 
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+
         // Check if direct conversation already exists
-        $conversation = auth()->user()->conversations()
+        $conversation = $currentUser->conversations()
             ->where('type', 'direct')
             ->whereHas('participants', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -33,7 +37,7 @@ class ChatController extends Controller
                 'name' => null, // Direct chats use participant names
             ]);
 
-            $conversation->participants()->attach([auth()->id(), $user->id]);
+            $conversation->participants()->attach([Auth::id(), $user->id]);
         }
 
         return redirect()->route('chat', $conversation);

@@ -6,8 +6,11 @@ namespace App\Jobs;
 
 use App\Models\Project;
 use App\Models\User;
+use Google_Service_Calendar_AclRule;
+use Google_Service_Calendar_AclRuleScope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Spatie\GoogleCalendar\GoogleCalendarFactory;
 
 class AddMemberToProjectCalendar implements ShouldQueue
@@ -43,7 +46,7 @@ class AddMemberToProjectCalendar implements ShouldQueue
             $calendarId = $this->project->google_calendar_id;
 
             if (! $calendarId) {
-                \Log::info("Project [{$this->project->title}] has no Google Calendar. Skipping member add.");
+                Log::info("Project [{$this->project->title}] has no Google Calendar. Skipping member add.");
 
                 return;
             }
@@ -58,8 +61,8 @@ class AddMemberToProjectCalendar implements ShouldQueue
             $service = new \Google_Service_Calendar($client);
 
             // Add user to calendar via ACL
-            $rule = new \Google_Service_Calendar_AclRule;
-            $scope = new \Google_Service_Calendar_AclRuleScope;
+            $rule = new Google_Service_Calendar_AclRule;
+            $scope = new Google_Service_Calendar_AclRuleScope;
 
             $scope->setType('user');
             $scope->setValue($this->user->email);
@@ -72,10 +75,10 @@ class AddMemberToProjectCalendar implements ShouldQueue
 
             $service->acl->insert($calendarId, $rule);
 
-            \Log::info("User [{$this->user->email}] added to Google Calendar of project [{$this->project->title}]");
+            Log::info("User [{$this->user->email}] added to Google Calendar of project [{$this->project->title}]");
 
         } catch (\Exception $e) {
-            \Log::error("Failed to add member [{$this->user->email}] to Google Calendar: ".$e->getMessage());
+            Log::error("Failed to add member [{$this->user->email}] to Google Calendar: ".$e->getMessage());
         }
     }
 }
