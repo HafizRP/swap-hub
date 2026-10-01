@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Skill extends Model
 {
@@ -17,12 +20,12 @@ class Skill extends Model
         return $this->belongsToMany(User::class)->withPivot('proficiency_level')->withTimestamps();
     }
 
-    public function swapRequestsOffered()
+    public function swapRequestsOffered(): HasMany
     {
         return $this->hasMany(SkillSwapRequest::class, 'offered_skill_id');
     }
 
-    public function swapRequestsRequested()
+    public function swapRequestsRequested(): HasMany
     {
         return $this->hasMany(SkillSwapRequest::class, 'requested_skill_id');
     }

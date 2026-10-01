@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Models\Project;
@@ -11,6 +13,10 @@ use Spatie\GoogleCalendar\GoogleCalendarFactory;
 class CreateProjectGoogleCalendar implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
+
+    public int $timeout = 30;
 
     public Project $project;
 

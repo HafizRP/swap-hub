@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Health & Readiness Probes
+Route::get('/healthz', [HealthController::class, 'liveness'])->name('healthz');
+Route::get('/readyz', [HealthController::class, 'readiness'])->name('readyz');
 
 Route::middleware('auth')->group(function () {
     // Dashboard
@@ -35,6 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/apply', [ProjectController::class, 'apply'])->name('projects.apply');
     Route::post('/projects/{project}/applications/{user}/accept', [ProjectController::class, 'acceptApplication'])->name('projects.applications.accept');
     Route::post('/projects/{project}/applications/{user}/reject', [ProjectController::class, 'rejectApplication'])->name('projects.applications.reject');
+
+    // Skill Swaps
+    Route::get('/skills/swap', [\App\Http\Controllers\SkillSwapController::class, 'index'])->name('skills.swap.index');
+    Route::get('/skills/swap/create', [\App\Http\Controllers\SkillSwapController::class, 'create'])->name('skills.swap.create');
+    Route::post('/skills/swap', [\App\Http\Controllers\SkillSwapController::class, 'store'])->name('skills.swap.store');
+    Route::post('/skills/swap/{skillSwap}/accept', [\App\Http\Controllers\SkillSwapController::class, 'accept'])->name('skills.swap.accept');
+    Route::post('/skills/swap/{skillSwap}/complete', [\App\Http\Controllers\SkillSwapController::class, 'complete'])->name('skills.swap.complete');
+    Route::post('/skills/swap/{skillSwap}/cancel', [\App\Http\Controllers\SkillSwapController::class, 'cancel'])->name('skills.swap.cancel');
 
     // Chat - Full Livewire SPA
     Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');

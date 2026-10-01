@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Models\Task;
@@ -11,7 +13,11 @@ class CreateGoogleCalendarEvent implements ShouldQueue
 {
     use Queueable;
 
-    public $task;
+    public int $tries = 3;
+
+    public int $timeout = 30;
+
+    public Task $task;
 
     /**
      * Create a new job instance.
