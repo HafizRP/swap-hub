@@ -83,20 +83,28 @@
                 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 p-5 shadow-sm hover-lift transition-all flex flex-col justify-between group">
                     <div class="space-y-4">
                         <!-- Top Meta -->
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-2">
                             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusStyles['bg'] }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $statusStyles['dot'] }}"></span>
                                 {{ $statusStyles['label'] }}
                             </span>
-                            <span class="text-xs font-bold text-slate-400 dark:text-slate-500">
-                                {{ $project->category ?? 'Tech' }}
-                            </span>
+                            <div class="flex items-center gap-1.5">
+                                @if(isset($project->skill_match) && $project->skill_match['required_count'] > 0)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $project->skill_match['badge_class'] }}" title="Kecocokan Jaccard: {{ $project->skill_match['jaccard_index'] }}">
+                                        <i class="bi bi-stars"></i>
+                                        {{ $project->skill_match['match_percentage'] }}% Cocok
+                                    </span>
+                                @endif
+                                <span class="text-xs font-bold text-slate-400 dark:text-slate-500">
+                                    {{ $project->category ?? 'Tech' }}
+                                </span>
+                            </div>
                         </div>
 
                         <!-- Title & Description -->
                         <div>
                             <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-                                <a href="{{ route('projects.show', $project) }}" class="no-underline text-inherit">
+                                <a href="{{ route('projects.show', $project) }}" class="no-underline text-inherit" wire:navigate.hover>
                                     {{ $project->title }}
                                 </a>
                             </h3>
@@ -104,6 +112,19 @@
                                 {{ $project->description ?? 'Proyek kolaboratif mahasiswa.' }}
                             </p>
                         </div>
+
+                        @if($project->skills->isNotEmpty())
+                            <div class="flex flex-wrap gap-1 pt-1">
+                                @foreach($project->skills->take(3) as $s)
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300">
+                                        {{ $s->name }}
+                                    </span>
+                                @endforeach
+                                @if($project->skills->count() > 3)
+                                    <span class="px-1.5 py-0.5 text-[10px] text-slate-400 font-bold">+{{ $project->skills->count() - 3 }}</span>
+                                @endif
+                            </div>
+                        @endif
 
                         <!-- Team & Campus Meta -->
                         <div class="flex items-center justify-between pt-2 text-xs text-slate-500 dark:text-slate-400">

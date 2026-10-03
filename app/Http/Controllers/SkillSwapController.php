@@ -46,6 +46,14 @@ class SkillSwapController extends Controller
         $requests = $query->latest()->paginate(12)->withQueryString();
         $skills = Skill::orderBy('name')->get();
 
+        if (Auth::check()) {
+            $matcher = app(\App\Services\SkillMatchingService::class);
+            $user = Auth::user();
+            foreach ($requests as $item) {
+                $item->compatibility = $matcher->evaluateSkillSwapCompatibility($user, $item);
+            }
+        }
+
         return view('skills.swap.index', compact('requests', 'skills'));
     }
 
