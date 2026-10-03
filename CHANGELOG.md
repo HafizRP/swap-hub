@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Academic Skill Matching Engine with Jaccard Similarity Coefficient and requirement coverage scoring (`App\Services\SkillMatchingService`).
+- Project Required Skills relation and interactive visual matching widgets in project list, detail, and skill swap barter cards.
+- System Usability Scale (SUS) 10-item Likert evaluation survey (`/usability-survey`) with automated Brooke (1996) score calculation.
+- Administrative SUS Analytics dashboard (`/admin/usability`) with statistical distributions (mean, std-dev, grade, adjective).
+- System benchmark console command (`php artisan app:benchmark`) generating academic performance tables.
+- Comprehensive thesis manuscripts: `docs/skripsi/BAB_3_METODOLOGI_DAN_ALGORITMA.md` and `docs/skripsi/BAB_4_HASIL_DAN_PENGUJIAN.md`.
 - Full Progressive Web App (PWA) support with web app manifest, offline service worker, cache strategies, and install prompts.
 - Offline fallback view and static HTML page (`/offline` and `offline.html`).
 - Multi-resolution PWA and Apple touch icons (72x72 to 512x512 maskable).

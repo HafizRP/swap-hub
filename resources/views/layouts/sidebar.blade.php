@@ -91,6 +91,7 @@
                 ['route' => 'admin.users.index',    'icon' => 'bi-people-fill',    'label' => 'User Management'],
                 ['route' => 'admin.projects.index', 'icon' => 'bi-folder-fill',    'label' => 'Project Management'],
                 ['route' => 'admin.health.index',   'icon' => 'bi-heart-pulse-fill','label' => 'System Health'],
+                ['route' => 'admin.usability.index','icon' => 'bi-clipboard2-data-fill','label' => 'Evaluasi SUS'],
             ] as $aItem)
                 @php $aActive = request()->routeIs($aItem['route'] . '*'); @endphp
                 <a href="{{ route($aItem['route']) }}" wire:navigate.hover

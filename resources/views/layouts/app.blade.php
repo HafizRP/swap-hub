@@ -201,7 +201,11 @@
 
             <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 custom-scrollbar bg-slate-50 dark:bg-slate-900">
                 <div class="mx-auto max-w-[1400px]">
-                    {{ $slot }}
+                    @if(isset($slot) && !empty((string)$slot))
+                        {{ $slot }}
+                    @else
+                        @yield('content')
+                    @endif
                 </div>
             </main>
         </div>
