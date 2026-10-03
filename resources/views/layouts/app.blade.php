@@ -11,6 +11,8 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
 
+    @include('partials.pwa-head')
+
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -265,6 +267,8 @@
             });
         </script>
     @endauth
+
+    @include('partials.pwa-install-prompt')
 </body>
 
 </html>
