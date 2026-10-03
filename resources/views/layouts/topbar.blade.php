@@ -28,16 +28,16 @@
                 <span class="absolute top-1.5 right-1.5 p-1 bg-red-500 border border-white rounded-full"></span>
             </a>
  
-            <a class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full transition-colors duration-200 mr-2" href="{{ route('chat') }}">
+            <a class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full transition-colors duration-200 mr-2" href="{{ route('chat') }}" wire:navigate.hover>
                 <i class="bi bi-chat-left-text-fill text-lg"></i>
             </a>
- 
+
             <div class="border-l border-slate-200 dark:border-slate-700 pl-3 ml-2 flex items-center gap-3">
                 <div class="text-right hidden md:block" style="line-height: 1.2;">
                     <span class="block font-bold text-slate-800 dark:text-slate-100 text-sm">{{ auth()->user()->name }}</span>
                     <span class="block text-slate-400 dark:text-slate-500 text-xs">{{ auth()->user()->major ?? 'Computer Science' }}</span>
                 </div>
- 
+
                 <!-- Profile Dropdown Menu (Alpine.js) -->
                 <div class="relative" x-data="{ open: false }" @click.outside="open = false">
                     <a href="#" @click.prevent="open = !open" class="block">
@@ -56,11 +56,11 @@
                          style="display: none; z-index: 50;">
                         <h6 class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/50 mb-1">Manage Account</h6>
                         <a class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-                           href="{{ route('profile.show', auth()->id()) }}">
+                           href="{{ route('profile.show', auth()->id()) }}" wire:navigate.hover>
                             <i class="bi bi-person"></i> Profile
                         </a>
                         <a class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-                           href="{{ route('profile.edit') }}">
+                           href="{{ route('profile.edit') }}" wire:navigate.hover>
                             <i class="bi bi-gear"></i> Settings
                         </a>
                         <div class="border-t border-slate-100 dark:border-slate-700/50 my-1"></div>
