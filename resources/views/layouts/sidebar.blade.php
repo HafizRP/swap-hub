@@ -4,7 +4,7 @@
 
     <!-- Logo & Collapse/Expand toggle -->
     <div class="flex items-center p-4 mb-2 shrink-0 min-h-[64px]">
-        <a href="{{ route('dashboard') }}"
+        <a href="{{ route('dashboard') }}" wire:navigate.hover
            class="flex items-center gap-2 no-underline text-slate-800 dark:text-slate-100 flex-1 min-w-0 overflow-hidden">
             <img src="{{ asset('icon.png') }}"
                  alt="Swap Hub"
@@ -54,7 +54,7 @@
                 $isActive = request()->routeIs($item['route'] . '*');
                 $url = route($item['route'], $item['params'] ?? []);
             @endphp
-            <a href="{{ $url }}"
+            <a href="{{ $url }}" wire:navigate.hover
                class="flex items-center py-2.5 rounded-xl transition-all duration-150 no-underline text-sm font-semibold shrink-0 {{ $isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
                :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
                :title="sidebarExpanded ? '' : '{{ $item['label'] }}'">
@@ -69,7 +69,7 @@
         <div class="border-t border-slate-200 dark:border-slate-700 my-2 mx-1 shrink-0"></div>
 
         @php $settingsActive = request()->routeIs('profile.edit'); @endphp
-        <a href="{{ route('profile.edit') }}"
+        <a href="{{ route('profile.edit') }}" wire:navigate.hover
            class="flex items-center py-2.5 rounded-xl transition-all duration-150 no-underline text-sm font-semibold shrink-0 {{ $settingsActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
            :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
            :title="sidebarExpanded ? '' : 'Pengaturan'">
@@ -93,7 +93,7 @@
                 ['route' => 'admin.health.index',   'icon' => 'bi-heart-pulse-fill','label' => 'System Health'],
             ] as $aItem)
                 @php $aActive = request()->routeIs($aItem['route'] . '*'); @endphp
-                <a href="{{ route($aItem['route']) }}"
+                <a href="{{ route($aItem['route']) }}" wire:navigate.hover
                    class="flex items-center py-2 rounded-xl transition-all duration-150 no-underline text-xs font-semibold shrink-0 {{ $aActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}"
                    :class="sidebarExpanded ? 'gap-3 px-3.5' : 'justify-center px-0'"
                    :title="sidebarExpanded ? '' : '{{ $aItem['label'] }}'">
