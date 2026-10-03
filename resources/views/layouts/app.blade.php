@@ -111,7 +111,7 @@
 
             <!-- Logo & Close -->
             <div class="flex items-center justify-between p-4 mb-2">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 no-underline text-slate-800 dark:text-slate-100">
+                <a href="{{ route('dashboard') }}" @click="sidebarOpenMobile = false" wire:navigate.hover class="flex items-center gap-2 no-underline text-slate-800 dark:text-slate-100">
                     <img src="{{ asset('icon.png') }}" alt="Swap Hub" class="w-8 h-8 rounded shrink-0">
                     <span class="text-lg font-bold">Swap Hub</span>
                 </a>
@@ -146,7 +146,7 @@
                         $mUrl = route($mItem['route'], $mItem['params'] ?? []);
                     @endphp
                     <li>
-                        <a href="{{ $mUrl }}" @click="sidebarOpenMobile = false"
+                        <a href="{{ $mUrl }}" @click="sidebarOpenMobile = false" wire:navigate.hover
                            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ $mActive ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
                             <i class="bi {{ $mItem['icon'] }} text-base shrink-0"></i>
                             <span>{{ $mItem['label'] }}</span>
@@ -157,7 +157,7 @@
                 <li><div class="border-t border-slate-200 dark:border-slate-700 my-2"></div></li>
 
                 <li>
-                    <a href="{{ route('profile.edit') }}" @click="sidebarOpenMobile = false"
+                    <a href="{{ route('profile.edit') }}" @click="sidebarOpenMobile = false" wire:navigate.hover
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ request()->routeIs('profile.edit') ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
                         <i class="bi bi-gear-fill text-base shrink-0"></i>
                         <span>Pengaturan</span>
@@ -173,7 +173,7 @@
                         ['route' => 'admin.health.index', 'icon' => 'bi-heart-pulse-fill', 'label' => 'System Health'],
                     ] as $aItem)
                         <li>
-                            <a href="{{ route($aItem['route']) }}" @click="sidebarOpenMobile = false"
+                            <a href="{{ route($aItem['route']) }}" @click="sidebarOpenMobile = false" wire:navigate.hover
                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors no-underline text-sm font-medium {{ request()->routeIs($aItem['route'] . '*') ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' }}">
                                 <i class="bi {{ $aItem['icon'] }} text-base shrink-0"></i>
                                 <span>{{ $aItem['label'] }}</span>
