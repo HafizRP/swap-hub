@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
     // Chat - Full Livewire SPA
     Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');
     Route::post('/chat/direct/{user}', [ChatController::class, 'createDirectConversation'])->name('chat.direct');
+
+    // System Usability Scale (SUS) Survey
+    Route::get('/usability-survey', [\App\Http\Controllers\UsabilitySurveyController::class, 'create'])->name('survey.sus');
+    Route::post('/usability-survey', [\App\Http\Controllers\UsabilitySurveyController::class, 'store'])->name('survey.sus.store');
 })->middleware('verified');
 
 // Admin Routes
@@ -68,6 +72,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // System Health
     Route::get('/system-health', \App\Livewire\SystemHealth::class)->name('health.index');
+
+    // Usability Scale Report (Academic Research)
+    Route::get('/usability', [\App\Http\Controllers\UsabilitySurveyController::class, 'adminReport'])->name('usability.index');
 });
 
 // GitHub OAuth
