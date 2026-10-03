@@ -19,6 +19,25 @@ class GitHubActivity extends Model
         'activity_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'type',
+        'payload',
+    ];
+
+    public function getTypeAttribute(): string
+    {
+        return $this->activity_type ?? 'commit';
+    }
+
+    public function getPayloadAttribute(): array
+    {
+        if (is_array($this->metadata)) {
+            return $this->metadata;
+        }
+
+        return is_string($this->metadata) ? (json_decode($this->metadata, true) ?: []) : [];
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
