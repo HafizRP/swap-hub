@@ -71,6 +71,13 @@ class DatabaseSeeder extends Seeder
             ->create();
 
         foreach ($projects as $project) {
+            // Attach 2-4 required skills to each project for matching engine
+            if ($skills->isNotEmpty()) {
+                $project->skills()->syncWithoutDetaching(
+                    $skills->random(min(rand(2, 4), $skills->count()))->pluck('id')
+                );
+            }
+
             // Add some members to each project
             $members = $users->random(rand(1, 3));
             foreach ($members as $member) {

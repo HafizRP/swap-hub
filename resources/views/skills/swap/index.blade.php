@@ -177,6 +177,18 @@
                             <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mb-4">
                                 {{ $requestItem->description }}
                             </p>
+
+                            @if(isset($requestItem->compatibility) && $requestItem->requester_id !== auth()->id())
+                                <div class="mb-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                        <i class="bi bi-stars text-indigo-500"></i>
+                                        <span>Kecocokan Barter:</span>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold {{ $requestItem->compatibility['badge_class'] }}">
+                                        {{ $requestItem->compatibility['status'] }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Footer & Actions -->

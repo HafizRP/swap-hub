@@ -32,6 +32,13 @@ class Project extends Model
             ->withTimestamps();
     }
 
+    public function skills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class, 'project_skill')
+            ->withPivot('importance')
+            ->withTimestamps();
+    }
+
     public function activeMembers(): BelongsToMany
     {
         return $this->members()->wherePivot('status', 'active');

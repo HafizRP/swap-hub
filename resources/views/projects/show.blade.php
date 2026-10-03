@@ -168,7 +168,44 @@
                         @endif
                     </div>
                 </div>
- 
+
+                <!-- Project Required Skills Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
+                    <div class="border-b border-slate-100 dark:border-slate-700/60 p-5 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="bi bi-tags-fill text-indigo-600 dark:text-indigo-400"></i>
+                            <h3 class="font-extrabold text-slate-900 dark:text-slate-100 text-base mb-0">Keahlian yang Dibutuhkan</h3>
+                        </div>
+                        <span class="text-xs font-bold text-slate-400">
+                            {{ $project->skills->count() }} Keahlian
+                        </span>
+                    </div>
+                    <div class="p-6">
+                        @if($project->skills->isNotEmpty())
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($project->skills as $ps)
+                                    @php
+                                        $userHasSkill = auth()->check() && auth()->user()->skills->contains('id', $ps->id);
+                                    @endphp
+                                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl border {{ $userHasSkill ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300' : 'bg-slate-50 dark:bg-slate-700/30 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300' }}">
+                                        @if($userHasSkill)
+                                            <i class="bi bi-check-circle-fill text-emerald-500 text-xs"></i>
+                                        @else
+                                            <i class="bi bi-circle text-slate-400 text-xs"></i>
+                                        @endif
+                                        <span class="text-xs font-bold">{{ $ps->name }}</span>
+                                        <span class="text-[9px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-white/60 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400">
+                                            {{ $ps->pivot->importance ?? 'Wajib' }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-xs text-slate-400 mb-0">Pemilik proyek belum menentukan daftar keahlian spesifik.</p>
+                        @endif
+                    </div>
+                </div>
+
                 <!-- GitHub Activity Feed Timeline -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
                     <div class="border-b border-slate-100 dark:border-slate-700/60 p-5 flex justify-between items-center">
@@ -209,7 +246,84 @@
  
             <!-- Sidebar (4 cols) -->
             <div class="lg:col-span-4 flex flex-col gap-6">
- 
+
+                @if(isset($skillMatch) && $skillMatch['required_count'] > 0)
+                    <!-- Academic Skill Matching Analysis (Jaccard Similarity) -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-200/80 dark:border-slate-700/80 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm">
+                                    <i class="bi bi-cpu-fill"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-slate-900 dark:text-slate-100 text-sm mb-0">Analisis Kecocokan</h3>
+                                    <span class="text-[10px] text-slate-400 font-medium">Algoritma Jaccard Similarity</span>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-black {{ $skillMatch['badge_class'] }}">
+                                {{ $skillMatch['label'] }}
+                            </span>
+                        </div>
+
+                        <!-- Progress Bar & Score -->
+                        <div class="bg-slate-50 dark:bg-slate-700/30 rounded-xl p-3.5 border border-slate-100 dark:border-slate-700/50 mb-4">
+                            <div class="flex justify-between items-baseline mb-2">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Skor Keselarasan</span>
+                                <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{{ $skillMatch['match_percentage'] }}%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: {{ $skillMatch['match_percentage'] }}%"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 text-center">
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Jaccard Index</span>
+                                    <span class="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">{{ $skillMatch['jaccard_index'] }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Cakupan Kebutuhan</span>
+                                    <span class="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">{{ round($skillMatch['coverage'] * 100) }}%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Matched Skills -->
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1.5 flex items-center gap-1.5">
+                                    <i class="bi bi-check-circle-fill text-emerald-500"></i>
+                                    Skill Anda yang Memenuhi ({{ $skillMatch['matched_skills']->count() }})
+                                </span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @forelse($skillMatch['matched_skills'] as $ms)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1">
+                                            <i class="bi bi-check2"></i>
+                                            {{ $ms->name }}
+                                        </span>
+                                    @empty
+                                        <span class="text-[11px] text-slate-400 italic">Belum ada skill profil yang cocok.</span>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                            @if($skillMatch['missing_skills']->isNotEmpty())
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1.5 flex items-center gap-1.5">
+                                        <i class="bi bi-exclamation-circle text-amber-500"></i>
+                                        Skill yang Masih Dibutuhkan ({{ $skillMatch['missing_skills']->count() }})
+                                    </span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach($skillMatch['missing_skills'] as $mis)
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                                {{ $mis->name }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Squad Members -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
                     <div class="border-b border-slate-100 dark:border-slate-700/60 p-5 flex justify-between items-center">

@@ -16,6 +16,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\GitHubService;
 use App\Services\GitHubWebhookService;
+use App\Services\SkillMatchingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Project::with(['owner', 'members'])
+        $query = Project::with(['owner', 'members', 'skills'])
             ->where('status', '!=', 'archived');
 
         if ($request->has('category') && $request->category !== 'All') {
@@ -56,6 +57,14 @@ class ProjectController extends Controller
         }
 
         $projects = $query->paginate(12)->withQueryString();
+
+        if (Auth::check()) {
+            $matcher = app(SkillMatchingService::class);
+            $user = Auth::user();
+            foreach ($projects as $proj) {
+                $proj->skill_match = $matcher->evaluateProjectMatch($user, $proj);
+            }
+        }
 
         return view('projects.index', compact('projects'));
     }
@@ -108,7 +117,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project): View
     {
-        $project->load(['owner', 'members', 'githubActivities']);
+        $project->load(['owner', 'members', 'skills', 'githubActivities']);
 
         // Lazy create conversation if it doesn't exist
         if (! $project->conversation) {
@@ -122,7 +131,13 @@ class ProjectController extends Controller
             $conversation->participants()->attach($project->members->pluck('id'));
         }
 
-        return view('projects.show', compact('project'));
+        $skillMatch = null;
+        if (Auth::check()) {
+            $matcher = app(SkillMatchingService::class);
+            $skillMatch = $matcher->evaluateProjectMatch(Auth::user(), $project);
+        }
+
+        return view('projects.show', compact('project', 'skillMatch'));
     }
 
     /**
