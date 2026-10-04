@@ -109,6 +109,7 @@ class CreateGoogleCalendarEvent implements ShouldQueue
 
         } catch (\Exception $e) {
             Log::error('Failed to create Google Calendar Event: '.$e->getMessage());
+            throw $e;
         }
     }
 }

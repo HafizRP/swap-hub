@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,10 +14,13 @@ class ProjectMember extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = [
-        'is_validated' => 'boolean',
-        'joined_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_validated' => 'boolean',
+            'joined_at' => 'datetime',
+        ];
+    }
 
     public function project(): BelongsTo
     {

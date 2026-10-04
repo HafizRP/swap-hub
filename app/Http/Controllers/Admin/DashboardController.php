@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAuditLog;
+use App\Models\CodeReviewRequest;
 use App\Models\Message;
 use App\Models\Project;
+use App\Models\SkillSwapRequest;
 use App\Models\User;
 use Illuminate\View\View;
 
@@ -23,9 +26,15 @@ class DashboardController extends Controller
             'active_projects' => Project::where('status', 'active')->count(),
             'completed_projects' => Project::where('status', 'completed')->count(),
             'total_messages' => Message::count(),
+            'total_swaps' => SkillSwapRequest::count(),
+            'pending_reviews' => CodeReviewRequest::whereIn('status', ['open', 'in_review'])->count(),
+            'total_credits_circulating' => (int) User::sum('credits'),
             'new_users_today' => User::whereDate('created_at', today())->count(),
             'new_projects_today' => Project::whereDate('created_at', today())->count(),
         ];
+
+        // Recent Audit Logs (Last 8)
+        $recentAuditLogs = AdminAuditLog::with('admin')->latest()->take(8)->get();
 
         // Recent Users (Last 10)
         $recentUsers = User::latest()->take(10)->get();
@@ -43,6 +52,6 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('admin.dashboard', compact('stats', 'recentUsers', 'recentProjects', 'userGrowth'));
+        return view('admin.dashboard', compact('stats', 'recentUsers', 'recentProjects', 'userGrowth', 'recentAuditLogs'));
     }
 }

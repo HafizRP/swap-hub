@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateProjectRequest;
 use App\Models\Project;
+use App\Services\AdminAuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
@@ -17,11 +20,15 @@ class ProjectController extends Controller
         $query = Project::with(['owner', 'members']);
 
         // Search
-        if ($request->has('search')) {
-            $search = $request->search;
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhereHas('owner', function ($oq) use ($search) {
+                        $oq->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -61,16 +68,16 @@ class ProjectController extends Controller
         return view('admin.projects.edit', compact('project'));
     }
 
-    public function update(Request $request, Project $project): RedirectResponse
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'status' => ['required', 'in:planning,active,completed,archived'],
-            'category' => ['required', 'string', 'in:Development,Design,Marketing'],
-        ]);
+        $project->update($request->validated());
 
-        $project->update($validated);
+        app(AdminAuditService::class)->log(
+            Auth::user(),
+            'project.update',
+            $project,
+            ['fields' => array_keys($request->validated())]
+        );
 
         return redirect()->route('admin.projects.show', $project)
             ->with('success', 'Project updated successfully.');
@@ -78,7 +85,16 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): RedirectResponse
     {
+        $projectId = $project->id;
+        $title = $project->title;
         $project->delete();
+
+        app(AdminAuditService::class)->log(
+            Auth::user(),
+            'project.delete',
+            null,
+            ['project_id' => $projectId, 'title' => $title]
+        );
 
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project deleted successfully.');
@@ -87,6 +103,13 @@ class ProjectController extends Controller
     public function archive(Project $project): RedirectResponse
     {
         $project->update(['status' => 'archived']);
+
+        app(AdminAuditService::class)->log(
+            Auth::user(),
+            'project.archive',
+            $project,
+            ['title' => $project->title]
+        );
 
         return back()->with('success', 'Project archived successfully.');
     }

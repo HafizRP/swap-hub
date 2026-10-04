@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
@@ -59,7 +60,9 @@ class GoogleAuthController extends Controller
             return redirect()->intended(route('dashboard'));
 
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Google login failed: '.$e->getMessage());
+            Log::error($e);
+
+            return redirect()->route('login')->with('error', 'Google authentication failed. Please try again.');
         }
     }
 }

@@ -54,11 +54,11 @@ class DashboardController extends Controller
 
         // 4. Recommended (Simple: Not my projects)
         // Ensure we don't pick projects user is already in
-        $myProjectIds = $user->projects->pluck('id');
+        $myProjectIds = $user->projects()->pluck('projects.id');
         $recommendedProjects = Project::with(['owner', 'members'])
             ->whereNotIn('id', $myProjectIds)
             ->where('status', '!=', 'completed')
-            ->inRandomOrder()
+            ->orderBy('id', 'desc')
             ->take(3)
             ->get();
 

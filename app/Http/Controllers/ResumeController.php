@@ -7,22 +7,37 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class ResumeController extends Controller
 {
     public function download(User $user): Response
     {
+        // Authorization check: only owner, admin, or shared project member can download
+        $authUser = Auth::user();
+        $isOwner = Auth::id() === $user->id;
+        $isAdmin = $authUser && $authUser->isAdmin();
+        $isTeammate = $authUser && $authUser->projects()->whereHas('members', fn ($q) => $q->where('users.id', $user->id)->where('project_members.status', 'active'))->exists();
+
+        if (! $isOwner && ! $isAdmin && ! $isTeammate) {
+            abort(403, 'Anda tidak memiliki akses untuk mengunduh resume ini.');
+        }
+
         $user->load(['skills', 'ownedProjects', 'projects', 'githubActivities']);
 
         // Convert avatar URL to base64
         $avatarBase64 = null;
         if ($user->avatar && $this->isValidAvatarUrl($user->avatar)) {
             try {
-                $avatarContent = Http::timeout(3)->get($user->avatar)->body();
-                $extension = pathinfo(parse_url($user->avatar, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION);
-                $type = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true) ? strtolower($extension) : 'png';
-                $avatarBase64 = 'data:image/'.$type.';base64,'.base64_encode($avatarContent);
+                $response = Http::withoutRedirecting()->timeout(3)->get($user->avatar);
+                $contentType = (string) $response->header('Content-Type');
+                if ($response->successful() && str_starts_with($contentType, 'image/') && $contentType !== 'image/svg+xml') {
+                    $avatarContent = $response->body();
+                    $extension = pathinfo(parse_url($user->avatar, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION);
+                    $type = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp'], true) ? strtolower($extension) : 'png';
+                    $avatarBase64 = 'data:image/'.$type.';base64,'.base64_encode($avatarContent);
+                }
             } catch (\Exception $e) {
                 // Fallback or ignore if image fails to load
             }

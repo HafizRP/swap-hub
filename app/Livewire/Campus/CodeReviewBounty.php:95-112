@@ -1,0 +1,18 @@
+    public function acceptSubmission(int $submissionId, CodeReviewService $codeReviewService): void
+    {
+        $submission = CodeReviewSubmission::with('request')->findOrFail($submissionId);
+
+        if ($submission->request->user_id !== auth()->id()) {
+            abort(403, 'Hanya pembuat request yang dapat menerima submission.');
+        }
+
+        try {
+            if ($submission->request->status === 'completed') {
+                throw new \RuntimeException('Request sudah selesai, tidak dapat menerima submission baru.');
+            }
+            $codeReviewService->acceptReview($submission);
+            session()->flash('message', 'Review diterima dan bounty berhasil diberikan ke reviewer!');
+        } catch (\Throwable $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }

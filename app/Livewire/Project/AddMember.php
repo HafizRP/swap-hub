@@ -44,12 +44,15 @@ class AddMember extends Component
 
     public function addMember($userId)
     {
+        if (auth()->id() !== $this->project->owner_id) {
+            abort(403, 'Only project owners can add members.');
+        }
+
         $user = User::find($userId);
 
         if (! $user) {
             return;
         }
-
         // Add to project
         $this->project->members()->syncWithoutDetaching([
             $user->id => [

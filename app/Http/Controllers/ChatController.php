@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMessageRequest;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -41,5 +42,27 @@ class ChatController extends Controller
         }
 
         return redirect()->route('chat', $conversation);
+    }
+
+    /**
+     * Store a message in a conversation.
+     */
+    public function storeMessage(StoreMessageRequest $request): RedirectResponse
+    {
+        $conversation = Conversation::with('participants')->findOrFail($request->conversation_id);
+
+        if (! $conversation->participants->contains(Auth::id())) {
+            abort(403, 'Anda bukan peserta percakapan ini.');
+        }
+
+        $message = \App\Models\Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => Auth::id(),
+            'content' => trim($request->message),
+        ]);
+
+        event(new \App\Events\MessageSent($message));
+
+        return back()->with('status', 'message-sent');
     }
 }

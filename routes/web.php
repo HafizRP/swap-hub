@@ -18,6 +18,7 @@ Route::get('/readyz', [HealthController::class, 'readiness'])->name('readyz');
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/search/live', [\App\Http\Controllers\SearchController::class, 'live'])->name('search.live');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -52,6 +53,16 @@ Route::middleware('auth')->group(function () {
     // Chat - Full Livewire SPA
     Route::get('/chat/{conversation?}', \App\Livewire\Chat\ChatPage::class)->name('chat');
     Route::post('/chat/direct/{user}', [ChatController::class, 'createDirectConversation'])->name('chat.direct');
+    Route::post('/messages', [ChatController::class, 'storeMessage'])->name('messages.store');
+
+    // Campus Features
+    Route::get('/campus/credits', \App\Livewire\Campus\CreditLedger::class)->name('campus.credits');
+    Route::get('/campus/code-reviews', \App\Livewire\Campus\CodeReviewBounty::class)->name('campus.code-reviews');
+    Route::get('/campus/study-desk', \App\Livewire\Campus\StudyDesk::class)->name('campus.study-desk');
+    Route::get('/campus/courses', \App\Livewire\Campus\CourseTagging::class)->name('campus.courses');
+    Route::get('/projects/{project}/matchmaker', \App\Livewire\Campus\TeamMatchmaker::class)->name('projects.matchmaker');
+    Route::get('/projects/{project}/milestones', \App\Livewire\Campus\MilestoneRoadmap::class)->name('projects.milestones');
+    Route::get('/portfolio/{user}', \App\Livewire\Campus\StudentPortfolio::class)->name('portfolio.show');
 
     // System Usability Scale (SUS) Survey
     Route::get('/usability-survey', [\App\Http\Controllers\UsabilitySurveyController::class, 'create'])->name('survey.sus');
@@ -65,10 +76,30 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // User Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::post('users/{user}/toggle-role', [\App\Http\Controllers\Admin\UserController::class, 'toggleRole'])->name('users.toggle-role');
+    Route::post('users/{user}/toggle-suspension', [\App\Http\Controllers\Admin\UserController::class, 'toggleSuspension'])->name('users.toggle-suspension');
 
     // Project Management
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
     Route::post('projects/{project}/archive', [\App\Http\Controllers\Admin\ProjectController::class, 'archive'])->name('projects.archive');
+    // Credit & Bounty Moderation
+    Route::get('/credits', [\App\Http\Controllers\Admin\CreditController::class, 'index'])->name('credits.index');
+    Route::post('/credits/adjust', [\App\Http\Controllers\Admin\CreditController::class, 'adjust'])->name('credits.adjust');
+    Route::get('/code-reviews', [\App\Http\Controllers\Admin\CodeReviewController::class, 'index'])->name('code-reviews.index');
+    Route::post('/code-reviews/{codeReview}/cancel', [\App\Http\Controllers\Admin\CodeReviewController::class, 'cancel'])->name('code-reviews.cancel');
+
+    // Skill Swap Moderation
+    Route::get('/swaps', [\App\Http\Controllers\Admin\SkillSwapController::class, 'index'])->name('swaps.index');
+    Route::post('/swaps/{skillSwap}/cancel', [\App\Http\Controllers\Admin\SkillSwapController::class, 'cancel'])->name('swaps.cancel');
+    Route::post('/swaps/{skillSwap}/complete', [\App\Http\Controllers\Admin\SkillSwapController::class, 'complete'])->name('swaps.complete');
+
+    // Campus Master Data
+    Route::resource('skills', \App\Http\Controllers\Admin\SkillController::class)->except(['create', 'show', 'edit']);
+    Route::resource('courses', \App\Http\Controllers\Admin\CourseController::class)->except(['create', 'show', 'edit']);
+    Route::resource('badges', \App\Http\Controllers\Admin\BadgeController::class)->except(['create', 'show', 'edit']);
+    Route::post('/badges/assign', [\App\Http\Controllers\Admin\BadgeController::class, 'assign'])->name('badges.assign');
+
+    // Audit Trail
+    Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
 
     // System Health
     Route::get('/system-health', \App\Livewire\SystemHealth::class)->name('health.index');
@@ -86,7 +117,7 @@ Route::get('/auth/google', [\App\Http\Controllers\GoogleAuthController::class, '
 Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController::class, 'callback']);
 
 // GitHub Webhook (Excluded from CSRF)
-Route::post('/webhooks/github', [\App\Http\Controllers\GitHubWebhookController::class, 'handle'])->name('github.webhook');
+Route::post('/webhooks/github', [\App\Http\Controllers\GitHubWebhookController::class, 'handle'])->middleware('throttle:60,1')->name('github.webhook');
 
 // PWA Routes
 Route::get('/manifest.json', function () {

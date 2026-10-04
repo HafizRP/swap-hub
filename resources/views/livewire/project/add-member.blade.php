@@ -1,51 +1,51 @@
 <div>
     <!-- Modal (Alpine.js controlled via parent) -->
-    <div x-show="showAddMemberModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-slate-900/60 p-4" style="display: none;" x-transition>
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-md w-full shadow-2xl p-6" @click.outside="showAddMemberModal = false">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700/50 mb-4">
-                <h5 class="font-bold text-slate-800 dark:text-slate-100 text-lg">Add Team Members</h5>
-                <button type="button" @click="showAddMemberModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                    <i class="bi bi-x-lg text-lg"></i>
+    <div x-show="showAddMemberModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-stone-900/60 p-4" style="display: none;" x-transition>
+        <div class="bg-white dark:bg-[#141414] border border-stone-200 dark:border-stone-800 rounded-xl max-w-md w-full shadow-2xl p-4" @click.outside="showAddMemberModal = false">
+            <div class="flex justify-between items-center pb-3 border-b border-stone-100 dark:border-stone-800 mb-4">
+                <h5 class="font-bold text-stone-900 dark:text-stone-100 text-base">Tambah Anggota Tim</h5>
+                <button type="button" @click="showAddMemberModal = false" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300">
+                    <i class="bi bi-x-lg text-sm"></i>
                 </button>
             </div>
             
             <div class="modal-body p-0">
-                <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">Search and add students to
-                    <strong>{{ $project->title }}</strong>. They will get access to the chat and task board.</p>
+                <p class="text-stone-500 dark:text-stone-400 text-xs mb-4">Cari dan tambahkan rekan mahasiswa ke
+                    <strong>{{ $project->title }}</strong>. Mereka akan mendapatkan akses ke diskusi dan kanban board.</p>
  
                 <div class="relative mb-4">
-                    <div class="flex items-center bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden">
-                        <span class="pl-3 pr-2 text-slate-455 text-slate-400">
-                            <i class="bi bi-search"></i>
+                    <div class="flex items-center bg-stone-50 dark:bg-[#2e2c29]/50 border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-600">
+                        <span class="pl-3 pr-2 text-stone-400">
+                            <i class="bi bi-search text-xs"></i>
                         </span>
                         <input type="text" wire:model.live.debounce.300ms="search"
-                            class="bg-transparent border-0 w-full outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 py-2.5 px-1 text-sm rounded-r-lg"
-                            placeholder="Search by name or email..." autofocus>
+                            class="bg-transparent border-0 w-full outline-none text-stone-900 dark:text-stone-100 placeholder-stone-400 py-2.5 px-1 text-xs rounded-r-xl"
+                            placeholder="Cari berdasarkan nama atau email..." autofocus>
                     </div>
  
                     <!-- Search Results Dropdown -->
                     @if(strlen($search) >= 2)
-                        <div class="absolute w-full mt-1 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden z-[1050] max-h-[300px] overflow-y-auto">
+                        <div class="absolute w-full mt-1 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#1a1917] overflow-hidden z-[1050] max-h-[300px] overflow-y-auto">
                             @if(count($searchResults) > 0)
-                                <div class="flex flex-col divide-y divide-slate-100 dark:divide-slate-700/50">
+                                <div class="flex flex-col divide-y divide-stone-100 dark:divide-stone-800">
                                     @foreach($searchResults as $result)
                                         <button wire:click="addMember({{ $result->id }})"
-                                            class="w-full text-left bg-transparent p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-0">
+                                            class="w-full text-left bg-transparent p-3 flex items-center justify-between gap-3 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors border-0 cursor-pointer">
                                             <div class="flex items-center gap-3">
-                                                <img src="{{ $result->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($result->name) }}"
-                                                    class="rounded-circle" width="40" height="40">
+                                                <img src="{{ $result->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($result->name) . '&background=0d9488&color=fff' }}"
+                                                    class="w-9 h-9 rounded-full object-cover">
                                                 <div class="min-w-0">
-                                                    <div class="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{{ $result->name }}</div>
-                                                    <div class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $result->email }}</div>
+                                                    <div class="font-bold text-stone-900 dark:text-stone-100 text-xs truncate">{{ $result->name }}</div>
+                                                    <div class="text-[11px] text-stone-400 dark:text-stone-500 truncate">{{ $result->email }}</div>
                                                 </div>
                                             </div>
-                                            <span class="bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-xs py-1.5 px-3.5 rounded-full transition-colors border-0">Add</span>
+                                            <span class="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs py-1.5 px-3.5 rounded-lg transition-colors border-0">Tambah</span>
                                         </button>
                                     @endforeach
                                 </div>
                             @else
-                                <div class="p-4 text-center text-slate-400 dark:text-slate-500 text-xs">
-                                    No users found matching "{{ $search }}"
+                                <div class="p-4 text-center text-stone-400 dark:text-stone-500 text-xs">
+                                    Tidak ada pengguna yang cocok dengan "{{ $search }}"
                                 </div>
                             @endif
                         </div>
@@ -59,8 +59,8 @@
                     </div>
                 @endif
  
-                <div class="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                    <button type="button" @click="showAddMemberModal = false" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-250 font-bold py-2 px-5 rounded-full text-xs transition-colors border-0">Done</button>
+                <div class="flex justify-end pt-3 border-t border-stone-100 dark:border-stone-800">
+                    <button type="button" @click="showAddMemberModal = false" class="bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-250 font-medium py-2 px-5 rounded-lg text-xs transition-colors border-0 cursor-pointer">Selesai</button>
                 </div>
             </div>
         </div>
