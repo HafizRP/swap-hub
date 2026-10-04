@@ -3,7 +3,7 @@
  * Comprehensive PWA caching, offline fallback, and background sync helper.
  */
 
-const CACHE_VERSION = 'swaphub-v1.0.0';
+const CACHE_VERSION = 'swaphub-v1.0.1';
 const CORE_CACHE = `core-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 

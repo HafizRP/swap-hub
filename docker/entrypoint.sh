@@ -21,7 +21,8 @@ if [ "$1" = "php-fpm" ]; then
 
     # Clear potentially stale cache files from mounted volumes
     rm -f /var/www/bootstrap/cache/*.php
-
+    rm -f /var/www/storage/framework/views/*.php
+    php artisan optimize:clear || true
     # Generate application key if missing
     if [ ! -f ".env" ] || ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
         if [ -f ".env.example" ] && [ ! -f ".env" ]; then
