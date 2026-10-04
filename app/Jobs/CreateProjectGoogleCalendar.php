@@ -67,6 +67,7 @@ class CreateProjectGoogleCalendar implements ShouldQueue
 
         } catch (\Exception $e) {
             Log::error("Failed to create Google Calendar for project [{$this->project->title}]: ".$e->getMessage());
+            throw $e;
         }
     }
 

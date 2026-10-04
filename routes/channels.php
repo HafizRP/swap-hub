@@ -19,8 +19,9 @@ Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
     }
 
     // Allow if user is a member of the project involved in the chat
+    // Allow if user is an active member of the project involved in the chat
     if ($conversation->type === 'project' && $conversation->project) {
-        return $conversation->project->members()->where('user_id', $user->id)->exists()
+        return $conversation->project->activeMembers()->where('user_id', $user->id)->exists()
             || $conversation->project->owner_id === $user->id;
     }
 

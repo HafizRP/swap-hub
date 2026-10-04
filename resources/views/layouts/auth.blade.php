@@ -9,20 +9,21 @@
     <title>@yield('title') - {{ config('app.name', 'Swap Hub') }}</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/png" href="{{ asset('icon.png') }}">
 
     @include('partials.pwa-head')
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    @livewireStyles
     <!-- Dark Mode Init: prevent theme flashing -->
     <script>
         (function() {
@@ -37,7 +38,7 @@
     </script>
 </head>
 
-<body class="antialiased font-sans bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white"
+<body class="antialiased font-sans bg-[#fafaf9] dark:bg-[#141210] text-stone-900 dark:text-stone-100 min-h-screen flex flex-col justify-between selection:bg-teal-600 selection:text-white"
     x-data="{
         darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
         toggleTheme() {
@@ -53,12 +54,12 @@
 
     <!-- Floating Theme Switcher & Back to Home -->
     <div class="fixed top-5 right-5 z-50 flex items-center gap-2">
-        <a href="/" class="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all shadow-sm flex items-center gap-1.5 text-xs font-semibold px-3.5" title="Back to Homepage">
+        <a href="/" class="p-2.5 rounded-full bg-white/90 dark:bg-[#2e2c29]/80 backdrop-blur border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-300 dark:hover:border-teal-600 transition-all shadow-sm flex items-center gap-1.5 text-xs font-semibold px-3.5" title="Back to Homepage">
             <i class="bi bi-house text-sm"></i>
             <span class="hidden sm:inline">Home</span>
         </a>
-        <button type="button" @click="toggleTheme()" class="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all shadow-sm" aria-label="Toggle theme">
-            <i class="bi" :class="darkMode ? 'bi-sun-fill text-amber-400' : 'bi-moon-stars-fill text-indigo-500'"></i>
+        <button type="button" @click="toggleTheme()" class="p-2.5 rounded-full bg-white/90 dark:bg-[#2e2c29]/80 backdrop-blur border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-300 dark:hover:border-teal-600 transition-all shadow-sm" aria-label="Toggle theme">
+            <i class="bi" :class="darkMode ? 'bi-sun-fill text-amber-400' : 'bi-moon-stars-fill text-teal-600'"></i>
         </button>
     </div>
 
@@ -79,14 +80,14 @@
             show(message, type = 'info', title = null, duration = 5000) {
                 const toast = document.createElement('div');
                 const borderClass = type === 'error' ? 'border-red-200 dark:border-red-800/60' : 
-                                   (type === 'success' ? 'border-emerald-200 dark:border-emerald-800/60' : 'border-indigo-200 dark:border-indigo-800/60');
-                toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border ${borderClass} shadow-xl shadow-slate-900/10 dark:shadow-black/50 transition-all duration-300 ease-out transform translate-y-2 opacity-0`;
+                                   (type === 'success' ? 'border-emerald-200 dark:border-emerald-800/60' : 'border-teal-200 dark:border-teal-800/60');
+                toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-lg bg-white dark:bg-[#141414] border ${borderClass} shadow-xl shadow-stone-900/10 dark:shadow-black/50 transition-all duration-300 ease-out transform translate-y-2 opacity-0`;
 
                 const icons = {
                     error: '<div class="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0"><i class="bi bi-x-circle-fill text-base"></i></div>',
                     success: '<div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"><i class="bi bi-check-circle-fill text-base"></i></div>',
                     warning: '<div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"><i class="bi bi-exclamation-triangle-fill text-base"></i></div>',
-                    info: '<div class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><i class="bi bi-info-circle-fill text-base"></i></div>'
+                    info: '<div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0"><i class="bi bi-info-circle-fill text-base"></i></div>'
                 };
 
                 const titles = {
@@ -99,10 +100,10 @@
                 toast.innerHTML = `
                     ${icons[type] || icons.info}
                     <div class="flex-grow min-w-0 pr-1">
-                        <div class="text-xs font-bold text-slate-900 dark:text-slate-100 mb-0.5">${titles[type]}</div>
-                        <div class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${message}</div>
+                        <div class="text-xs font-bold text-stone-900 dark:text-stone-100 mb-0.5">${titles[type]}</div>
+                        <div class="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">${message}</div>
                     </div>
-                    <button type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 transition-colors" onclick="this.closest('div.pointer-events-auto').remove()">
+                    <button type="button" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1 transition-colors" onclick="this.closest('div.pointer-events-auto').remove()">
                         <i class="bi bi-x-lg text-xs"></i>
                     </button>
                 `;
@@ -219,8 +220,8 @@
             });
         });
     </script>
-
     @include('partials.pwa-install-prompt')
+    @livewireScripts
 </body>
 
 </html>

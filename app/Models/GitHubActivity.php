@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,10 +16,13 @@ class GitHubActivity extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = [
-        'metadata' => 'array',
-        'activity_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+            'activity_at' => 'datetime',
+        ];
+    }
 
     protected $appends = [
         'type',

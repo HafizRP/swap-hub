@@ -35,7 +35,6 @@ phpunit.xml
 .phpunit.result.cache
 
 # CI/CD and orchestration scripts
-Jenkinsfile
 docker-compose*.yml
 
 # Database local directories

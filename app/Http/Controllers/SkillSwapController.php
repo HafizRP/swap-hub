@@ -11,6 +11,8 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class SkillSwapController extends Controller
@@ -103,11 +105,17 @@ class SkillSwapController extends Controller
             return back()->with('error', 'This skill swap request is no longer available.');
         }
 
-        $skillSwap->update([
-            'provider_id' => Auth::id(),
-            'status' => 'accepted',
-            'accepted_at' => now(),
-        ]);
+        $affected = SkillSwapRequest::where('id', $skillSwap->id)
+            ->where('status', 'pending')
+            ->update([
+                'provider_id' => Auth::id(),
+                'status' => 'accepted',
+                'accepted_at' => now(),
+            ]);
+
+        if (! $affected) {
+            return back()->with('error', 'This skill swap request is no longer available.');
+        }
 
         return back()->with('status', 'skill-swap-accepted');
     }
@@ -117,24 +125,23 @@ class SkillSwapController extends Controller
      */
     public function complete(Request $request, SkillSwapRequest $skillSwap): RedirectResponse
     {
-        $userId = Auth::id();
-        if ((int) $skillSwap->requester_id !== (int) $userId && (int) $skillSwap->provider_id !== (int) $userId) {
-            abort(403, 'Unauthorized to complete this swap.');
-        }
+        Gate::authorize('complete', $skillSwap);
 
         if (! in_array($skillSwap->status, ['accepted', 'in_progress'], true)) {
             return back()->with('error', 'Only accepted swaps can be marked completed.');
         }
 
-        $skillSwap->update([
-            'status' => 'completed',
-            'completed_at' => now(),
-        ]);
+        DB::transaction(function () use ($skillSwap) {
+            $skillSwap->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
 
-        // Award reputation points to provider
-        if ($skillSwap->provider) {
-            $skillSwap->provider->increment('reputation_points', $skillSwap->points_offered);
-        }
+            // Award reputation points to provider
+            if ($skillSwap->provider) {
+                $skillSwap->provider->increment('reputation_points', $skillSwap->points_offered);
+            }
+        });
 
         return back()->with('status', 'skill-swap-completed');
     }
@@ -144,10 +151,7 @@ class SkillSwapController extends Controller
      */
     public function cancel(Request $request, SkillSwapRequest $skillSwap): RedirectResponse
     {
-        $userId = Auth::id();
-        if ((int) $skillSwap->requester_id !== (int) $userId && (int) $skillSwap->provider_id !== (int) $userId) {
-            abort(403, 'Unauthorized to cancel this swap.');
-        }
+        Gate::authorize('cancel', $skillSwap);
 
         if ($skillSwap->status === 'completed') {
             return back()->with('error', 'Completed swaps cannot be cancelled.');

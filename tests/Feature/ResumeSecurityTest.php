@@ -34,6 +34,29 @@ class ResumeSecurityTest extends TestCase
         $this->assertFalse($controller->isValidAvatarUrl('ftp://example.com/avatar.jpg'));
     }
 
+    public function test_unauthorized_user_cannot_download_other_user_resume(): void
+    {
+        $targetUser = User::factory()->create();
+        $unauthorizedUser = User::factory()->create();
+
+        $response = $this->actingAs($unauthorizedUser)->get(route('profile.resume', $targetUser));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_or_team_member_can_download_resume(): void
+    {
+        $targetUser = User::factory()->create();
+        $adminRole = \App\Models\Role::where('slug', 'admin')->first();
+        $adminUser = User::factory()->create();
+        $adminUser->role()->associate($adminRole)->save();
+
+        $response = $this->actingAs($adminUser)->get(route('profile.resume', $targetUser));
+
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
     public function test_resume_download_does_not_fetch_ssrf_avatar_url(): void
     {
         Http::fake([

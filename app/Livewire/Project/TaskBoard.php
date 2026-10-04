@@ -47,7 +47,7 @@ class TaskBoard extends Component
         }
 
         $isMember = $this->project->owner_id === $userId
-            || $this->project->members()->where('user_id', $userId)->exists();
+            || $this->project->activeMembers()->where('user_id', $userId)->exists();
 
         if (! $isMember) {
             abort(403, 'You are not authorized to modify tasks for this project.');
@@ -107,7 +107,7 @@ class TaskBoard extends Component
 
         return view('livewire.project.task-board', [
             'tasks' => $tasks,
-            'members' => $this->project->members,
+            'members' => $this->project->activeMembers,
         ]);
     }
 }

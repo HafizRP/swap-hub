@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -10,6 +12,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property int $credits
+ * @property int $reputation_points
+ * @property \Carbon\Carbon|null $suspended_at
+ * @property string|null $suspension_reason
+ * @property-read \App\Models\Role|null $role
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $projects
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $ownedProjects
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Badge> $badges
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Course> $courses
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $assignedTasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Conversation> $conversations
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GitHubActivity> $githubActivities
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -42,7 +63,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'credit_balance' => 'integer',
+            'github_token' => 'encrypted',
+            'credits' => 'integer',
+            'suspended_at' => 'datetime',
         ];
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
     }
 
     // Relationships
@@ -96,6 +126,51 @@ class User extends Authenticatable implements MustVerifyEmail
     public function receivedSkillSwaps(): HasMany
     {
         return $this->hasMany(SkillSwapRequest::class, 'provider_id');
+    }
+
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
+    public function creditTransactions(): HasMany
+    {
+        return $this->hasMany(CreditTransaction::class);
+    }
+
+    public function userBadges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    public function badges(): BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class)->withPivot('awarded_at');
+    }
+
+    public function studySessions(): BelongsToMany
+    {
+        return $this->belongsToMany(StudySession::class, 'study_session_user');
+    }
+
+    public function hostedStudySessions(): HasMany
+    {
+        return $this->hasMany(StudySession::class, 'host_id');
+    }
+
+    public function codeReviewRequests(): HasMany
+    {
+        return $this->hasMany(CodeReviewRequest::class);
+    }
+
+    public function codeReviewSubmissions(): HasMany
+    {
+        return $this->hasMany(CodeReviewSubmission::class, 'reviewer_id');
+    }
+
+    public function projectMemberships(): HasMany
+    {
+        return $this->hasMany(ProjectMember::class);
     }
 
     // Helper Methods

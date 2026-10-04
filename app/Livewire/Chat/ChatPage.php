@@ -130,13 +130,13 @@ class ChatPage extends Component
             'attachments.*' => [
                 'file',
                 'max:10240',
-                'mimes:jpg,jpeg,png,gif,webp,svg,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar',
+                'mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar',
                 function ($attribute, $value, $fail) {
                     $ext = strtolower($value->getClientOriginalExtension());
                     $dangerousExtensions = [
                         'php', 'php3', 'php4', 'php5', 'phtml', 'phar',
                         'exe', 'sh', 'bat', 'cmd', 'py', 'pl', 'cgi',
-                        'bash', 'js', 'html', 'htm',
+                        'bash', 'js', 'html', 'htm', 'svg',
                     ];
                     if (in_array($ext, $dangerousExtensions, true)) {
                         $fail('The attachment file extension is not permitted.');

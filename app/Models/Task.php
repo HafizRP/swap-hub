@@ -38,4 +38,9 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+
+    public function milestone(): BelongsTo
+    {
+        return $this->belongsTo(ProjectMilestone::class, 'milestone_id');
+    }
 }

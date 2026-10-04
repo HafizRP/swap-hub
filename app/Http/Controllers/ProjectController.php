@@ -20,6 +20,8 @@ use App\Services\SkillMatchingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -33,14 +35,22 @@ class ProjectController extends Controller
         $query = Project::with(['owner', 'members', 'skills'])
             ->where('status', '!=', 'archived');
 
-        if ($request->has('category') && $request->category !== 'All') {
+        if ($request->filled('category') && $request->category !== 'All') {
             $query->where('category', $request->category);
         }
 
-        if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhere('category', 'like', '%'.$search.'%')
+                    ->orWhereHas('skills', function ($sq) use ($search) {
+                        $sq->where('name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('owner', function ($oq) use ($search) {
+                        $oq->where('name', 'like', '%'.$search.'%');
+                    });
             });
         }
 
@@ -92,14 +102,27 @@ class ProjectController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $project = $user->ownedProjects()->create($validated);
 
-        // Add owner as member
-        $project->members()->attach(Auth::id(), [
-            'role' => 'owner',
-            'status' => 'active',
-            'is_validated' => true,
-        ]);
+        $project = DB::transaction(function () use ($user, $validated) {
+            $project = $user->ownedProjects()->create($validated);
+
+            // Add owner as member
+            $project->members()->attach($user->id, [
+                'role' => 'owner',
+                'status' => 'active',
+                'is_validated' => true,
+            ]);
+
+            // Auto-create project conversation
+            $conversation = \App\Models\Conversation::create([
+                'type' => 'project',
+                'project_id' => $project->id,
+                'name' => $project->title.' Chat',
+            ]);
+            $conversation->participants()->attach($user->id);
+
+            return $project;
+        });
 
         // Auto-create Google Calendar for this project
         \App\Jobs\CreateProjectGoogleCalendar::dispatch($project);
@@ -145,14 +168,33 @@ class ProjectController extends Controller
      */
     public function workspace(Project $project): View
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+
         // Check if user is a member or owner
-        if ($project->owner_id !== Auth::id() && ! $project->members->contains(Auth::id())) {
+        if ($project->owner_id !== $currentUser->id && ! $project->activeMembers->contains($currentUser->id)) {
             abort(403, 'You are not a member of this project.');
         }
 
-        $project->load(['owner', 'members', 'conversation.messages.user', 'githubActivities']);
+        if (! $project->conversation) {
+            $conversation = \App\Models\Conversation::create([
+                'type' => 'project',
+                'project_id' => $project->id,
+                'name' => $project->title.' Chat',
+            ]);
+            $conversation->participants()->attach($project->members->pluck('id'));
+            $project->setRelation('conversation', $conversation);
+        }
 
-        return view('projects.workspace', compact('project'));
+        $project->load(['owner', 'members', 'githubActivities']);
+
+        $messages = $project->conversation
+            ? $project->conversation->messages()->with('user')->latest()->take(50)->get()->reverse()
+            : collect();
+
+        $userProjects = $currentUser->projects()->take(4)->get();
+
+        return view('projects.workspace', compact('project', 'messages', 'userProjects'));
     }
 
     /**
@@ -160,7 +202,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): View
     {
-        $this->authorizeOwner($project);
+        Gate::authorize('update', $project);
 
         $repositories = [];
         if (Auth::user()?->github_token) {
@@ -176,7 +218,7 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $this->authorizeOwner($project);
+        Gate::authorize('update', $project);
 
         $validated = $request->validated();
 
@@ -190,7 +232,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): RedirectResponse
     {
-        $this->authorizeOwner($project);
+        Gate::authorize('delete', $project);
         $project->delete();
 
         return redirect()->route('projects.index')->with('status', 'project-deleted');
@@ -201,7 +243,12 @@ class ProjectController extends Controller
      */
     public function addMember(AddProjectMemberRequest $request, Project $project): RedirectResponse
     {
-        $userId = $request->input('user_id', Auth::id());
+        // Security: Direct member addition restricted to project owner only
+        if (Auth::id() !== $project->owner_id) {
+            abort(403, 'Only project owners can directly add members. Non-owners must use application workflow.');
+        }
+
+        $userId = $request->input('user_id');
 
         // Allow adding by email
         if ($request->has('email') && $request->filled('email')) {
@@ -211,14 +258,14 @@ class ProjectController extends Controller
             }
         }
 
-        $role = $request->input('role', 'member');
-
-        // Security: Non-owners can only add themselves
-        if (Auth::id() !== $project->owner_id && (int) $userId !== (int) Auth::id()) {
-            abort(403, 'You can only join projects yourself.');
+        if (! $userId) {
+            return back()->with('error', 'User ID or valid email is required.');
         }
 
-        // Prevent duplicates
+        $role = $request->input('role', 'member');
+        if ($role === 'owner') {
+            abort(422, 'Role cannot be owner.');
+        }
         $project->members()->syncWithoutDetaching([
             $userId => ['role' => $role, 'status' => 'active', 'joined_at' => now()],
         ]);
@@ -351,6 +398,7 @@ class ProjectController extends Controller
     {
         $this->authorizeOwner($project);
         $project->members()->detach($user->id);
+        $project->conversation?->participants()->detach($user->id);
 
         return back()->with('status', 'member-removed');
     }
@@ -390,9 +438,7 @@ class ProjectController extends Controller
 
     protected function authorizeOwner(Project $project): void
     {
-        if (Auth::id() !== $project->owner_id) {
-            abort(403);
-        }
+        Gate::authorize('manageMembers', $project);
     }
 
     /**

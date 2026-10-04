@@ -49,6 +49,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+        if ($user && $user->isSuspended()) {
+            $reason = $user->suspension_reason ?? 'Pelanggaran ketentuan layanan.';
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda sedang ditangguhkan: '.$reason,
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

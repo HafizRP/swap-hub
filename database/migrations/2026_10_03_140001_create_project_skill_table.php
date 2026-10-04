@@ -11,15 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_skill', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->foreignId('skill_id')->constrained()->onDelete('cascade');
-            $table->enum('importance', ['required', 'preferred'])->default('required');
-            $table->timestamps();
+        if (! Schema::hasTable('project_skill')) {
+            Schema::create('project_skill', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('project_id')->constrained()->onDelete('cascade');
+                $table->foreignId('skill_id')->constrained()->onDelete('cascade');
+                $table->enum('importance', ['required', 'preferred'])->default('required');
+                $table->timestamps();
 
-            $table->unique(['project_id', 'skill_id']);
-        });
+                $table->unique(['project_id', 'skill_id']);
+            });
+        } else {
+            Schema::table('project_skill', function (Blueprint $table) {
+                if (! Schema::hasColumn('project_skill', 'importance')) {
+                    $table->enum('importance', ['required', 'preferred'])->default('required')->after('skill_id');
+                }
+                if (! Schema::hasColumn('project_skill', 'created_at')) {
+                    $table->timestamps();
+                }
+            });
+        }
     }
 
     /**

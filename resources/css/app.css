@@ -36,33 +36,27 @@ a.btn-interactive:active {
     transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Glassmorphism & Refined Surfaces */
-.glass-surface {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+/* Card surface */
+.card {
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid #e7e5e4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
-.dark .glass-surface {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+.dark .card {
+    background: #242220;
+    border-color: #2e2c29;
 }
 
-/* Subtle ambient background pattern */
-.bg-subtle-grid {
-    background-size: 32px 32px;
-    background-image: 
-        linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+/* Hover lift */
+.hover-lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dark .bg-subtle-grid {
-    background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -10px rgba(15, 23, 42, 0.09), 0 4px 6px -2px rgba(15, 23, 42, 0.04) !important;
 }
 
 /* Sidebar: hidden on mobile, visible as flex column on desktop */

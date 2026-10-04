@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +17,13 @@ class Project extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date',
+            'end_date' => 'date',
+        ];
+    }
 
     public function owner(): BelongsTo
     {
@@ -67,5 +72,30 @@ class Project extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function requiredSkills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class, 'project_skill');
+    }
+
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(ProjectMilestone::class);
+    }
+
+    public function studySessions(): HasMany
+    {
+        return $this->hasMany(StudySession::class);
+    }
+
+    public function codeReviewRequests(): HasMany
+    {
+        return $this->hasMany(CodeReviewRequest::class);
     }
 }

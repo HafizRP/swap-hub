@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SuspendUserRequest;
+use App\Http\Requests\Admin\ToggleRoleRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\AdminAuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,15 +21,16 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = User::query();
+        $query = User::with('role');
 
         // Search
-        if ($request->has('search')) {
-            $search = $request->search;
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('university', 'like', "%{$search}%");
+                    ->orWhere('university', 'like', "%{$search}%")
+                    ->orWhere('major', 'like', "%{$search}%");
             });
         }
 
@@ -62,22 +67,15 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user'));
     }
 
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
-            'role' => ['required', 'in:user,student,admin'],
-            'reputation_points' => ['nullable', 'integer', 'min:0'],
-        ]);
-
-        $roleSlug = in_array($validated['role'], ['user', 'student'], true) ? 'student' : 'admin';
+        $roleSlug = in_array($request->role, ['user', 'student'], true) ? 'student' : 'admin';
         $role = Role::where('slug', $roleSlug)->first();
 
         $updateData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'reputation_points' => $validated['reputation_points'] ?? $user->reputation_points,
+            'name' => $request->name,
+            'email' => $request->email,
+            'reputation_points' => $request->reputation_points ?? $user->reputation_points,
         ];
 
         if ($role && (int) $user->id !== (int) Auth::id()) {
@@ -85,6 +83,13 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
+
+        app(AdminAuditService::class)->log(
+            Auth::user(),
+            'user.update',
+            $user,
+            ['fields' => array_keys($updateData)]
+        );
 
         return redirect()->route('admin.users.show', $user)
             ->with('success', 'User updated successfully.');
@@ -97,28 +102,37 @@ class UserController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
+        $userId = $user->id;
         $user->delete();
+
+        app(AdminAuditService::class)->log(
+            Auth::user(),
+            'user.delete',
+            null,
+            ['deleted_user_id' => $userId, 'email' => $user->email]
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
     }
 
-    public function toggleRole(Request $request, User $user): RedirectResponse
+    public function toggleRole(ToggleRoleRequest $request, User $user): RedirectResponse
     {
         // Prevent self-demotion
         if ((int) $user->id === (int) Auth::id()) {
             return back()->with('error', 'You cannot change your own role.');
         }
 
-        // Validate password
-        $request->validate([
-            'admin_password' => 'required|string',
-        ]);
-
         /** @var User $currentUser */
         $currentUser = Auth::user();
 
         if (! Hash::check($request->admin_password, $currentUser->password)) {
+            \Log::warning('Security: Failed admin password verification during role toggle attempt', [
+                'admin_id' => $currentUser->id,
+                'target_user_id' => $user->id,
+                'ip' => $request->ip(),
+            ]);
+
             return back()->withErrors(['admin_password' => 'Incorrect password provided.']);
         }
 
@@ -130,8 +144,48 @@ class UserController extends Controller
             $user->update([
                 'role_id' => $targetRole->id,
             ]);
+
+            app(AdminAuditService::class)->log(
+                $currentUser,
+                'user.toggle_role',
+                $user,
+                ['new_role' => $targetSlug]
+            );
         }
 
         return back()->with('success', 'User role updated successfully.');
+    }
+
+    public function toggleSuspension(SuspendUserRequest $request, User $user, AdminAuditService $auditService): RedirectResponse
+    {
+        if ((int) $user->id === (int) Auth::id()) {
+            return back()->with('error', 'You cannot suspend your own account.');
+        }
+
+        /** @var User $admin */
+        $admin = Auth::user();
+
+        if ($user->isSuspended()) {
+            $user->update([
+                'suspended_at' => null,
+                'suspension_reason' => null,
+            ]);
+            $action = 'user.unsuspend';
+            $message = 'Akun pengguna berhasil diaktifkan kembali.';
+        } else {
+            $reason = $request->input('reason') ?: 'Ditangguhkan oleh administrator.';
+            $user->update([
+                'suspended_at' => now(),
+                'suspension_reason' => $reason,
+            ]);
+            $action = 'user.suspend';
+            $message = 'Pengguna berhasil ditangguhkan.';
+        }
+
+        $auditService->log($admin, $action, $user, [
+            'reason' => $user->suspension_reason,
+        ]);
+
+        return back()->with('success', $message);
     }
 }

@@ -84,4 +84,24 @@ class ChatSecurityTest extends TestCase
         $this->assertStringNotContainsString('href="javascript:', $rendered);
         $this->assertStringContainsString('<strong>Safe text</strong>', $rendered);
     }
+
+    public function test_chat_file_upload_rejects_svg_files(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $conversation = Conversation::create([
+            'type' => 'direct',
+            'name' => 'Direct Chat',
+        ]);
+        $conversation->participants()->attach($user->id);
+
+        $svgFile = UploadedFile::fake()->create('exploit.svg', 10, 'image/svg+xml');
+
+        Livewire::actingAs($user)
+            ->test(ChatPage::class, ['conversation' => $conversation->id])
+            ->set('attachments', [$svgFile])
+            ->call('sendMessage')
+            ->assertHasErrors(['attachments.0']);
+    }
 }

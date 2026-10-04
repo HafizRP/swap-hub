@@ -1,32 +1,28 @@
 @section('title', 'Pertukaran Skill')
 <x-app-layout>
-    <div class="py-2 space-y-6">
+    <div class="py-2 space-y-4">
         
         <!-- Header Banner -->
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 border border-indigo-900/50 shadow-xl">
-            <div class="absolute -top-24 -right-24 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute inset-0 bg-subtle-grid opacity-30 pointer-events-none"></div>
-
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="overflow-hidden rounded-lg bg-[#1a1917] text-white p-4 sm:p-4 border border-[#2e2c29]">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold mb-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/20 text-xs font-semibold mb-3">
                         <i class="bi bi-arrow-left-right"></i>
                         <span>Peer-to-Peer Learning</span>
                     </div>
-                    <h1 class="text-2xl sm:text-4xl font-black text-white tracking-tight mb-2">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
                         Pertukaran Skill Mahasiswa
                     </h1>
-                    <p class="text-xs sm:text-sm text-slate-300 max-w-xl mb-0">
+                    <p class="text-xs sm:text-sm text-stone-400 max-w-xl mb-0">
                         Tukarkan keahlianmu dengan mahasiswa lain. Ajarkan apa yang kamu kuasai dan pelajari skill baru yang kamu butuhkan.
                     </p>
                 </div>
-
                 <div class="flex items-center gap-3 shrink-0">
-                    <span class="text-xs font-bold text-slate-300 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 backdrop-blur-sm tabular-nums">
+                    <span class="text-xs font-semibold text-stone-400 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 tabular-nums">
                         {{ $requests->total() }} Permintaan Aktif
                     </span>
-                    <a href="{{ route('skills.swap.create') }}" 
-                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center gap-2 text-xs no-underline transition-all duration-150 active:scale-[0.98]">
+                    <a href="{{ route('skills.swap.create') }}"
+                        class="bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2.5 px-5 rounded-xl shadow-sm flex items-center gap-2 text-xs no-underline transition-all duration-150 active:scale-[0.98]">
                         <i class="bi bi-plus-lg text-sm"></i>
                         <span>Ajukan Swap Skill</span>
                     </a>
@@ -61,26 +57,26 @@
         @endif
 
         <!-- Filter Bar -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 p-4 shadow-sm flex flex-wrap gap-3 items-center justify-between">
+        <div class="bg-white dark:bg-[#141414] rounded-lg border border-stone-200 dark:border-stone-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-4 flex flex-wrap gap-3 items-center justify-between">
             <div class="flex flex-wrap gap-2 items-center">
                 <a href="{{ route('skills.swap.index') }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ !request('status') && !request('filter') ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ !request('status') && !request('filter') ? 'bg-teal-600 text-white' : 'bg-stone-100 dark:bg-[#2e2c29]/60 text-stone-600 dark:text-stone-300 hover:bg-stone-200' }}">
                     Semua
                 </a>
                 <a href="{{ route('skills.swap.index', ['status' => 'pending']) }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'pending' ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'pending' ? 'bg-amber-500 text-white' : 'bg-stone-100 dark:bg-[#2e2c29]/60 text-stone-600 dark:text-stone-300 hover:bg-stone-200' }}">
                     Menunggu (Pending)
                 </a>
                 <a href="{{ route('skills.swap.index', ['status' => 'accepted']) }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'accepted' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'accepted' ? 'bg-blue-600 text-white' : 'bg-stone-100 dark:bg-[#2e2c29]/60 text-stone-600 dark:text-stone-300 hover:bg-stone-200' }}">
                     Berjalan (Accepted)
                 </a>
                 <a href="{{ route('skills.swap.index', ['status' => 'completed']) }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'completed' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('status') === 'completed' ? 'bg-emerald-600 text-white' : 'bg-stone-100 dark:bg-[#2e2c29]/60 text-stone-600 dark:text-stone-300 hover:bg-stone-200' }}">
                     Selesai
                 </a>
                 <a href="{{ route('skills.swap.index', ['filter' => 'my']) }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('filter') === 'my' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100' }}">
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors no-underline {{ request('filter') === 'my' ? 'bg-teal-600 text-white' : 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 hover:bg-teal-100' }}">
                     <i class="bi bi-person mr-1"></i> Swap Saya
                 </a>
             </div>
@@ -88,7 +84,7 @@
             @if($skills->isNotEmpty())
             <form action="{{ route('skills.swap.index') }}" method="GET" class="flex items-center gap-2">
                 <select name="skill_id" onchange="this.form.submit()" 
-                        class="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none">
+                        class="bg-stone-50 dark:bg-[#2e2c29] border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-1.5 text-xs text-stone-800 dark:text-stone-100 focus:outline-none">
                     <option value="">Semua Kategori Skill</option>
                     @foreach($skills as $skill)
                         <option value="{{ $skill->id }}" {{ (string) request('skill_id') === (string) $skill->id ? 'selected' : '' }}>
@@ -102,35 +98,35 @@
 
         <!-- Requests Grid -->
         @if($requests->isEmpty())
-            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700/60 p-12 text-center shadow-sm">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-2xl">
+            <div class="bg-white dark:bg-[#141414] rounded-xl border border-stone-200 dark:border-stone-800 p-12 text-center shadow-sm">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-lg bg-teal-50 dark:bg-teal-950/40 flex items-center justify-center text-teal-600 dark:text-teal-400 text-2xl">
                     <i class="bi bi-arrow-left-right"></i>
                 </div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">Belum Ada Permintaan Swap</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-4">
+                <h3 class="text-base font-bold text-stone-900 dark:text-stone-100 mb-1">Belum Ada Permintaan Swap</h3>
+                <p class="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto mb-4">
                     Jadilah yang pertama menawarkan barter keahlian dengan sesama mahasiswa di Swap Hub!
                 </p>
-                <a href="{{ route('skills.swap.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold no-underline hover:bg-indigo-500">
+                <a href="{{ route('skills.swap.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl text-xs font-bold no-underline hover:bg-teal-500">
                     <i class="bi bi-plus-lg"></i>
                     <span>Mulai Swap Pertama</span>
                 </a>
             </div>
         @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($requests as $requestItem)
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div class="bg-white dark:bg-[#141414] rounded-lg border border-stone-200 dark:border-stone-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
                         <div>
                             <!-- User header -->
                             <div class="flex items-center justify-between gap-3 mb-4">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <img src="{{ $requestItem->requester->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($requestItem->requester->name) }}"
                                          alt="{{ $requestItem->requester->name }}"
-                                         class="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700">
+                                         class="w-9 h-9 rounded-full object-cover shrink-0 border border-stone-200 dark:border-stone-800">
                                     <div class="min-w-0">
-                                        <p class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate mb-0">
+                                        <p class="text-xs font-bold text-stone-900 dark:text-stone-100 truncate mb-0">
                                             {{ $requestItem->requester->name }}
                                         </p>
-                                        <p class="text-[10px] text-slate-400 mb-0">
+                                        <p class="text-[10px] text-stone-400 mb-0">
                                             {{ $requestItem->created_at->diffForHumans() }}
                                         </p>
                                     </div>
@@ -140,7 +136,7 @@
                                         'pending' => 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300',
                                         'accepted' => 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
                                         'completed' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300',
-                                        default => 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
+                                        default => 'bg-stone-100 text-stone-700 dark:bg-[#2e2c29] dark:text-stone-300',
                                     };
                                 @endphp
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusColor }}">
@@ -149,7 +145,7 @@
                             </div>
 
                             <!-- Skills Swap Exchange Box -->
-                            <div class="bg-slate-50 dark:bg-slate-700/30 rounded-xl p-3 mb-4 border border-slate-100 dark:border-slate-700/50">
+                            <div class="bg-stone-50 dark:bg-[#2e2c29]/30 rounded-xl p-3 mb-4 border border-stone-100 dark:border-stone-800/50">
                                 <div class="flex items-center justify-between gap-2 text-xs">
                                     <div class="flex-1 min-w-0">
                                         <span class="block text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">
@@ -159,14 +155,14 @@
                                             {{ $requestItem->offeredSkill->name ?? 'Skill' }}
                                         </span>
                                     </div>
-                                    <div class="text-slate-400 shrink-0 px-1">
+                                    <div class="text-stone-400 shrink-0 px-1">
                                         <i class="bi bi-arrow-right text-base"></i>
                                     </div>
                                     <div class="flex-1 min-w-0 text-right">
-                                        <span class="block text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
+                                        <span class="block text-[10px] font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-1">
                                             Mencari
                                         </span>
-                                        <span class="inline-block px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-200 font-bold truncate max-w-full">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg bg-teal-100 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200 font-bold truncate max-w-full">
                                             {{ $requestItem->requestedSkill->name ?? 'Skill' }}
                                         </span>
                                     </div>
@@ -174,7 +170,7 @@
                             </div>
 
                             <!-- Description -->
-                            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                            <p class="text-xs text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 mb-4">
                                 {{ $requestItem->description }}
                             </p>
 
@@ -192,17 +188,16 @@
                         </div>
 
                         <!-- Footer & Actions -->
-                        <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60">
+                        <div class="pt-3 border-t border-stone-100 dark:border-stone-800/60">
                             <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                <span class="text-[11px] font-bold text-stone-500 dark:text-stone-400 flex items-center gap-1">
                                     <i class="bi bi-trophy text-amber-500"></i>
                                     <span>{{ $requestItem->points_offered }} Poin Reputasi</span>
                                 </span>
 
                                 @if($requestItem->provider)
-                                    <span class="text-[10px] text-slate-400">
-                                        Partner: <strong class="text-slate-700 dark:text-slate-200">{{ $requestItem->provider->name }}</strong>
-                                    </span>
+                                    <span class="text-[10px] text-stone-400">
+                                        Partner: <strong class="text-stone-700 dark:text-stone-200">{{ $requestItem->provider->name }}</strong>
                                 @endif
                             </div>
 
@@ -212,14 +207,14 @@
                                     @if((int) $requestItem->requester_id !== (int) auth()->id())
                                         <form action="{{ route('skills.swap.accept', $requestItem) }}" method="POST" class="flex-1">
                                             @csrf
-                                            <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
+                                            <button type="submit" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
                                                 Ambil Tawaran
                                             </button>
                                         </form>
                                     @else
                                         <form action="{{ route('skills.swap.cancel', $requestItem) }}" method="POST" class="flex-1">
                                             @csrf
-                                            <button type="submit" onclick="return confirm('Batalkan permintaan ini?')" class="w-full py-2 bg-slate-100 dark:bg-slate-700 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl text-xs font-bold transition-all">
+                                            <button type="submit" onclick="return confirm('Batalkan permintaan ini?')" class="w-full py-2 bg-stone-100 dark:bg-[#2e2c29] text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl text-xs font-bold transition-all">
                                                 Batalkan
                                             </button>
                                         </form>
@@ -233,7 +228,7 @@
                                     </form>
                                     <form action="{{ route('skills.swap.cancel', $requestItem) }}" method="POST">
                                         @csrf
-                                        <button type="submit" onclick="return confirm('Batalkan swap ini?')" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-rose-600 rounded-xl text-xs font-bold hover:bg-rose-50">
+                                        <button type="submit" onclick="return confirm('Batalkan swap ini?')" class="px-3 py-2 bg-stone-100 dark:bg-[#2e2c29] text-rose-600 rounded-xl text-xs font-bold hover:bg-rose-50">
                                             Batal
                                         </button>
                                     </form>
