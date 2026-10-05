@@ -60,7 +60,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=1800
 
 # Install Node.js, NPM, and Git for development
-RUN apk add --no-cache nodejs npm git
+RUN apk add --no-cache nodejs npm git unzip
 
 # Leverage layer caching: Copy dependency manifests first
 COPY composer.json composer.lock ./
