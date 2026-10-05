@@ -12,8 +12,8 @@ services:
     working_dir: /var/www
     volumes:
       - .:/var/www
-      - /var/www/vendor
-      - /var/www/node_modules
+      - vendor-data:/var/www/vendor
+      - node-modules-data:/var/www/node_modules
       - storage-data:/var/www/storage
     depends_on:
       db:
@@ -65,8 +65,8 @@ services:
     working_dir: /var/www
     volumes:
       - .:/var/www
-      - /var/www/vendor
-      - /var/www/node_modules
+      - vendor-data:/var/www/vendor
+      - node-modules-data:/var/www/node_modules
       - storage-data:/var/www/storage
     depends_on:
       db:
@@ -102,6 +102,12 @@ services:
       REVERB_PORT: ${REVERB_PORT:-8080}
       REVERB_SCHEME: ${REVERB_SCHEME:-http}
     command: php artisan queue:work --tries=3 --timeout=90
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -v grep | grep -q 'queue:work' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   db:
     image: mariadb:10.11
@@ -149,4 +155,10 @@ volumes:
   db-data:
     driver: local
     name: swap-hub-db-${APP_ENV:-development}
+  vendor-data:
+    driver: local
+    name: swap-hub-vendor-${APP_ENV:-development}
+  node-modules-data:
+    driver: local
+    name: swap-hub-node-modules-${APP_ENV:-development}
 
