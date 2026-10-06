@@ -74,10 +74,17 @@ class ProjectFactory extends Factory
             'owner_id' => User::factory(),
             'github_repo_url' => 'https://github.com/'.fake()->userName().'/'.fake()->slug(),
             'github_repo_name' => fake()->userName().'/'.fake()->slug(),
-            'status' => fake()->randomElement(['planning', 'active', 'completed', 'archived']),
+            'status' => 'active',
             'start_date' => $startDate = fake()->dateTimeBetween('-3 months', 'now'),
             'end_date' => (clone $startDate)->modify('+3 months'),
             'created_at' => $startDate,
         ];
+    }
+
+    public function archived(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'archived',
+        ]);
     }
 }
