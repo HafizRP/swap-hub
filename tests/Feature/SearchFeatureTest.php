@@ -22,6 +22,7 @@ class SearchFeatureTest extends TestCase
             'title' => 'E-Commerce Platform',
             'description' => 'Building online store',
             'category' => 'Development',
+            'status' => 'active',
         ]);
 
         $skill = Skill::create(['name' => 'VueJS', 'category' => 'Frontend']);
