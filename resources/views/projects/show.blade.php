@@ -85,28 +85,8 @@
                 $member = $project->members->firstWhere('id', auth()->id());
                 $status = $member ? $member->pivot->status : null;
             @endphp
- 
-            @if($status === null || $status === 'rejected')
-                <div class="bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 shadow-sm rounded-lg flex flex-col md:flex-row md:items-center justify-between mb-6 p-4 gap-4">
-                    <div>
-                        <h4 class="font-extrabold text-stone-900 dark:text-stone-100 text-base mb-1 flex items-center gap-2">
-                            <i class="bi bi-stars text-teal-600 dark:text-teal-400"></i>
-                            Tertarik bergabung dengan proyek ini?
-                        </h4>
-                        <p class="text-stone-600 dark:text-stone-400 text-xs mb-0">
-                            Ajukan diri Anda sekarang untuk mulai berkolaborasi dengan tim dan bangun reputasi portofolio.
-                        </p>
-                    </div>
-                    <form action="{{ route('projects.members.add', $project) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="role" value="member">
-                        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-sm text-xs border-0 transition-all duration-150 active:scale-[0.98] inline-flex items-center gap-1.5 cursor-pointer shrink-0">
-                            <i class="bi bi-person-plus-fill"></i>
-                            <span>Lamar ke Squad</span>
-                        </button>
-                    </form>
-                </div>
-            @elseif($status === 'pending')
+
+            @if($status === 'pending')
                 <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 shadow-sm rounded-lg flex items-center gap-3.5 mb-6 p-4 text-amber-800 dark:text-amber-300">
                     <i class="bi bi-hourglass-split text-2xl shrink-0"></i>
                     <div>
