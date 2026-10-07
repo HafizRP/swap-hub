@@ -1,6 +1,6 @@
 @section('title', $user->name . ' - Profil')
 <x-app-layout>
-    <div class="container mx-auto py-6">
+    <div class="w-full">
         
         <!-- ROW 1: HEADER CARD -->
         <div class="bg-white dark:bg-[#141414] rounded-xl border border-stone-200 dark:border-stone-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-6 overflow-hidden relative">
