@@ -18,7 +18,7 @@ class PwaTest extends TestCase
         $this->assertEquals('standalone', $manifest['display']);
         $this->assertArrayHasKey('icons', $manifest);
         $this->assertNotEmpty($manifest['icons']);
-        $this->assertEquals('#4f46e5', $manifest['theme_color']);
+        $this->assertEquals('#0d9488', $manifest['theme_color']);
         $this->assertEquals('#0f172a', $manifest['background_color']);
     }
 
