@@ -1,6 +1,6 @@
 <!-- PWA Primary Meta Tags -->
 <link rel="manifest" href="{{ asset('manifest.json') }}">
-<meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d9488" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="{{ config('app.name', 'Swap Hub') }}">
