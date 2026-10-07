@@ -1,8 +1,8 @@
 @section('title', $this->getTitle())
  
 <div>
-    <div id="chat-page-component" class="w-full h-full flex flex-col" style="height: calc(100vh - 74px) !important;" x-data="{ showAddMemberModal: false }">
-        <div class="grid grid-cols-12 h-full gap-0">
+    <div id="chat-page-component" class="w-full h-full flex-1 flex flex-col min-h-0 {{ $conversation ? '' : 'pb-16 md:pb-0' }}" x-data="{ showAddMemberModal: false }">
+        <div class="grid grid-cols-12 h-full flex-1 min-h-0 gap-0">
  
             <!-- LEFT COLUMN: Conversation List -->
             <div class="col-span-12 md:col-span-4 lg:col-span-3 border-r border-stone-200 dark:border-stone-800 flex flex-col h-full bg-white dark:bg-[#0a0a0a] {{ $conversation ? 'hidden md:flex' : 'flex' }}">
@@ -71,20 +71,21 @@
  
                         @if($conversation->type === 'project')
                             <!-- Tabs -->
-                            <div class="flex gap-2 border-b border-stone-200 dark:border-stone-800 mt-3" style="margin-bottom: -1px;">
-                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer {{ $activeTab === 'chat' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
+                            <div class="flex gap-2 border-b border-stone-200 dark:border-stone-800 mt-3 overflow-x-auto custom-scrollbar whitespace-nowrap" style="margin-bottom: -1px;">
+                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer shrink-0 {{ $activeTab === 'chat' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
+                                    wire:click.prevent="setTab('chat')">
                                     <i class="bi bi-chat-dots-fill mr-1.5"></i>Squad Chat
                                 </button>
-                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer {{ $activeTab === 'tasks' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
+                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer shrink-0 {{ $activeTab === 'tasks' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
                                     wire:click.prevent="setTab('tasks')">
                                     <i class="bi bi-kanban mr-1.5"></i>Task Board
                                 </button>
-                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer {{ $activeTab === 'files' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
+                                <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer shrink-0 {{ $activeTab === 'files' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
                                     wire:click.prevent="setTab('files')">
                                     <i class="bi bi-folder mr-1.5"></i>Berkas
                                 </button>
                                 @if($conversation->project && $conversation->project->github_repo_url)
-                                    <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer {{ $activeTab === 'github' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
+                                    <button class="px-3 py-2 font-bold text-xs border-b-2 transition-all duration-150 cursor-pointer shrink-0 {{ $activeTab === 'github' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200' }}"
                                         wire:click.prevent="setTab('github')">
                                         <i class="bi bi-github mr-1.5"></i>GitHub Feed
                                     </button>

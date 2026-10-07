@@ -1,6 +1,6 @@
-@section('title', 'Edit Proyek - ' . $project->title)
+@section('title', 'Edit Proyek: ' . $project->title)
 <x-app-layout>
-    <div class="container mx-auto py-6">
+    <div class="w-full">
         <div class="flex justify-center">
             <div class="w-full max-w-3xl">
                 <!-- Header -->

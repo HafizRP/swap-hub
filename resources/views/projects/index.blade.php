@@ -17,12 +17,12 @@
                         Temukan partner dengan keahlian yang saling melengkapi. Gabung ke proyek nyata atau inisiasi ide barumu.
                     </p>
                 </div>
-                <div class="flex items-center gap-3 shrink-0">
-                    <span class="text-xs font-semibold text-stone-400 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 tabular-nums">
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 shrink-0">
+                    <span class="text-xs font-semibold text-stone-400 bg-white/10 px-3 py-2 rounded-xl border border-white/15 tabular-nums">
                         {{ $projects->total() ?? $projects->count() }} Proyek Tersedia
                     </span>
                     <a href="{{ route('projects.create') }}"
-                        class="bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2.5 px-5 rounded-xl shadow-sm flex items-center gap-2 text-xs no-underline transition-all duration-150 active:scale-[0.98]">
+                        class="flex-1 sm:flex-initial bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-xs no-underline transition-all duration-150 active:scale-[0.98]">
                         <i class="bi bi-plus-lg text-sm"></i>
                         <span>Buat Proyek Baru</span>
                     </a>

@@ -3,16 +3,16 @@
     <div class="py-2 space-y-4">
 
         <!-- Compact Hero Greeting -->
-        <div class="flex items-center justify-between gap-4 mb-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
             <div class="flex items-center gap-3">
                 <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0d9488&color=fff' }}"
                      alt="{{ $user->name }}"
-                     class="w-12 h-12 rounded-xl object-cover ring-2 ring-teal-500/20">
-                <div>
-                    <h1 class="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-0">
+                     class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover ring-2 ring-teal-500/20 shrink-0">
+                <div class="min-w-0">
+                    <h1 class="text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100 mb-0 truncate">
                         Selamat Datang, {{ explode(' ', $user->name)[0] }} 👋
                     </h1>
-                    <p class="text-sm text-stone-500 dark:text-stone-400 mb-0">
+                    <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mb-0 truncate">
                         @if($activeProjects->count() > 0)
                             <span class="text-teal-600 dark:text-teal-400 font-semibold">{{ $activeProjects->count() }} proyek aktif</span> • {{ $user->university ?? 'Mahasiswa' }}
                         @else
@@ -21,14 +21,14 @@
                     </p>
                 </div>
             </div>
-            <div class="hidden sm:flex items-center gap-2">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
                 <a href="{{ route('projects.create') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-teal-600 hover:bg-teal-500 text-white transition-all no-underline">
+                   class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium bg-teal-600 hover:bg-teal-500 text-white transition-all no-underline shadow-xs">
                     <i class="bi bi-plus-lg"></i>
                     <span>Buat Proyek</span>
                 </a>
                 <a href="{{ route('projects.index') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all no-underline">
+                   class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all no-underline">
                     <i class="bi bi-compass"></i>
                     <span>Eksplor</span>
                 </a>
@@ -182,11 +182,12 @@
 
                                     <!-- Quick Sprint Date Badge -->
                                     @if($project->end_date)
-                                        <span class="text-xs font-medium text-stone-500 dark:text-stone-400">
+                                        <span class="text-xs font-medium text-stone-500 dark:text-stone-400 shrink-0">
                                             <i class="bi bi-clock text-[10px]"></i>
                                             {{ \Carbon\Carbon::parse($project->end_date)->translatedFormat('d M') }}
                                         </span>
                                     @endif
+                                </div>
 
                                 <!-- Progress Bar & Squad Meta -->
                                 <div class="space-y-2 pt-3 border-t border-stone-100 dark:border-stone-800">
@@ -255,7 +256,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                         @forelse($recommendedProjects as $rec)
                             <div class="bg-white dark:bg-[#141414] rounded-xl border border-stone-200 dark:border-stone-800 p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                                 <div class="space-y-3">

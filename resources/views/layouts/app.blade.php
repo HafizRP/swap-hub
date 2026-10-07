@@ -270,9 +270,13 @@
             <!-- Slim Topbar / Command Header -->
             @include('layouts.topbar')
 
+            @php
+                $isChatRoute = request()->routeIs('chat*');
+            @endphp
+
             <!-- Main Scrollable Canvas -->
-            <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar">
-                <div class="mx-auto max-w-[1400px]">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar {{ $isChatRoute ? 'p-0 flex flex-col h-full' : 'p-3.5 sm:p-6 lg:p-8 pb-20 md:pb-8' }}">
+                <div class="{{ $isChatRoute ? 'w-full h-full flex-1 flex flex-col min-h-0' : 'mx-auto max-w-[1400px]' }}">
                     @if(isset($slot) && !empty((string)$slot))
                         {{ $slot }}
                     @else
@@ -282,6 +286,41 @@
             </main>
         </div>
     </div>
+
+    <!-- ===================== MOBILE BOTTOM NAVIGATION BAR ===================== -->
+    @auth
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0f0f0f]/95 border-t border-stone-200/80 dark:border-stone-800/80 backdrop-blur-md px-1 py-1.5 flex items-center justify-around select-none shadow-lg">
+            <a href="{{ route('dashboard') }}" wire:navigate.hover
+               class="flex-1 flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold no-underline transition-colors {{ request()->routeIs('dashboard') ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100' }}">
+                <i class="bi {{ request()->routeIs('dashboard') ? 'bi-columns-gap' : 'bi-columns-gap' }} text-base mb-0.5"></i>
+                <span>Beranda</span>
+            </a>
+
+            <a href="{{ route('projects.index') }}" wire:navigate.hover
+               class="flex-1 flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold no-underline transition-colors {{ request()->routeIs('projects.*') ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100' }}">
+                <i class="bi {{ request()->routeIs('projects.*') ? 'bi-compass-fill' : 'bi-compass' }} text-base mb-0.5"></i>
+                <span>Proyek</span>
+            </a>
+
+            <a href="{{ route('skills.swap.index') }}" wire:navigate.hover
+               class="flex-1 flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold no-underline transition-colors {{ request()->routeIs('skills.swap.*') ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100' }}">
+                <i class="bi bi-arrow-left-right text-base mb-0.5"></i>
+                <span>Swap</span>
+            </a>
+
+            <a href="{{ route('chat') }}" wire:navigate.hover
+               class="flex-1 flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold no-underline transition-colors {{ request()->routeIs('chat*') ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100' }}">
+                <i class="bi {{ request()->routeIs('chat*') ? 'bi-chat-dots-fill' : 'bi-chat-dots' }} text-base mb-0.5"></i>
+                <span>Chat</span>
+            </a>
+
+            <button @click="sidebarOpenMobile = true"
+                    class="flex-1 flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold transition-colors bg-transparent border-0 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer">
+                <i class="bi bi-grid text-base mb-0.5"></i>
+                <span>Menu</span>
+            </button>
+        </nav>
+    @endauth
 
     @livewireScripts
     @stack('scripts')
