@@ -1,28 +1,33 @@
-<header class="h-12 craft-topbar border-b border-stone-200/80 dark:border-stone-800/80 sticky top-0 px-4 z-20 flex items-center justify-between select-none">
+<header class="h-12 craft-topbar border-b border-stone-200/80 dark:border-stone-800/80 sticky top-0 px-2.5 sm:px-4 z-20 flex items-center justify-between gap-1.5 sm:gap-4 select-none">
     <!-- Left: Mobile Toggle + Quick Nav -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1 sm:gap-2 shrink-0">
         <!-- Mobile Menu Toggle -->
         <button @click="sidebarOpenMobile = !sidebarOpenMobile"
-                class="md:hidden p-2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                class="md:hidden p-1.5 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                 aria-label="Menu">
-            <i class="bi bi-list text-lg"></i>
+            <i class="bi bi-list text-xl"></i>
         </button>
+        <!-- Mobile Logo Icon -->
+        <a href="{{ route('dashboard') }}" wire:navigate.hover class="md:hidden flex items-center no-underline">
+            <x-application-logo class="w-6 h-6 rounded-md shrink-0" />
+        </a>
     </div>
 
     <!-- Center: Command Palette Search -->
-    <div class="flex-1 max-w-xl mx-auto">
+    <div class="flex-1 max-w-xl mx-auto px-1 sm:px-0">
         <button @click="commandPaletteOpen = true"
-                class="w-full flex items-center gap-2.5 px-3 py-1.5 bg-stone-100/80 dark:bg-stone-800/60 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60 rounded-lg text-sm text-stone-500 dark:text-stone-400 transition-all group">
-            <i class="bi bi-search text-xs"></i>
-            <span class="flex-1 text-left text-xs">Cari proyek, teknologi, atau anggota...</span>
-            <kbd class="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white dark:bg-stone-700 text-[10px] font-mono-code font-semibold text-stone-400 dark:text-stone-300 border border-stone-200 dark:border-stone-600">
+                class="w-full flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-stone-100/80 dark:bg-stone-800/60 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60 rounded-lg text-sm text-stone-500 dark:text-stone-400 transition-all group">
+            <i class="bi bi-search text-xs shrink-0"></i>
+            <span class="flex-1 text-left text-xs truncate hidden sm:inline">Cari proyek, teknologi, atau anggota...</span>
+            <span class="flex-1 text-left text-xs truncate sm:hidden">Cari...</span>
+            <kbd class="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white dark:bg-stone-700 text-[10px] font-mono-code font-semibold text-stone-400 dark:text-stone-300 border border-stone-200 dark:border-stone-600 shrink-0">
                 ⌘K
             </kbd>
         </button>
     </div>
 
     <!-- Right: Utilities -->
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
         <!-- Theme Toggle -->
         <button @click="toggleTheme()"
                 class="w-8 h-8 rounded-lg flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
@@ -34,15 +39,15 @@
         <button class="w-8 h-8 rounded-lg flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors relative"
                 title="Notifikasi">
             <i class="bi bi-bell text-sm"></i>
-            <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
+            <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
         </button>
 
         <!-- User Menu -->
-        <div class="relative ml-1" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
+        <div class="relative ml-0.5 sm:ml-1" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
             <button @click="userMenuOpen = !userMenuOpen"
-                    class="flex items-center gap-1.5 p-1 pr-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors">
+                    class="flex items-center gap-1.5 p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors">
                 <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=0d9488&color=fff' }}"
-                     class="w-6 h-6 rounded-full object-cover ring-1 ring-stone-200 dark:ring-stone-700">
+                     class="w-6 h-6 rounded-full object-cover ring-1 ring-stone-200 dark:ring-stone-700 shrink-0">
                 <i class="bi bi-chevron-down text-[9px] text-stone-400 hidden sm:inline"></i>
             </button>
             <!-- Dropdown -->
