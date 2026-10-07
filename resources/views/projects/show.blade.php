@@ -1,6 +1,6 @@
 @section('title', $project->title)
 <x-app-layout>
-    <div x-data="{ showInviteModal: false, showValidateModal: false, validateUserId: null, validateUserName: '' }" class="container mx-auto py-6">
+    <div x-data="{ showInviteModal: false, showValidateModal: false, validateUserId: null, validateUserName: '' }" class="w-full">
         
         <!-- Header -->
         <div class="mb-6">

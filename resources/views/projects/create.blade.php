@@ -1,6 +1,6 @@
 @section('title', 'Buat Proyek Baru')
 <x-app-layout>
-    <div class="container mx-auto py-6">
+    <div class="w-full">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
             <div>
